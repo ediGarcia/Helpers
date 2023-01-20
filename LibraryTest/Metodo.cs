@@ -27,6 +27,7 @@ namespace LibraryTest
             Aba = aba;
         }
 
+        // ReSharper disable once StringCompareToIsCultureSpecific
         public int CompareTo(Metodo metodo) => Texto.CompareTo(metodo.Texto);
     }
 }

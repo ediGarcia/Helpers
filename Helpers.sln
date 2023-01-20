@@ -11,17 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperMethods", "HelperMeth
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperControls", "HelperControls\HelperControls.csproj", "{C631016D-03B0-463F-BB6B-91D5BAE73CB9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensionMethods", "ExtensionMethods", "{AED58CE8-0F6B-40F1-9AF6-B76B16E74424}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorUtils", "ColorUtils\ColorUtils.csproj", "{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateTimeUtils", "DateTimeUtils\DateTimeUtils.csproj", "{0A055521-C97A-4B94-BEAD-345FBCA2D93D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperExtensions", "HelperExtensions\HelperExtensions.csproj", "{414C69F3-57EF-42FF-91C3-088772DA4968}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downloader", "Downloader\Downloader.csproj", "{35C6D577-A25C-4DD1-9EE4-08A164EB4CFD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManager", "FileMaanager\FileManager.csproj", "{51ADB844-485B-478D-A41A-65DCE309593B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lists", "Lists\Lists.csproj", "{59249DD9-95A9-4E1F-A54C-1234F9767ADA}"
 EndProject
@@ -52,14 +44,6 @@ Global
 		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A055521-C97A-4B94-BEAD-345FBCA2D93D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A055521-C97A-4B94-BEAD-345FBCA2D93D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A055521-C97A-4B94-BEAD-345FBCA2D93D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A055521-C97A-4B94-BEAD-345FBCA2D93D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,10 +52,6 @@ Global
 		{35C6D577-A25C-4DD1-9EE4-08A164EB4CFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35C6D577-A25C-4DD1-9EE4-08A164EB4CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35C6D577-A25C-4DD1-9EE4-08A164EB4CFD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51ADB844-485B-478D-A41A-65DCE309593B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51ADB844-485B-478D-A41A-65DCE309593B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51ADB844-485B-478D-A41A-65DCE309593B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51ADB844-485B-478D-A41A-65DCE309593B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{59249DD9-95A9-4E1F-A54C-1234F9767ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59249DD9-95A9-4E1F-A54C-1234F9767ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59249DD9-95A9-4E1F-A54C-1234F9767ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,10 +59,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A39E6882-6D33-49CD-98ED-5E77A7AA8C1E} = {AED58CE8-0F6B-40F1-9AF6-B76B16E74424}
-		{0A055521-C97A-4B94-BEAD-345FBCA2D93D} = {AED58CE8-0F6B-40F1-9AF6-B76B16E74424}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3061C096-0392-40DB-AB11-847BA3B6941C}

@@ -2,6 +2,7 @@
 using System.Net;
 using Downloader.Classes.Helper;
 using HelperMethods;
+// ReSharper disable UnusedMember.Global
 
 namespace Downloader.Classes
 {

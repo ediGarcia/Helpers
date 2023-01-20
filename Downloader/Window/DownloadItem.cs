@@ -10,6 +10,7 @@ using Downloader.Properties;
 using HelperExtensions;
 using HelperMethods;
 using DownloadProgressChangedEventArgs = Downloader.Classes.Helper.DownloadProgressChangedEventArgs;
+// ReSharper disable UnusedMember.Global
 
 namespace Downloader.Window
 {

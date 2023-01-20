@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HelperExtensions;
+// ReSharper disable UnusedMember.Global
 
 namespace Lists
 {
@@ -35,7 +36,7 @@ namespace Lists
             _comparer = comparer;
         }
 
-        public UniqueList(IComparer<T> comparer, int capacity, bool throwExceptionOnConflict = true) : base(capacity)
+        public UniqueList(int capacity, IComparer<T> comparer, bool throwExceptionOnConflict = true) : base(capacity)
         {
             ThrowExceptionOnConflict = throwExceptionOnConflict;
             _comparer = comparer;
@@ -47,7 +48,7 @@ namespace Lists
             _comparison = comparison;
         }
 
-        public UniqueList(Comparison<T> comparison, int capacity, bool throwExceptionOnConflict = true) : base(capacity)
+        public UniqueList(int capacity, Comparison<T> comparison, bool throwExceptionOnConflict = true) : base(capacity)
         {
             ThrowExceptionOnConflict = throwExceptionOnConflict;
             _comparison = comparison;

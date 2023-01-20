@@ -68,10 +68,6 @@
     <Compile Include="WinFormsMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DateTimeUtils\DateTimeUtils.csproj">
-      <Project>{0a055521-c97a-4b94-bead-345fbca2d93d}</Project>
-      <Name>DateTimeUtils</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HelperExtensions\HelperExtensions.csproj">
       <Project>{414c69f3-57ef-42ff-91c3-088772da4968}</Project>
       <Name>HelperExtensions</Name>

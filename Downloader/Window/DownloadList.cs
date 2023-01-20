@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Downloader.Classes.Helper;
 using HelperExtensions;
+// ReSharper disable UnusedMember.Global
 
 namespace Downloader.Window
 {
