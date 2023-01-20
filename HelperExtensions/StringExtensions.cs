@@ -152,9 +152,8 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="count"></param>
     /// <param name="fillingString"></param>
-    /// <param name="separator"></param>
     /// <returns></returns>
-    public static string FillLeft(this string st, int count, string fillingString, string separator = "")
+    public static string FillLeft(this string st, int count, string fillingString)
     {
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
@@ -162,7 +161,7 @@ public static class StringExtensions
         StringBuilder newString = new();
 
         for (int i = 0; i < count; i++)
-            newString.Append(fillingString).Append(separator);
+            newString.Append(fillingString);
 
         return newString.Append(st).ToString();
     }
@@ -177,7 +176,7 @@ public static class StringExtensions
     /// <param name="fillingString"></param>
     /// <param name="separator"></param>
     /// <returns></returns>
-    public static string FillRight(this string st, int count, string fillingString, string separator = "")
+    public static string FillRight(this string st, int count, string fillingString)
     {
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
@@ -185,9 +184,7 @@ public static class StringExtensions
         StringBuilder newString = new(st);
 
         for (int i = 0; i < count; i++)
-            newString.Append(fillingString).Append(separator);
-
-        newString.Length -= separator?.Length ?? 0;
+            newString.Append(fillingString);
 
         return newString.ToString();
     }
