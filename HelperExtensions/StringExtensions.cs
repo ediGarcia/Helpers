@@ -168,13 +168,13 @@ public static class StringExtensions
     #endregion
 
     #region FillRight
+
     /// <summary>
     /// Appends the specified string value the selected number of times.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="count"></param>
     /// <param name="fillingString"></param>
-    /// <param name="separator"></param>
     /// <returns></returns>
     public static string FillRight(this string st, int count, string fillingString)
     {

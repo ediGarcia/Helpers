@@ -396,6 +396,19 @@ public static class ListExtensions
     }
     #endregion
 
+    #region ToList
+    /// <summary>
+    /// Creates a <see cref="List{T2}"/> from the specified list.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static List<T2> ToList<T1, T2>(this IList<T1> list, Func<T1, T2> func) =>
+        list.Select(func).ToList();
+    #endregion
+
     #endregion
 
     #region IEnumerable<T>
@@ -423,6 +436,8 @@ public static class ListExtensions
     public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
         items.Any(iEnumerable.Contains);
     #endregion
+
+    #region ForEach
 
     #region ForEach(this IEnumerable<T>, Action<T>)
 
@@ -461,6 +476,8 @@ public static class ListExtensions
         foreach (T value in iEnumerable)
             action?.Invoke(value, index++);
     }
+
+    #endregion
 
     #endregion
 
