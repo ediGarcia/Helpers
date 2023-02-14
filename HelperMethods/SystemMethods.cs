@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Xml.Serialization;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -935,6 +936,20 @@ public static class SystemMethods
     }
     #endregion
 
+    #region ReadXml
+    /// <summary>
+    /// Reads the XML data from the specified file and converts it to the specified type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static T ReadXml<T>(string path)
+    {
+        using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return (T)new XmlSerializer(typeof(T)).Deserialize(stream);
+    }
+    #endregion
+
     #region RetrieveDataFromFile
     /// <summary>
     /// Retrieves data from an existing file.
@@ -1006,6 +1021,20 @@ public static class SystemMethods
         flags |= suppressBigFileWarning ? FileOperationFlags.FofSilent : FileOperationFlags.FofWantNukeWarning;
 
         CallSystemFileOperation(path, null, FileOperationType.FoDelete, flags);
+    }
+    #endregion
+
+    #region WriteXml
+    /// <summary>
+    /// Writes the specified data in XML format into the specified file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="data"></param>
+    public static void WriteXml<T>(string path, T data)
+    {
+        using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        new XmlSerializer(typeof(T)).Serialize(stream, data);
     }
     #endregion
 
