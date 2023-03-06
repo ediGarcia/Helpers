@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -58,40 +60,39 @@ public static class ListExtensions
 
     #region Remove
     /// <summary>
-    /// Removes the first occurrence of a specific object from the <see cref="List{T}"/>.
+    /// Removes the first element that matches the specified criteria.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
-    /// <param name="item"></param>
-    /// <param name="comparer"></param>
+    /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool Remove<T>(this ICollection<T> list, T item, IEqualityComparer<T> comparer) =>
-        list.FirstOrDefault(_ => comparer.Equals(item, _)) is { } itemToRemove && list.Remove(itemToRemove);
+    public static bool Remove<T>(this ICollection<T> list, Func<T, bool> predicate) =>
+        list.FirstOrDefault(predicate) is { } itemToRemove && list.Remove(itemToRemove);
     #endregion
 
     #region RemoveAll
     /// <summary>
-    /// Removes every occurrence of a specific object from the <see cref="List{T}"/>.
+    /// Removes every element that matches the specified criteria.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
-    /// <param name="item"></param>
-    /// <param name="comparer"></param>
-    /// <returns></returns>
-    public static bool RemoveAll<T>(this ICollection<T> list, T item, IEqualityComparer<T> comparer)
+    /// <param name="action"></param>
+    /// <returns>The number of items removed.</returns>
+    public static int RemoveAll<T>(this ICollection<T> list, Func<T, bool> action)
     {
-        bool itemsRemoved = false;
+        int itemsRemovedCount = 0;
+        T[] originalItems = list.ToArray();
 
-        list.ForEach(_ =>
+        originalItems.ForEach(_ =>
         {
-            if (comparer.Equals(item, _))
+            if (action(_))
             {
                 list.Remove(_);
-                itemsRemoved = true;
+                itemsRemovedCount++;
             }
         });
 
-        return itemsRemoved;
+        return itemsRemovedCount;
     }
     #endregion
 
@@ -168,20 +169,14 @@ public static class ListExtensions
 
     #region FillLeft(this IList<T>, int)
     /// <summary>
-    /// Inserts the specified quantity of the default value to the beginning of the list.
+    /// Inserts the specified quantity of the specified value to the beginning of the list.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="quantity"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void FillLeft<T>(this IList<T> list, int quantity)
-    {
-        if (quantity < 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
-
-        for (int i = 0; i < quantity; i++)
-            list.Insert(0, default);
-    }
+    public static void FillLeft<T>(this IList<T> list, int quantity) =>
+        list.FillLeft(default, quantity);
     #endregion
 
     #region FillLeft(this IList<T>, T, int)
@@ -215,14 +210,8 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="quantity"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void FillRight<T>(this IList<T> list, int quantity)
-    {
-        if (quantity < 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
-
-        for (int i = 0; i < quantity; i++)
-            list.Add(default);
-    }
+    public static void FillRight<T>(this IList<T> list, int quantity) =>
+    list.FillRight(default, quantity);
     #endregion
 
     #region FillRight(this IList<T>, T, int)
@@ -260,57 +249,11 @@ public static class ListExtensions
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
     public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex = 0, int? length = null)
     {
-        for (int i = startIndex; i < startIndex + (length ?? list.Count); i++)
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i < finalIndex; i++)
             action?.Invoke(list[i], i);
     }
-    #endregion
-
-    #region InverseForEach
-
-    #region InverseForEach(this IList<T>, Action<T>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the list in the inverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void InverseForEach<T>(this IList<T> list, Action<T> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.Count - 1;
-        int lastIndex = startIndex.Value - (length ?? list.Count);
-
-        for (int i = startIndex.Value; i > lastIndex; i--)
-            action?.Invoke(list[i]);
-    }
-    #endregion
-
-    #region InverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the list in the inverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void InverseForEach<T>(this IList<T> list, Action<T, int> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.Count - 1;
-        int lastIndex = startIndex.Value - (length ?? list.Count);
-
-        for (int i = startIndex.Value; i > lastIndex; i--)
-            action?.Invoke(list[i], i);
-    }
-    #endregion
-
     #endregion
 
     #region InsertMany
@@ -322,7 +265,7 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="items"></param>
     public static void InsertMany<T>(this IList<T> list, int startIndex, params T[] items) =>
-        items.InverseForEach(_ => list.Insert(startIndex, _));
+        items.ReverseForEach(_ => list.Insert(startIndex, _));
     #endregion
 
     #region Move
@@ -331,9 +274,30 @@ public static class ListExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
+    /// <param name="item"></param>
+    /// <param name="destinationIndex"></param>
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    public static bool Move<T>(this IList<T> list, T item, int destinationIndex)
+    {
+        if (list.Remove(item))
+        {
+            list.Insert(destinationIndex, item);
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
+
+    #region MoveAt
+    /// <summary>
+    /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
     /// <param name="currentIndex"></param>
     /// <param name="destinationIndex"></param>
-    public static void Move<T>(this IList<T> list, int currentIndex, int destinationIndex)
+    public static void MoveAt<T>(this IList<T> list, int currentIndex, int destinationIndex)
     {
         T item = list[currentIndex];
 
@@ -349,8 +313,17 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="item"></param>
-    public static void MoveDown<T>(this IList<T> list, T item) =>
-        list.MoveDownAt(list.IndexOf(item));
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    public static bool MoveDown<T>(this IList<T> list, T item)
+    {
+        int index = list.IndexOf(item);
+
+        if (index < 0)
+            return false;
+
+        list.MoveDownAt(index);
+        return true;
+    }
     #endregion
 
     #region MoveDownAt
@@ -365,7 +338,7 @@ public static class ListExtensions
         if (index == list.LastIndex())
             return;
 
-        list.Move(index, index + 1);
+        list.MoveAt(index, index + 1);
     }
     #endregion
 
@@ -376,8 +349,17 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="item"></param>
-    public static void MoveUp<T>(this IList<T> list, T item) =>
-        list.MoveUpAt(list.IndexOf(item));
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    public static bool MoveUp<T>(this IList<T> list, T item)
+    {
+        int index = list.IndexOf(item);
+
+        if (index < 0)
+            return false;
+
+        list.MoveUpAt(index);
+        return true;
+    }
     #endregion
 
     #region MoveUpAt
@@ -392,26 +374,74 @@ public static class ListExtensions
         if (index == 0)
             return;
 
-        list.Move(index, index - 1);
+        list.MoveAt(index, index - 1);
     }
     #endregion
 
-    #region ToList
+    #region ReverseForEach
+
+    #region ReverseForEach(this IList<T>, Action<T>, [int?], [int?])
     /// <summary>
-    /// Creates a <see cref="List{T2}"/> from the specified list.
+    /// Performs the specified action on each element of the list in the inverse order.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
-    /// <param name="func"></param>
-    /// <returns></returns>
-    public static List<T2> ToList<T1, T2>(this IList<T1> list, Func<T1, T2> func) =>
-        list.Select(func).ToList();
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ReverseForEach<T>(this IList<T> list, Action<T> action, int? startIndex = null, int? length = null)
+    {
+        startIndex ??= list.LastIndex();
+        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
+
+        for (int i = startIndex.Value; i > lastIndex; i--)
+            action?.Invoke(list[i]);
+    }
+    #endregion
+
+    #region ReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the list in the inverse order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ReverseForEach<T>(this IList<T> list, Action<T, int> action, int? startIndex = null, int? length = null)
+    {
+        startIndex ??= list.LastIndex();
+        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
+
+        for (int i = startIndex.Value; i > lastIndex; i--)
+            action?.Invoke(list[i], i);
+    }
+    #endregion
+
     #endregion
 
     #endregion
 
     #region IEnumerable<T>
+
+    #region Cast
+    /// <summary>
+    /// Casts the elements of an <see cref="IEnumerable{T}"/> to an specific type.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
+        iEnumerable.Select(func);
+    #endregion
 
     #region ContainsAll
     /// <summary>
@@ -440,7 +470,6 @@ public static class ListExtensions
     #region ForEach
 
     #region ForEach(this IEnumerable<T>, Action<T>)
-
     /// <summary>
     /// Performs the specified action on each element of the array.
     /// </summary>
@@ -453,13 +482,12 @@ public static class ListExtensions
     public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action)
     {
         foreach (T value in iEnumerable)
-            action?.Invoke(value);
+            action(value);
     }
 
     #endregion
 
     #region ForEach(this IEnumerable<T>, Action<T, int>)
-
     /// <summary>
     /// Performs the specified action on each element of the array.
     /// </summary>
@@ -474,11 +502,83 @@ public static class ListExtensions
         int index = 0;
 
         foreach (T value in iEnumerable)
-            action?.Invoke(value, index++);
+            action(value, index++);
     }
 
     #endregion
 
+    #endregion
+
+    #region ForEachAsync
+
+    #region ForEachAsync<T>(this IEnumerable<T>, Action<T>)
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="callback">Action to be executed right after every execution has finished.</param>
+    public static void ForEachAsync<T>(this IEnumerable<T> iEnumerable, Action<T> action, Action callback = null)
+    {
+        iEnumerable.Select(value => Task.Run(() => action(value))).ForEach(_ => _.Wait());
+            callback?.Invoke();
+    }
+    #endregion
+
+    #region ForEachAsync<T>(this IEnumerable<T>, Action<T, int>)
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="callback">Action to be executed right after every execution has finished.</param>
+    public static void ForEachAsync<T>(this IEnumerable<T> iEnumerable, Action<T, int> action, Action callback = null)
+    {
+        int index = 0;
+        iEnumerable.Select(value => Task.Run(() => action(value, index++))).ForEach(_ => _.Wait());
+            callback?.Invoke();
+        }
+    #endregion
+
+    #endregion
+
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the <see cref="IEnumerable{T}"/> is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
+        iEnumerable?.Any() != true;
+    #endregion
+
+    #region ToArray
+    /// <summary>
+    /// Creates a T array out of the specific type from the <see cref="IEnumerable{T}"/>
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static T2[] ToArray<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
+        iEnumerable.Select(func).ToArray();
+    #endregion
+
+    #region ToList
+    /// <summary>
+    /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
+        iEnumerable.Select(func).ToList();
     #endregion
 
     #endregion

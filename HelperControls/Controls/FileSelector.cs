@@ -307,7 +307,7 @@ namespace HelperControls.Controls
 
                 try
                 {
-                    SystemMethods.Run(SelectedPath, isAdmin: IsRunAsAdmin);
+                    SystemMethods.Run(SelectedPath, runAsAdmin: IsRunAsAdmin);
                 }
                 catch (Exception ex)
                 {

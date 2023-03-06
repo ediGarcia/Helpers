@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using HelperExtensions;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
-// ReSharper disable once UnusedMember.Global
 public static class GenericMethods
 {
     #region Public Methods
 
-    #region Average (string, params T[])
+    #region Average
     /// <summary>
     /// Retrieve the average value of the selected property.
     /// </summary>
@@ -23,6 +23,19 @@ public static class GenericMethods
         values.Length == 0
             ? throw new ArgumentException("No values to compare.")
             : values.Average(_ => GetDoubleValue(_, propertyName));
+    #endregion
+
+    #region AreEqual
+    /// <summary>
+    /// Indicates whether the specified properties of the given objects have the same values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj1"></param>
+    /// <param name="obj2"></param>
+    /// <param name="properties"></param>
+    /// <returns></returns>
+    public static bool AreEqual<T>(T obj1, T obj2, params string[] properties) =>
+        properties.IsNullOrEmpty() && properties.Select(typeof(T).GetProperty).All(_ => _.GetValue(obj1).Equals(_.GetValue(obj2)));
     #endregion
 
     #region Compare
@@ -65,6 +78,31 @@ public static class GenericMethods
             : values.FirstOrDefault(condition);
     #endregion
 
+    #region GetFirstNotNull
+
+    #region GetFirstNotNull(params object[])
+    /// <summary>
+    /// Returns the first not null element of the sequence.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static object GetFirstNotNull(params object[] items) =>
+        items.FirstOrDefault(_ => _ is not null);
+    #endregion
+
+    #region GetFirstNotNull<T>(params T[])
+    /// <summary>
+    /// Returns the first not null element of the sequence.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static T GetFirstNotNull<T>(params T[] items) =>
+        items.FirstOrDefault(_ => _ is not null);
+    #endregion
+
+    #endregion
+
     #region GetMatching
     /// <summary>
     /// Returns all the values that match the condition
@@ -77,6 +115,8 @@ public static class GenericMethods
     public static IEnumerable<T> GetMatching<T>(Func<T, bool> condition, params T[] values) =>
         values == null || values.Length == 0 ? throw new ArgumentException("No values to compare.") : values.Where(condition);
     #endregion
+
+    #region Max
 
     #region Max (params T[])
     /// <summary>
@@ -125,6 +165,10 @@ public static class GenericMethods
     }
     #endregion
 
+    #endregion
+
+    #region Min
+
     #region Min (params T[])
     /// <summary>
     /// Retrieves the smaller T value.
@@ -169,6 +213,29 @@ public static class GenericMethods
         }, 1);
 
         return selectedObjects.ToArray();
+    }
+    #endregion
+
+    #endregion
+
+    #region ReturnFirstNotNull
+    /// <summary>
+    /// Returns the first <see cref="Func{TResult}"/> that returns a not null value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static T ReturnFirstNotNull<T>(params Func<T>[] items)
+    {
+        foreach (Func<T> function in items)
+        {
+            T result = function();
+
+            if (result is not null)
+                return result;
+        }
+
+        return default;
     }
     #endregion
 

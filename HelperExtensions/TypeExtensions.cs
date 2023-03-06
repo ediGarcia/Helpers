@@ -1,8 +1,8 @@
 ﻿using System;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 
-// ReSharper disable once UnusedMember.Global
 public static class TypeExtensions
 {
     #region Public Methods

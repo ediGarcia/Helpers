@@ -1,5 +1,4 @@
 ﻿using HelperMethods.Classes;
-using HelpersClasses.Enums;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +7,9 @@ using System.Net;
 using System.Text;
 using System.Xml;
 using HelperExtensions;
+using HelperMethods.Enums;
+
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

@@ -221,6 +221,16 @@ public static class StringExtensions
         st is null;
     #endregion
 
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the current string is null or empty.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty(this string st) =>
+        String.IsNullOrEmpty(st);
+    #endregion
+
     #region IsNullOrWhiteSpace
     /// <summary>
     /// Indicates whether the current string is null, empty or contains only white-space characters.

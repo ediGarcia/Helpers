@@ -5,6 +5,7 @@ using System.Net;
 using Downloader.Classes.Helper;
 using HelperMethods;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
+// ReSharper disable UnusedMember.Global
 
 namespace Downloader.Classes
 {

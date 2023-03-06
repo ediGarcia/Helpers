@@ -1,5 +1,5 @@
 ﻿using HelperExtensions;
-using HelperMethods.Classes;
+using HelperMethods.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -24,6 +25,46 @@ public static class StringMethods
     public const string LineBreaks = "\n";
 
     #region Public Methods
+
+    #region GetFirstNotEmpty
+    /// <summary>
+    /// Retrieves the first not empty string within the sequence.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static string GetFirstNotEmpty(params string[] strings) =>
+        strings?.FirstOrDefault(_ => !_.IsEmpty());
+    #endregion
+
+    #region GetFirstNotNull
+    /// <summary>
+    /// Retrieves the first not null string within the sequence.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static string GetFirstNotNull(params string[] strings) =>
+        strings?.FirstOrDefault(_ => !_.IsNull());
+    #endregion
+
+    #region GetFirstNotNullOrEmpty
+    /// <summary>
+    /// Retrieves the first not null or empty string within the sequence.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static string GetFirstNotNullOrEmpty(params string[] strings) =>
+        strings?.FirstOrDefault(_ => !_.IsNullOrEmpty());
+    #endregion
+
+    #region GetFirstNotNullOrWhiteSpace
+    /// <summary>
+    /// Retrieves the first not null, empty or white-space only string within the sequence.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static string GetFirstNotNullOrWhiteSpace(params string[] strings) =>
+        strings?.FirstOrDefault(_ => !_.IsNullOrWhiteSpace());
+    #endregion
 
     #region GenerateStringBuilder
     /// <summary>
@@ -327,6 +368,86 @@ public static class StringMethods
         InsertEllipsisPrivate(text, maxWidth, true);
     #endregion
 
+    #endregion
+
+    #region AreAllEmpty
+    /// <summary>
+    /// Indicates whether the sequence contains only empty strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool AreAllEmpty(params string[] strings) =>
+        strings?.All(_ => _.IsEmpty()) == true;
+    #endregion
+
+    #region AreAllNull
+    /// <summary>
+    /// Indicates whether the sequence contains only null strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool AreAllNull(params string[] strings) =>
+        strings?.All(_ => _.IsNull()) == true;
+    #endregion
+
+    #region AreAllNullOrEmpty
+    /// <summary>
+    /// Indicates whether the sequence contains only null or empty strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool AreAllNullOrEmpty(params string[] strings) =>
+        strings?.All(_ => _.IsNullOrEmpty()) == true;
+    #endregion
+
+    #region AreAllNullOrWhiteSpace
+    /// <summary>
+    /// Indicates whether the sequence contains only null, empty or white-space only strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool AreAllNullOrWhiteSpace(params string[] strings) =>
+        strings?.All(_ => _.IsNullOrWhiteSpace()) == true;
+    #endregion
+
+    #region IsAnyEmpty
+    /// <summary>
+    /// Indicates whether the sequence contains any empty strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool IsAnyEmpty(params string[] strings) =>
+        strings?.Any(_ => _.IsEmpty()) == true;
+    #endregion
+
+    #region IsAnyNull
+    /// <summary>
+    /// Indicates whether the sequence contains any null strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool IsAnyNull(params string[] strings) =>
+        strings?.Any(_ => _.IsNull()) == true;
+    #endregion
+
+    #region IsAnyNullOrEmpty
+    /// <summary>
+    /// Indicates whether the sequence contains any null or empty strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool IsAnyNullOrEmpty(params string[] strings) =>
+        strings?.Any(_ => _.IsNullOrEmpty()) == true;
+    #endregion
+
+    #region IsAnyNullOrWhiteSpace
+    /// <summary>
+    /// Indicates whether the sequence contains any null, empty or white-space only strings.
+    /// </summary>
+    /// <param name="strings"></param>
+    /// <returns></returns>
+    public static bool IsAnyNullOrWhiteSpace(params string[] strings) =>
+        strings?.Any(_ => _.IsNullOrWhiteSpace()) == true;
     #endregion
 
     #region IsNumber

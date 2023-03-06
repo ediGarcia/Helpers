@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
@@ -603,7 +604,7 @@ public static class NumberMethods
 
     #endregion
 
-    #region Sum
+    #region Sum*
 
     #region Sum (sbyte)
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using HelperExtensions;
-using HelperMethods.Classes;
-using Microsoft.Win32;
+using HelperMethods.Enums;
+using HelperMethods.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,114 +9,21 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
 public static class SystemMethods
 {
-    #region Enums
-
-    /// <summary>
-    /// Possible flags for the SHFileOperation method.
-    /// </summary>
-    [Flags]
-    private enum FileOperationFlags : ushort
-    {
-        /// <summary>
-        /// Do not show a dialog during the process
-        /// </summary>
-        FofSilent = 0x0004,
-        /// <summary>
-        /// Do not ask the user to confirm selection
-        /// </summary>
-        FofNoConfirmation = 0x0010,
-        /// <summary>
-        /// Delete the file to the recycle bin.  (Required flag to send a file to the bin
-        /// </summary>
-        FofAllowUndo = 0x0040,
-        /// <summary>
-        /// Do not show the names of the files or folders that are being recycled.
-        /// </summary>
-        // ReSharper disable once UnusedMember.Local
-        FofSimpleProgress = 0x0100,
-        /// <summary>
-        /// Suppress errors, if any occur during the process.
-        /// </summary>
-        FofNoErrorUi = 0x0400,
-        /// <summary>
-        /// Warn if files are too big to fit in the recycle bin and will need
-        /// to be deleted completely.
-        /// </summary>
-        FofWantNukeWarning = 0x4000
-    }
-
-    /// <summary>
-    /// File Operation Function Type for SHFileOperation
-    /// </summary>
-    private enum FileOperationType : uint
-    {
-        /// <summary>
-        /// Move the objects
-        /// </summary>
-        FoMove = 0x0001,
-        /// <summary>
-        /// Copy the objects
-        /// </summary>
-        FoCopy = 0x0002,
-        /// <summary>
-        /// Delete (or recycle) the objects
-        /// </summary>
-        FoDelete = 0x0003,
-        /// <summary>
-        /// Rename the object(s)
-        /// </summary>
-        // ReSharper disable once UnusedMember.Local
-        FoRename = 0x0004
-    }
-
-    /// <summary>
-    /// ShFileOpStruct for SHFileOperation from COM
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private struct ShFileOpStruct
-    {
-        // ReSharper disable once IdentifierTypo
-        private readonly IntPtr _hwnd;
-        [MarshalAs(UnmanagedType.U4)] public FileOperationType WFunc;
-        public string PFrom;
-        public string PTo;
-        public FileOperationFlags FFlags;
-        [MarshalAs(UnmanagedType.Bool)] private readonly bool _fAnyOperationsAborted;
-        private readonly IntPtr _hNameMappings;
-        private readonly string _lpszProgressTitle;
-    }
-
-    #endregion
-
-    #region Imports
-
-    [DllImport("shell32.dll", EntryPoint = "ExtractIconA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
-    private static extern IntPtr ExtractIcon(int hInst, string lpszExeFileName, int nIconIndex);
-
-    // ReSharper disable once StringLiteralTypo
-    [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
-    // ReSharper disable once IdentifierTypo
-    private static extern uint AssocQueryString(int flags, int str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, ref uint pcchOut);
-
-    [DllImport("Shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
-    private static extern int ExtractIconEx(string sFile, int iIndex, out IntPtr piLargeVersion, out IntPtr piSmallVersion, int amountIcons);
-
-    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int SHFileOperation(ref ShFileOpStruct fileOp);
-
-    // ReSharper disable once StringLiteralTypo
-    [DllImport("shlwapi.dll", BestFitMapping = false, CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = false, ThrowOnUnmappableChar = true)]
-    private static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
-
-    #endregion
+    public static string ApplicationDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    public static string UserDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     #region Public Methods
 
@@ -245,8 +152,10 @@ public static class SystemMethods
     /// <param name="source"></param>
     /// <param name="destination"></param>
     public static void CopyOs(string source, string destination) =>
-        CallSystemFileOperation(source, destination, FileOperationType.FoCopy, 0);
+        CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoCopy, 0);
     #endregion
+
+    #region CopyToFolder*
 
     #region CopyToFolder(string, string, ConflictAction)
     /// <summary>
@@ -280,6 +189,8 @@ public static class SystemMethods
     /// <param name="conflictAction"></param>
     public static void CopyToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction) =>
         sourceEntries.ForEach(_ => CopyToFolder(_, destinationFolder, conflictAction));
+    #endregion
+
     #endregion
 
     #region CreateDirectory
@@ -333,83 +244,6 @@ public static class SystemMethods
         File.WriteAllText(path, content ?? "");
         return path;
     }
-    #endregion
-
-    #region CreateProcess(string, [bool])
-    /// <summary>
-    /// Creates a process to run a operational system command.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="isAdmin"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException" />
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="ObjectDisposedException" />
-    /// <exception cref="FileNotFoundException" />
-    /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process CreateProcess(string path, bool isAdmin = false) =>
-        new() { StartInfo = new(path) { WorkingDirectory = Path.GetDirectoryName(path), Verb = isAdmin ? "runas" : "" } };
-    #endregion
-
-    #region CreateProcess(string, string, [bool])
-    /// <summary>
-    /// Creates a process to run a operational system command.
-    /// </summary>
-    /// <param name="command"></param>
-    /// <param name="arguments"></param>
-    /// <param name="isAdmin"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException" />
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="ObjectDisposedException" />
-    /// <exception cref="FileNotFoundException" />
-    /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process CreateProcess(string command, string arguments, bool isAdmin = false) =>
-        new() { StartInfo = new(command, arguments) { WorkingDirectory = Path.GetDirectoryName(command), Verb = isAdmin ? "runas" : "" } };
-    #endregion
-
-    #region CreateProcessAt(string, string, [bool])
-    /// <summary>
-    /// Creates a process to run a operational system command at the specified location.
-    /// </summary>
-    /// <param name="workingFolder"></param>
-    /// <param name="path"></param>
-    /// <param name="isAdmin"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException" />
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="ObjectDisposedException" />
-    /// <exception cref="FileNotFoundException" />
-    /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process CreateProcessAt(string workingFolder, string path, bool isAdmin = false) =>
-        new() { StartInfo = new(path) { WorkingDirectory = workingFolder, Verb = isAdmin ? "runas" : "" } };
-    #endregion
-
-    #region CreateProcessAt(string, string, string, [bool])
-
-    /// <summary>
-    /// Creates a process to run a operational system command at the specified location.
-    /// </summary>
-    /// <param name="workingFolder"></param>
-    /// <param name="command"></param>
-    /// <param name="arguments"></param>
-    /// <param name="isAdmin"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException" />
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="ObjectDisposedException" />
-    /// <exception cref="FileNotFoundException" />
-    /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process CreateProcessAt(string workingFolder, string command, string arguments, bool isAdmin = false) =>
-        new()
-        {
-            StartInfo = new(command, arguments)
-            {
-                WorkingDirectory = workingFolder,
-                Verb = isAdmin ? "runas" : ""
-            }
-        };
-
     #endregion
 
     #region CreateRandomDirectory
@@ -509,142 +343,7 @@ public static class SystemMethods
         if (!CheckPathExists(path))
             throw new IOException($"Could not find file {path}.");
 
-        CallSystemFileOperation(path, null, FileOperationType.FoDelete, 0);
-    }
-    #endregion
-
-    #region ExtractIcon(string, [bool], [Icon])
-    /// <summary>
-    /// Extracts an icon from a binary file.
-    /// </summary>
-    /// <param name="binaryFilePath"></param>
-    /// <param name="getLargeVersion"></param>
-    /// <param name="defaultIcon">Default icon, returned when no icon is found in file.</param>
-    /// <returns></returns>
-    public static Icon ExtractIcon(string binaryFilePath, bool getLargeVersion = true, Icon defaultIcon = null) =>
-        ExtractIcon(binaryFilePath, getLargeVersion, 0, defaultIcon);
-    #endregion
-
-    #region ExtractIcon(string, [bool], [int], [Icon])
-    /// <summary>
-    /// Extracts an icon from a binary file.
-    /// </summary>
-    /// <param name="binaryFilePath"></param>
-    /// <param name="iconIndex">Icon index inside the binary file.</param>
-    /// <param name="getLargeVersion"></param>
-    /// <param name="defaultIcon">Default icon, returned when no icon is found in file.</param>
-    /// <returns></returns>
-    public static Icon ExtractIcon(string binaryFilePath, bool getLargeVersion = true, int iconIndex = 0, Icon defaultIcon = null)
-    {
-        ExtractIconEx(binaryFilePath, iconIndex, out IntPtr large, out IntPtr small, 1);
-
-        try
-        {
-            return Icon.FromHandle(getLargeVersion ? large : small);
-        }
-        catch
-        {
-            return defaultIcon;
-        }
-    }
-    #endregion
-
-    #region ExtractIconExtension
-    /// <summary>
-    /// Retrieves the system's default icon for the selected extension.
-    /// </summary>
-    /// <param name="extension"></param>
-    /// <param name="defaultIcon">The default value, if the extraction fails.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="System.Security.SecurityException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    /// <exception cref="IOException" />
-    public static Icon ExtractIconExtension(string extension, Icon defaultIcon = null)
-    {
-        //Valid extension check.
-        if (String.IsNullOrWhiteSpace(extension))
-            throw new NullReferenceException("The selected extension cannot be null, empty or white spaces.");
-
-        extension = InsertExtensionDot(extension);
-
-        RegistryKey rkRoot = Registry.ClassesRoot; //Access Windows' keys registry.
-
-        //Tries retrieving the icon.
-        if (rkRoot.GetSubKeyNames().FirstOrDefault(x => x == extension) is { } keyName &&
-            rkRoot.OpenSubKey(keyName) is { } rkFileType &&
-            rkFileType.GetValue("") is string defaultValue &&
-            rkRoot.OpenSubKey(defaultValue + @"\DefaultIcon") is { } rkFileIcon &&
-            rkFileIcon.GetValue("") is string data)
-        {
-            data = data.Replace("\"", "");
-
-            string foundExtension;
-            int iconIndex = 0;
-            int commaPosition = data.IndexOf(",", StringComparison.Ordinal);
-
-            if (commaPosition > 0)
-            {
-                foundExtension = data.Substring(0, commaPosition);
-                Int32.TryParse(data.Substring(commaPosition + 1), out iconIndex);
-            }
-            else
-                foundExtension = data;
-
-            try
-            {
-                return Icon.FromHandle(ExtractIcon(0, foundExtension, iconIndex));
-            }
-            catch
-            {
-                return defaultIcon; //Error extracting icon.
-            }
-        }
-
-        return defaultIcon; //No icon found.
-    }
-    #endregion
-
-    #region ExtractIconFile
-    /// <summary>
-    /// Extracts the file icon.
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="getBigVersion">Indicates whether the method should return the icon's big version.</param>
-    /// <param name="defaultIcon">The default value, if the extraction fails.</param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static Icon ExtractIconFile(string filePath, bool getBigVersion = true, Icon defaultIcon = null)
-    {
-        Icon icon = null;
-        string iconPath = RetrieveIconPath(Path.GetExtension(filePath));
-
-        if (!String.IsNullOrEmpty(iconPath))
-        {
-            if (iconPath.StartsWith("@{"))
-            {
-                StringBuilder outBuff = new(1024);
-                SHLoadIndirectString(iconPath, outBuff, outBuff.Capacity, IntPtr.Zero);
-
-                icon = Icon.FromHandle(new Bitmap(outBuff.ToString()).GetHicon());
-            }
-            else
-            {
-                int iconIndex = 0;
-
-                if (iconPath.Contains(","))
-                {
-                    iconIndex = Int32.Parse(iconPath.Substring(iconPath.IndexOf(",", StringComparison.Ordinal) + 1));
-                    iconPath = iconPath.Substring(0, iconPath.IndexOf(",", StringComparison.Ordinal));
-                }
-
-                icon = ExtractIcon(iconPath, getBigVersion, iconIndex);
-            }
-        }
-
-        icon ??= ExtractIconExtension(Path.GetExtension(filePath));
-
-        return icon ?? defaultIcon;
+        CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0);
     }
     #endregion
 
@@ -683,12 +382,13 @@ public static class SystemMethods
     /// <summary>
     /// Generates a random directory path.
     /// </summary>
-    /// <param name="parentFolder">.</param>
+    /// <param name="parentFolder">Optional parent folder. If null, the system user folder will be used.</param>
     /// <returns></returns>
     public static string GenerateRandomDirectoryPath(string parentFolder = null)
     {
+        parentFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string nomePasta = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
-        return String.IsNullOrWhiteSpace(parentFolder) ? nomePasta : Path.Combine(parentFolder, nomePasta);
+        return Path.Combine(parentFolder, nomePasta);
     }
     #endregion
 
@@ -751,14 +451,70 @@ public static class SystemMethods
         Path.GetDirectoryName(path.TrimEnd('/', '\\'));
     #endregion
 
-    #region GetSizeFromPath
+    #region GetDirectorySize
     /// <summary>
-    /// Retrieves the size of a path (if it is a directory, it will be calculated recursively),
+    /// Retrieves the size of the specified directory based on the sizes of its files and subdirectories.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static long GetDirectorySize(string path)
+    {
+        long size = 0;
+        Parallel.ForEach(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), _ => size += GetFileSize(_));
+        return size;
+    }
+    #endregion
+
+    #region GetFileSize
+    /// <summary>
+    /// Retrieves the size of the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static long GetFileSize(string path) =>
+        new FileInfo(path).Length;
+    #endregion
+
+    #region GetIcon
+    /// <summary>
+    /// Returns an icon for a given file.
+    /// </summary>
+    /// <param name="name">Pathname for file.</param>
+    /// <param name="largeIcon">Indicates whether the method should return the large version of the icon</param>
+    /// <param name="showLinkOverlay">Whether to include the link icon</param>
+    public static ImageSource GetIcon(string name, bool largeIcon, bool showLinkOverlay)
+    {
+        // ReSharper disable CommentTypo
+        WindowsHelper.ShFileInfo shFileInfo = new();
+        uint flags = 0x100; //SHGFI_ICON;
+
+        if (showLinkOverlay)
+            flags += 0x8000; //SHGFI_LINKOVERLAY;
+
+        flags += largeIcon ? 0U : 1U;
+
+        WindowsHelper.SHGetFileInfo(name,
+            0x10, //FILE_ATTRIBUTE_DIRECTORY
+            ref shFileInfo,
+            (uint)Marshal.SizeOf(shFileInfo),
+            flags);
+
+        Icon icon = (Icon)Icon.FromHandle(shFileInfo.hIcon).Clone(); // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly.
+        WindowsHelper.DestroyIcon(shFileInfo.hIcon);
+
+        return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        // ReSharper restore CommentTypo
+    }
+    #endregion
+
+    #region GetSize
+    /// <summary>
+    /// Retrieves the size of a path (if it is a directory, it will be calculated recursively).
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static long GetSizeFromPath(string path) =>
+    public static long GetSize(string path) =>
         IsDirectory(path)
             ? GetDirectorySize(path)
             : IsFile(path)
@@ -879,8 +635,10 @@ public static class SystemMethods
     /// <param name="source"></param>
     /// <param name="destination"></param>
     public static void MoveOs(string source, string destination) =>
-        CallSystemFileOperation(source, destination, FileOperationType.FoMove, 0);
+        CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoMove, 0);
     #endregion
+
+    #region MoveToFolder*
 
     #region MoveToFolder(string, string, ConflictAction)
     /// <summary>
@@ -915,6 +673,19 @@ public static class SystemMethods
     /// <param name="conflictAction"></param>
     public static void MoveToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction) =>
         sourceEntries.ForEach(_ => MoveToFolder(_, destinationFolder, conflictAction));
+    #endregion
+
+    #endregion
+
+    #region OpenFile
+    /// <summary>
+    /// Opens the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="runAsAdmin"></param>
+    /// <returns></returns>
+    public static Process OpenFile(string path, bool runAsAdmin = false) =>
+        Run("explorer", path, runAsAdmin: runAsAdmin);
     #endregion
 
     #region ReadFileLines
@@ -969,21 +740,23 @@ public static class SystemMethods
     /// Runs a command through operational system.
     /// </summary>
     /// <param name="workingFolder"></param>
-    /// <param name="path"></param>
+    /// <param name="command"></param>
     /// <param name="arguments"></param>
-    /// <param name="isAdmin"></param>
+    /// <param name="runAsAdmin"></param>
+    /// <param name="hideConsoleWindow"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException" />
     /// <exception cref="ArgumentNullException"/>
     /// <exception cref="ObjectDisposedException" />
     /// <exception cref="FileNotFoundException" />
     /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process Run(string path, string arguments = null, string workingFolder = null, bool isAdmin = false) =>
-        Process.Start(new ProcessStartInfo(path, arguments)
+    public static Process Run(string command, string arguments = null, string workingFolder = null, bool runAsAdmin = false, bool hideConsoleWindow = false) =>
+        Process.Start(new ProcessStartInfo(command, arguments)
         {
-            WorkingDirectory = workingFolder ?? Path.GetDirectoryName(path),
+            WorkingDirectory = workingFolder ?? Path.GetDirectoryName(command),
             UseShellExecute = true,
-            Verb = isAdmin ? "runas" : ""
+            Verb = runAsAdmin ? "runas" : "",
+            CreateNoWindow = hideConsoleWindow
         });
     #endregion
 
@@ -1013,14 +786,14 @@ public static class SystemMethods
         if (!CheckPathExists(path))
             throw new IOException($"Could not find file {path}.");
 
-        FileOperationFlags flags = FileOperationFlags.FofAllowUndo | FileOperationFlags.FofNoConfirmation;
+        WindowsHelper.FileOperationFlags flags = WindowsHelper.FileOperationFlags.FofAllowUndo | WindowsHelper.FileOperationFlags.FofNoConfirmation;
 
         if (suppressErrors)
-            flags |= FileOperationFlags.FofNoErrorUi;
+            flags |= WindowsHelper.FileOperationFlags.FofNoErrorUi;
 
-        flags |= suppressBigFileWarning ? FileOperationFlags.FofSilent : FileOperationFlags.FofWantNukeWarning;
+        flags |= suppressBigFileWarning ? WindowsHelper.FileOperationFlags.FofSilent : WindowsHelper.FileOperationFlags.FofWantNukeWarning;
 
-        CallSystemFileOperation(path, null, FileOperationType.FoDelete, flags);
+        CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, flags);
     }
     #endregion
 
@@ -1061,19 +834,19 @@ public static class SystemMethods
     /// <param name="fileOperationType"></param>
     /// <param name="flags"></param>
     /// <param name="pathFrom"></param>
-    private static void CallSystemFileOperation(string pathFrom, string pathTo, FileOperationType fileOperationType, FileOperationFlags flags)
+    private static void CallSystemFileOperation(string pathFrom, string pathTo, WindowsHelper.FileOperationType fileOperationType, WindowsHelper.FileOperationFlags flags)
     {
-        ShFileOpStruct fs = new()
+        WindowsHelper.ShFileOpStruct fs = new()
         {
             WFunc = fileOperationType,
             PFrom = pathFrom + '\0' + '\0',
             FFlags = flags
         };
 
-        if (fileOperationType is FileOperationType.FoCopy or FileOperationType.FoMove)
+        if (fileOperationType is WindowsHelper.FileOperationType.FoCopy or WindowsHelper.FileOperationType.FoMove)
             fs.PTo = pathTo;
 
-        SHFileOperation(ref fs);
+        WindowsHelper.SHFileOperation(ref fs);
     }
     #endregion
 
@@ -1120,31 +893,6 @@ public static class SystemMethods
     }
     #endregion
 
-    #region GetDirectorySize
-    /// <summary>
-    /// Retrieves the size of the specified directory based on the sizes of its files and subdirectories.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    private static long GetDirectorySize(string path)
-    {
-        DirectoryInfo dirInfo = new(path);
-
-        return dirInfo.GetFiles().Sum(_ => _.Length) +
-               dirInfo.GetDirectories().Sum(_ => GetDirectorySize(_.FullName));
-    }
-    #endregion
-
-    #region GetFileSize
-    /// <summary>
-    /// Retrieves the size of the specified file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    private static long GetFileSize(string path) =>
-        new FileInfo(path).Length;
-    #endregion
-
     #region ManageConflictAction
 
     /// <summary>
@@ -1182,28 +930,6 @@ public static class SystemMethods
             }
 
         return path;
-    }
-    #endregion
-
-    #region RetrieveIconPath
-    /// <summary>
-    /// Retrieves the default icon path for the selected extension.
-    /// </summary>
-    /// <param name="extension"></param>
-    /// <returns></returns>
-    private static string RetrieveIconPath(string extension)
-    {
-        const int sOk = 0;
-        const int sFalse = 1;
-
-        uint length = 0;
-
-        if (AssocQueryString(0, 15, extension, null, null, ref length) != sFalse)
-            return null;
-
-        StringBuilder sb = new((int)length);
-
-        return AssocQueryString(0, 15, extension, null, sb, ref length) != sOk ? null : sb.ToString();
     }
     #endregion
 

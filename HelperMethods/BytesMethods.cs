@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using HelperMethods.Classes;
+using HelperMethods.Enums;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -105,21 +105,12 @@ public static class BytesMethods
     {
         bool hasCredentials = !String.IsNullOrEmpty(user) || !String.IsNullOrEmpty(password);
 
-        //Validates local file.
-        try
-        {
-            Uri uri = new(url, UriKind.RelativeOrAbsolute);
+        //Validates local file.-------------
+        Uri uri = new(url, UriKind.RelativeOrAbsolute);
 
             if (!uri.IsAbsoluteUri || uri.IsFile)
-                return SystemMethods.IsDirectory(url)
-                    ? new DirectoryInfo(url).GetFiles("*", SearchOption.AllDirectories).Sum(_ => _.Length)
-                    : new FileInfo(url).Length;
-        }
-        catch
-        {
-            if (File.Exists(url))
-                return new FileInfo(url).Length;
-        }
+                return SystemMethods.GetSize(url);
+            //----------------------------------
 
         //FTP files.
         if (url.StartsWith("ftp://") || url.StartsWith("ftp."))
@@ -157,7 +148,7 @@ public static class BytesMethods
 
         using (WebResponse response = request.GetResponse())
             return response.ContentLength;
-        //---------------------------
+        //------------------------
     }
     #endregion
 

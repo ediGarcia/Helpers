@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperClasses", "Helpers\HelperClasses.csproj", "{6DAD93BB-045F-41EF-B513-A39197336EAC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperMethods", "HelperMethods\HelperMethods.csproj", "{2022D0FF-FC66-45B5-BE74-A3813C3EA6B6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperControls", "HelperControls\HelperControls.csproj", "{C631016D-03B0-463F-BB6B-91D5BAE73CB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperExtensions", "HelperExtensions\HelperExtensions.csproj", "{414C69F3-57EF-42FF-91C3-088772DA4968}"
 EndProject
@@ -26,18 +22,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6DAD93BB-045F-41EF-B513-A39197336EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DAD93BB-045F-41EF-B513-A39197336EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DAD93BB-045F-41EF-B513-A39197336EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DAD93BB-045F-41EF-B513-A39197336EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2022D0FF-FC66-45B5-BE74-A3813C3EA6B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2022D0FF-FC66-45B5-BE74-A3813C3EA6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2022D0FF-FC66-45B5-BE74-A3813C3EA6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2022D0FF-FC66-45B5-BE74-A3813C3EA6B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C631016D-03B0-463F-BB6B-91D5BAE73CB9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414C69F3-57EF-42FF-91C3-088772DA4968}.Release|Any CPU.ActiveCfg = Release|Any CPU
