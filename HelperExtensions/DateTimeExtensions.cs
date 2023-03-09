@@ -1,4 +1,5 @@
 ﻿using System;
+using HelperMethods;
 
 namespace HelperExtensions;
 
@@ -6,6 +7,8 @@ namespace HelperExtensions;
 public static class DateTimeExtensions
 {
     #region Public Methods
+
+    #region DateTime
 
     #region IsWeekday
     /// <summary>
@@ -40,7 +43,7 @@ public static class DateTimeExtensions
         dateTime.ToString("dd/MM/yyyy");
     #endregion
 
-    #region ToShortTimeString(DateTime)
+    #region ToShortTimeString
     /// <summary>
     /// Returns a string in the format HH:mm.
     /// </summary>
@@ -51,17 +54,7 @@ public static class DateTimeExtensions
         dateTime.TimeOfDay.ToShortTimeString();
     #endregion
 
-    #region ToShortTimeString(TimeSpan)
-    /// <summary>
-    /// Returns a string in the format HH:mm.
-    /// </summary>
-    /// <param name="timeSpan"></param>
-    /// <returns></returns>
-    public static string ToShortTimeString(this TimeSpan timeSpan) =>
-        $"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{Math.Abs(timeSpan.Minutes):00}";
-    #endregion
-
-    #region ToTimeString(DateTime)
+    #region ToTimeString
     /// <summary>
     /// Gets the DateTime string in format HHH:mm:ss.
     /// </summary>
@@ -72,7 +65,21 @@ public static class DateTimeExtensions
         time.TimeOfDay.ToTimeString();
     #endregion
 
-    #region ToTimeString(TimeSpan)
+    #endregion
+
+    #region TimeSpan
+
+    #region ToShortTimeString
+    /// <summary>
+    /// Returns a string in the format HH:mm.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static string ToShortTimeString(this TimeSpan timeSpan) =>
+        DateTimeMethods.GetShortTimeString(timeSpan.TotalSeconds);
+    #endregion
+
+    #region ToTimeString
     /// <summary>
     /// Gets the TimeSpan string in format HHH:mm:ss.
     /// </summary>
@@ -80,6 +87,8 @@ public static class DateTimeExtensions
     /// <returns></returns>
     public static string ToTimeString(this TimeSpan time) =>
         $"{(time < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(time.TotalHours)):00}:{time:\\:mm\\:ss}";
+    #endregion
+
     #endregion
 
     #endregion

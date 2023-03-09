@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayExtensions.cs" />
     <Compile Include="BooleanExtensions.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="DateTimeExtensions.cs" />

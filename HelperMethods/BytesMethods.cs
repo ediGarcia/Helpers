@@ -12,7 +12,6 @@ public static class BytesMethods
     #region Public Methods
 
     #region Convert
-
     /// <summary>
     /// Converts bytes units.
     /// </summary>
@@ -55,7 +54,7 @@ public static class BytesMethods
         FileSizeUnit unit = FileSizeUnit.Byte;
         double baseValueInt = useBase10 ? 1000d : 1024d;
 
-        while (bytes >= baseValueInt && unit < FileSizeUnit.Yotta)
+        while (bytes >= baseValueInt && unit < FileSizeUnit.Quetta)
         {
             bytes /= baseValueInt;
             unit++;
@@ -64,6 +63,8 @@ public static class BytesMethods
         return GenerateString(bytes, unit, decimalPlaces);
     }
     #endregion
+
+    #region GetFileSize
 
     #region GetFileSize(string)
     /// <summary>
@@ -108,9 +109,9 @@ public static class BytesMethods
         //Validates local file.-------------
         Uri uri = new(url, UriKind.RelativeOrAbsolute);
 
-            if (!uri.IsAbsoluteUri || uri.IsFile)
-                return SystemMethods.GetSize(url);
-            //----------------------------------
+        if (!uri.IsAbsoluteUri || uri.IsFile)
+            return SystemMethods.GetSize(url);
+        //----------------------------------
 
         //FTP files.
         if (url.StartsWith("ftp://") || url.StartsWith("ftp."))
@@ -154,6 +155,8 @@ public static class BytesMethods
 
     #endregion
 
+    #endregion
+
     #region Private methods
 
     #region GenerateString
@@ -176,6 +179,8 @@ public static class BytesMethods
             FileSizeUnit.Exa => "EB",
             FileSizeUnit.Zetta => "ZB",
             FileSizeUnit.Yotta => "YB",
+            FileSizeUnit.Ronna => "RB",
+            FileSizeUnit.Quetta => "QB",
             _ => "B"
         };
 

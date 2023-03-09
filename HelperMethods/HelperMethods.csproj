@@ -55,7 +55,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayMethods.cs" />
+    <Compile Include="ListMethods.cs" />
     <Compile Include="BytesMethods.cs" />
     <Compile Include="Classes\CommemorativeDay.cs" />
     <Compile Include="Enums\Enums.cs" />
@@ -67,12 +67,6 @@
     <Compile Include="StringMethods.cs" />
     <Compile Include="SystemMethods.cs" />
     <Compile Include="Helpers\WindowsHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HelperExtensions\HelperExtensions.csproj">
-      <Project>{414c69f3-57ef-42ff-91c3-088772da4968}</Project>
-      <Name>HelperExtensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

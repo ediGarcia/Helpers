@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
-using HelperExtensions;
 using HelperMethods.Enums;
 
 // ReSharper disable UnusedMember.Global
@@ -19,6 +18,8 @@ namespace HelperMethods;
 public static class DateTimeMethods
 {
     #region Public Methods
+
+    #region CheckHolilday*
 
     #region CheckHoliday(DateTime, BrazilianStates, string)
     /// <summary>
@@ -60,36 +61,44 @@ public static class DateTimeMethods
     }
     #endregion
 
-    #region GetFirstMonthDay
+    #endregion
+
+    #region GetFirstDayOfMonth*
+
+    #region GetFirstDayOfMonth()
     /// <summary>
     /// Gets the current month's first day.
     /// </summary>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstMonthDay() =>
-        GetFirstMonthDay(DateTime.Now.Month);
+    public static DateTime GetFirstDayOfMonth() =>
+        GetFirstDayOfMonth(DateTime.Now.Month);
     #endregion
 
-    #region GetFirstMonthDay(DateTime)
+    #region GetFirstDayOfMonth(DateTime)
     /// <summary>
     /// Gets the selected date month's first day.
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstMonthDay(DateTime baseDay) =>
+    public static DateTime GetFirstDayOfMonth(DateTime baseDay) =>
         new(baseDay.Year, baseDay.Month, 1);
     #endregion
 
-    #region GetFirstMonthDay(int)
+    #region GetFirstDayOfMonth(int)
     /// <summary>
     /// Gets the selected month's last day.
     /// </summary>
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
     /// <returns></returns>
-    public static DateTime GetFirstMonthDay(int month) =>
+    public static DateTime GetFirstDayOfMonth(int month) =>
         new(DateTime.Today.Year, month, 1);
     #endregion
+
+    #endregion
+
+    #region GetFirstDayOfWeek*
 
     #region GetFirstDayOfWeek()
     /// <summary>
@@ -112,6 +121,8 @@ public static class DateTimeMethods
     // ReSharper disable once UnusedMember.Global
     public static DateTime GetFirstDayOfWeek(DateTime baseDay) =>
         baseDay.AddDays(-(int)baseDay.DayOfWeek);
+    #endregion
+
     #endregion
 
     #region GetHolidaysInRange
@@ -156,29 +167,31 @@ public static class DateTimeMethods
     }
     #endregion
 
-    #region GetLastMonthDay()
+    #region GetLastDayOfMonth*
+
+    #region GetLastDayOfMonth()
     /// <summary>
     /// Gets the current month's last day.
     /// </summary>
     /// <returns></returns>
 
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastMonthDay() =>
-        GetLastMonthDay(DateTime.Today.Year, DateTime.Today.Month);
+    public static DateTime GetLastDayOfMonth() =>
+        GetLastDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
     #endregion
 
-    #region GetLastMonthDay(DateTime)
+    #region GetLastDayOfMonth(DateTime)
     /// <summary>
     /// Gets the selected date month's last day.
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastMonthDay(DateTime baseDay) =>
-        GetLastMonthDay(baseDay.Year, baseDay.Month);
+    public static DateTime GetLastDayOfMonth(DateTime baseDay) =>
+        GetLastDayOfMonth(baseDay.Year, baseDay.Month);
     #endregion
 
-    #region GetLastMonthDay(int)
+    #region GetLastDayOfMonth(int)
     /// <summary>
     /// Gets the selected month's last day for the current year.
     /// </summary>
@@ -186,23 +199,27 @@ public static class DateTimeMethods
     /// <returns></returns>
 
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastMonthDay(int month) =>
-        GetLastMonthDay(DateTime.Today.Year, month);
+    public static DateTime GetLastDayOfMonth(int month) =>
+        GetLastDayOfMonth(DateTime.Today.Year, month);
     #endregion
 
-    #region GetLastMonthDay(int, int)
+    #region GetLastDayOfMonth(int, int)
     /// <summary>
     /// Gets the selected month's last day for the selected year.
     /// </summary>
     /// <param name="year"></param>
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
     /// <returns></returns>
-    public static DateTime GetLastMonthDay(int year, int month)
+    public static DateTime GetLastDayOfMonth(int year, int month)
     {
         DateTime firstDay = new(year, month, 1);
         return firstDay.AddMonths(1).AddDays(-1);
     }
     #endregion
+
+    #endregion
+
+    #region GetLastDayOfWeek*
 
     #region GetLastDayOfWeek()
     /// <summary>
@@ -224,6 +241,107 @@ public static class DateTimeMethods
     public static DateTime GetLastDayOfWeek(DateTime baseDay) =>
         baseDay.AddDays(6 - (int)baseDay.DayOfWeek);
     #endregion
+
+    #endregion
+
+    #region GetShortTimeString*
+
+    #region GetShortTimeString(DateTime)
+    /// <summary>
+    /// Gets the time string in format HHH:mm.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static string GetShortTimeString(DateTime dateTime) =>
+        GetShortTimeString(dateTime.TimeOfDay);
+    #endregion
+
+    #region GetShortTimeString(TimeSpan)
+    /// <summary>
+    /// Gets the time string in format HHH:mm.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static string GetShortTimeString(TimeSpan timeSpan) =>
+        GetShortTimeString(timeSpan.TotalSeconds);
+    #endregion
+
+    #region GetShortTimeString(double)
+    /// <summary>
+    /// Gets the time string in format HHH:mm.
+    /// </summary>
+    /// <param name="seconds"></param>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Global
+    public static string GetShortTimeString(double seconds)
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+        return $"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{Math.Abs(timeSpan.Minutes):00}";
+    }
+    #endregion
+
+    #endregion
+
+    #region GetTimeString*
+
+    #region GetTimeString(DateTime)
+    /// <summary>
+    /// Gets the time string in format HHH:mm:ss.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static string GetTimeString(DateTime dateTime) =>
+        GetTimeString(dateTime.TimeOfDay);
+    #endregion
+
+    #region GetTimeString(TimeSpan)
+    /// <summary>
+    /// Gets the time string in format HHH:mm:ss.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static string GetTimeString(TimeSpan timeSpan) =>
+        GetTimeString(timeSpan.TotalSeconds);
+    #endregion
+
+    #region GetTimeString(double)
+    /// <summary>
+    /// Gets the time string in format HHH:mm:ss.
+    /// </summary>
+    /// <param name="seconds"></param>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Global
+    public static string GetTimeString(double seconds)
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+        return $"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{timeSpan:\\:mm\\:ss}";
+    }
+    #endregion
+
+    #region GetTimeString(double time, TimeField timeField)
+    /// <summary>
+    /// Gets the TimeSpan string in format HHH:mm:ss.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="timeField"></param>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Global
+    public static string GetTimeString(double time, TimeField timeField) =>
+        timeField switch
+        {
+            TimeField.Day => GetTimeString(TimeSpan.FromDays(time)),
+            TimeField.Hour => GetTimeString(TimeSpan.FromHours(time)),
+            TimeField.Minute => GetTimeString(TimeSpan.FromMinutes(time)),
+            TimeField.Second => GetTimeString(TimeSpan.FromSeconds(time)),
+            TimeField.Millisecond => GetTimeString(TimeSpan.FromMilliseconds(time)),
+            TimeField.Ticks => GetTimeString(TimeSpan.FromTicks((long)time)),
+            _ => throw new ArgumentOutOfRangeException(time.ToString(CultureInfo.InvariantCulture))
+        };
+    #endregion
+
+    #endregion
+
+    #region Max*
 
     #region Max(params DateTime[])
     /// <summary>
@@ -247,6 +365,10 @@ public static class DateTimeMethods
         values is null || values.Length == 0 ? TimeSpan.MaxValue : values.Max();
     #endregion
 
+    #endregion
+
+    #region Min*
+
     #region Min(params DateTime[])
     /// <summary>
     /// Returns the smallest DateTime value.
@@ -269,7 +391,11 @@ public static class DateTimeMethods
         values is null || values.Length == 0 ? TimeSpan.MinValue : values.Min();
     #endregion
 
-    #region RemoveSeconds (DateTime)
+    #endregion
+
+    #region RemoveSeconds*
+
+    #region RemoveSeconds(DateTime)
     /// <summary>
     /// Returns a new DateTime without the seconds, milliseconds and ticks.
     /// </summary>
@@ -280,7 +406,7 @@ public static class DateTimeMethods
         new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0);
     #endregion
 
-    #region RemoveSeconds (TimeSpan)
+    #region RemoveSeconds(TimeSpan)
     /// <summary>
     /// Returns a new TimeSpan without the seconds, milliseconds and ticks.
     /// </summary>
@@ -290,7 +416,11 @@ public static class DateTimeMethods
         new(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, 0);
     #endregion
 
-    #region RoundToMinutes (DateTime)
+    #endregion
+
+    #region RoundToMinutes*
+
+    #region RoundToMinutes(DateTime)
     /// <summary>
     /// Returns a new DateTime with the time rounded the to the nearest minute.
     /// </summary>
@@ -301,7 +431,7 @@ public static class DateTimeMethods
         dateTime.Date.Add(RoundToMinutes(dateTime.TimeOfDay));
     #endregion
 
-    #region RoundToMinutes (TimeSpan)
+    #region RoundToMinutes(TimeSpan)
     /// <summary>
     /// Returns a new TimeSpan with the time rounded the to the nearest minute.
     /// </summary>
@@ -311,7 +441,11 @@ public static class DateTimeMethods
         TimeSpan.FromMinutes(Math.Round(timeSpan.TotalMinutes));
     #endregion
 
-    #region RoundToSeconds (DateTime)
+    #endregion
+
+    #region RoundToSeconds*
+
+    #region RoundToSeconds(DateTime)
     /// <summary>
     /// Returns a new DateTime with the time rounded the to the nearest second.
     /// </summary>
@@ -322,7 +456,7 @@ public static class DateTimeMethods
         dateTime.Date.Add(RoundToSeconds(dateTime.TimeOfDay));
     #endregion
 
-    #region RoundToSeconds (TimeSpan)
+    #region RoundToSeconds(TimeSpan)
     /// <summary>
     /// Returns a new TimeSpan with the time rounded the to the nearest second.
     /// </summary>
@@ -330,7 +464,9 @@ public static class DateTimeMethods
     /// <returns></returns>
     public static TimeSpan RoundToSeconds(TimeSpan timeSpan) =>
         TimeSpan.FromSeconds(Math.Round(timeSpan.TotalSeconds));
-    #endregion;
+    #endregion
+
+    #endregion
 
     #region RetrieveCommemorativeDays
     /// <summary>
@@ -378,49 +514,6 @@ public static class DateTimeMethods
     /// <returns></returns>
     public static IEnumerable<CommemorativeDay> RetrieveHolidays(int year, BrazilianState state, string city, bool getOptional = false) =>
         RetrieveCommemorativeDays(year, state, city).Where(_ => _.Type != CommemorativeDayType.RegularDay && (getOptional || _.Type != CommemorativeDayType.Optional));
-    #endregion
-
-    #region GetTimeString(double, UnidadeTempo)
-    /// <summary>
-    /// Gets the TimeSpan string in format HHH:mm:ss.
-    /// </summary>
-    /// <param name="time"></param>
-    /// <param name="timeField"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetTimeString(double time, TimeField timeField) =>
-        timeField switch
-        {
-            TimeField.Day => TimeSpan.FromDays(time).ToTimeString(),
-            TimeField.Hour => TimeSpan.FromHours(time).ToTimeString(),
-            TimeField.Minute => TimeSpan.FromMinutes(time).ToTimeString(),
-            TimeField.Second => TimeSpan.FromSeconds(time).ToTimeString(),
-            TimeField.Millisecond => TimeSpan.FromMilliseconds(time).ToTimeString(),
-            TimeField.Ticks => TimeSpan.FromTicks((long)time).ToTimeString(),
-            _ => throw new ArgumentOutOfRangeException(time.ToString(CultureInfo.InvariantCulture))
-        };
-    #endregion
-
-    #region ToShortTimeString(double)
-    /// <summary>
-    /// Gets the TimeSpan string in format HHH:mm.
-    /// </summary>
-    /// <param name="seconds"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static string ToShortTimeString(double seconds) =>
-        TimeSpan.FromSeconds(seconds).ToShortTimeString();
-    #endregion
-
-    #region ToTimeString(double)
-    /// <summary>
-    /// Gets the TimeSpan string in format HHH:mm:ss.
-    /// </summary>
-    /// <param name="seconds"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static string ToTimeString(double seconds) =>
-        TimeSpan.FromSeconds(seconds).ToTimeString();
     #endregion
 
     #region TryCheckHoliday

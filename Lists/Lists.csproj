@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HelperMethods, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLL\HelperMethods.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,7 +47,7 @@
   <ItemGroup>
     <Compile Include="UniqueList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UniqueListConflictException.cs" />
+    <Compile Include="Exceptions\UniqueListConflictException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelperExtensions\HelperExtensions.csproj">
@@ -51,6 +55,7 @@
       <Name>HelperExtensions</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(ProjectDir)..\..\DLL</PostBuildEvent>

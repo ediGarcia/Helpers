@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using HelperMethods;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -11,7 +11,90 @@ public static class ListExtensions
 {
     #region Public methods
 
+    #region T[]
+
+    #region ArrayForEach*
+
+    #region ArrayForEach<T>(this T[], Action<T>, [int], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ArrayForEach<T>(this T[] array, Action<T> action, int startIndex = 0, int? length = null)
+    {
+        length ??= array.Length - startIndex;
+
+        for (int i = startIndex; i < startIndex + length; i++)
+            action?.Invoke(array[i]);
+    }
+    #endregion
+
+    #region ArrayForEach<T>(this T[], Action<T, int>, [int], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ArrayForEach<T>(this T[] array, Action<T, int> action, int startIndex = 0, int? length = null)
+    {
+        length ??= array.Length - startIndex;
+
+        for (int i = startIndex; i < startIndex + length; i++)
+            action?.Invoke(array[i], i);
+    }
+    #endregion
+
+    #endregion
+
+    #region GetSubArray
+    /// <summary>
+    /// Retrieves a sub-array from this instance. The sub-array starts at a specified position and has a specified length.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static T[] GetSubArray<T>(this T[] array, int startIndex, int? length = null)
+    {
+        length ??= array.Length - startIndex;
+
+        T[] newArray = new T[length.Value];
+
+        for (int i = 0; i < length; i++)
+            newArray[i] = array[startIndex + i];
+
+        return newArray;
+    }
+    #endregion
+
+    #endregion
+
     #region ICollection<T>
+
+    #region AddMany
+    /// <summary>
+    /// Adds multiple items to the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="items"></param>
+    public static void AddMany<T>(this ICollection<T> list, params T[] items) =>
+        items.ForEach(list.Add);
+    #endregion
 
     #region AddRange
     /// <summary>
@@ -100,7 +183,33 @@ public static class ListExtensions
 
     #region IDictionary<T1, T2>
 
-    #region ForEach
+    #region ForEach*
+
+    #region ForEach(this IDictionary<T1, T2>, Action<T1, T2>, [int], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the dictionary.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
+        int startIndex = 0, int? length = null)
+    {
+        T1[] keys = dictionary.Keys.ToArray();
+        T2[] values = dictionary.Values.ToArray();
+
+        for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
+            action?.Invoke(keys[i], values[i]);
+    }
+    #endregion
+
+    #region ForEach(this IDictionary<T1, T2>, Action<T1, T2, int>, [int], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary.
     /// </summary>
@@ -124,7 +233,11 @@ public static class ListExtensions
     }
     #endregion
 
-    #region InverseForEach
+    #endregion
+
+    #region ReverseForEach*
+
+    #region ReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2>, [int?], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary in the inverse order.
     /// </summary>
@@ -137,12 +250,38 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void InverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action, int? startIndex = null, int? length = null)
     {
         T1[] keys = dictionary.Keys.ToArray();
         T2[] values = dictionary.Values.ToArray();
 
         startIndex ??= keys.Length - 1;
+        length ??= keys.Length;
+
+        for (int i = startIndex.Value; i > startIndex - length; i--)
+            action?.Invoke(keys[i], values[i]);
+    }
+    #endregion
+
+    #region InverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2, int>, [int?], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the dictionary in the inverse order.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
+    {
+        T1[] keys = dictionary.Keys.ToArray();
+        T2[] values = dictionary.Values.ToArray();
+
+        startIndex ??= keys.LastIndex();
         length ??= keys.Length;
 
         for (int i = startIndex.Value; i > startIndex - length; i--)
@@ -152,20 +291,41 @@ public static class ListExtensions
 
     #endregion
 
+    #endregion
+
     #region IList<T>
 
-    #region AddMany
+    #region BinarySearch*
+
+    #region BinarySearch(this IList<T>, T)
     /// <summary>
-    /// Adds multiple items to the list.
+    /// Performs a binary search and retrieves the index of the target item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
-    /// <param name="items"></param>
-    public static void AddMany<T>(this IList<T> list, params T[] items) =>
-        items.ForEach(list.Add);
+    /// <param name="targetValue"></param>
+    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
+    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T> =>
+        ListMethods.BinarySearch(list, targetValue);
     #endregion
 
-    #region FillLeft
+    #region BinarySearch(this IList<T>, T, Func<T, T, int>)
+    /// <summary>
+    /// Performs a binary search and retrieves the index of the target item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="targetValue"></param>
+    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal; 
+    /// 1 if the first value is greater than the second; -1 if the first value is less than the second.</param>
+    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
+    public static int BinarySearch<T>(this IList<T> list, T targetValue, Func<T, T, int> comparisonFunction) =>
+        ListMethods.BinarySearch(list, targetValue, comparisonFunction);
+    #endregion
+
+    #endregion
+
+    #region FillLeft*
 
     #region FillLeft(this IList<T>, int)
     /// <summary>
@@ -200,7 +360,7 @@ public static class ListExtensions
 
     #endregion
 
-    #region FillRight
+    #region FillRight*
 
     #region FillRight(this IList<T>, int)
     /// <summary>
@@ -235,7 +395,7 @@ public static class ListExtensions
 
     #endregion
 
-    #region ForEach
+    #region ForEach*
 
     #region ForEach(this IList<T>, Action<T>, int, [int?])
     /// <summary>
@@ -254,7 +414,7 @@ public static class ListExtensions
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
         for (int i = startIndex; i <= finalIndex; i++)
-            action?.Invoke(list[i]);
+            action(list[i]);
     }
     #endregion
 
@@ -275,7 +435,64 @@ public static class ListExtensions
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
         for (int i = startIndex; i <= finalIndex; i++)
-            action?.Invoke(list[i], i);
+            action(list[i], i);
+    }
+    #endregion
+
+    #endregion
+
+    #region ForEachAsync*
+
+    #region ForEachAsync(this IList<T>, Action<T>, int, [int?])
+
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <param name="callback"></param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ForEachAsync<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null, Action callback = null)
+    {
+        List<Task> tasks = new(length ?? list.Count);
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i <= finalIndex; i++)
+            tasks.Add(Task.Run(() => action(list[i])));
+
+        tasks.ForEach(_ => _.Wait());
+        callback?.Invoke();
+    }
+    #endregion
+
+    #region ForEachAsync(this IList<T>, Action<T, int>, int, [int?])
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <param name="callback"></param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ForEachAsync<T>(this IList<T> list, Action<T, int> action, int startIndex, int? length = null, Action callback = null)
+    {
+        List<Task> tasks = new(length ?? list.Count);
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i <= finalIndex; i++)
+            tasks.Add(Task.Run(() => action(list[i], i)));
+
+        tasks.ForEach(_ => _.Wait());
+        callback?.Invoke();
     }
     #endregion
 
@@ -424,7 +641,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ReverseForEach
+    #region ReverseForEach*
 
     #region ReverseForEach(this IList<T>, Action<T>, [int?], [int?])
     /// <summary>
@@ -535,7 +752,7 @@ public static class ListExtensions
         items.Any(iEnumerable.Contains);
     #endregion
 
-    #region ForEach
+    #region ForEach*
 
     #region ForEach(this IEnumerable<T>, Action<T>)
     /// <summary>
@@ -577,7 +794,7 @@ public static class ListExtensions
 
     #endregion
 
-    #region ForEachAsync
+    #region ForEachAsync*
 
     #region ForEachAsync<T>(this IEnumerable<T>, Action<T>)
     /// <summary>
@@ -590,7 +807,7 @@ public static class ListExtensions
     public static void ForEachAsync<T>(this IEnumerable<T> iEnumerable, Action<T> action, Action callback = null)
     {
         iEnumerable.Select(value => Task.Run(() => action(value))).ForEach(_ => _.Wait());
-            callback?.Invoke();
+        callback?.Invoke();
     }
     #endregion
 
@@ -606,8 +823,8 @@ public static class ListExtensions
     {
         int index = 0;
         iEnumerable.Select(value => Task.Run(() => action(value, index++))).ForEach(_ => _.Wait());
-            callback?.Invoke();
-        }
+        callback?.Invoke();
+    }
     #endregion
 
     #endregion
@@ -620,7 +837,7 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
-        iEnumerable?.Any() != true;
+        (iEnumerable?.Any()).IsNullOrFalse();
     #endregion
 
     #region ToArray

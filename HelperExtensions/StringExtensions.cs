@@ -1,15 +1,15 @@
 ﻿using HelperMethods;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 
 public static class StringExtensions
 {
-    #region String methods
+    #region String
 
     #region Append
 
@@ -58,6 +58,8 @@ public static class StringExtensions
         st?.Contains(value) == true ? st : (st + value);
     #endregion
 
+    #region ContainsAny*
+
     #region ContainsAny(this string, params string[])
     /// <summary>
     /// Returns a value indicating whether any of the specified substrings occur within this string.
@@ -80,6 +82,10 @@ public static class StringExtensions
         values.Any(st.Contains);
     #endregion
 
+    #endregion
+
+    #region ContainsAll*
+
     #region ContainsAll(this string, params string[])
     /// <summary>
     /// Returns a value indicating whether all of the specified substrings occur within this string.
@@ -100,6 +106,8 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool ContainsAll(this string st, params char[] values) =>
         values.All(st.Contains);
+    #endregion
+
     #endregion
 
     #region ContainsSpace
@@ -124,6 +132,8 @@ public static class StringExtensions
         values.Any(st.StartsWith);
     #endregion
 
+    #region EqualsAny*
+
     #region EqualsAny(params string[])
     /// <summary>
     /// Determines whether this instance and any another specified <see cref="T:System.String" /> object have the same value.
@@ -147,15 +157,17 @@ public static class StringExtensions
         values.Any(_ => st?.Equals(_, comparison) == true);
     #endregion
 
+    #endregion
+
     #region FillLeft
     /// <summary>
     /// Insert the specified string value at the beginning of the string the selected number of times.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="count"></param>
-    /// <param name="fillingString"></param>
+    /// <param name="value"></param>
     /// <returns></returns>
-    public static string FillLeft(this string st, int count, string fillingString)
+    public static string FillLeft(this string st, int count, string value)
     {
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
@@ -163,22 +175,21 @@ public static class StringExtensions
         StringBuilder newString = new();
 
         for (int i = 0; i < count; i++)
-            newString.Append(fillingString);
+            newString.Append(value);
 
         return newString.Append(st).ToString();
     }
     #endregion
 
     #region FillRight
-
     /// <summary>
     /// Appends the specified string value the selected number of times.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="count"></param>
-    /// <param name="fillingString"></param>
+    /// <param name="value"></param>
     /// <returns></returns>
-    public static string FillRight(this string st, int count, string fillingString)
+    public static string FillRight(this string st, int count, string value)
     {
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
@@ -186,7 +197,7 @@ public static class StringExtensions
         StringBuilder newString = new(st);
 
         for (int i = 0; i < count; i++)
-            newString.Append(fillingString);
+            newString.Append(value);
 
         return newString.ToString();
     }
@@ -266,7 +277,6 @@ public static class StringExtensions
     #endregion
 
     #region Prepend
-
     /// <summary>
     /// Prepends the strings into the current one.
     /// </summary>
@@ -275,39 +285,31 @@ public static class StringExtensions
     /// <returns></returns>
     public static string Prepend(this string st, string value) =>
         value + st;
-
     #endregion
 
     #region PrependMany
-
     /// <summary>
     /// Prepends the strings into the current one.
     /// </summary>
     /// <param name="st"></param>
-    /// <param name="separator"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static string PrependMany(this string st, string separator, params string[] values) =>
-        String.Join(separator, values) + st;
-
+    public static string PrependMany(this string st, params string[] values) =>
+        String.Join(String.Empty, values) + st;
     #endregion
 
     #region PrependManyNew
-
     /// <summary>
     /// Prepends each string that does not exist in the original one.
     /// </summary>
     /// <param name="st"></param>
-    /// <param name="separator"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static string PrependManyNew(this string st, string separator, params string[] values) =>
-        String.Join(separator, values.Where(_ => st?.Contains(_) != true)) + st;
-
+    public static string PrependManyNew(this string st, params string[] values) =>
+        String.Join(String.Empty, values.Where(_ => st?.Contains(_) != true)) + st;
     #endregion
 
     #region PrependNew
-
     /// <summary>
     /// Prepends the string if it does not exist in the original one.
     /// </summary>
@@ -316,8 +318,9 @@ public static class StringExtensions
     /// <returns></returns>
     public static string PrependNew(this string st, string value) =>
         st?.Contains(value) == true ? st : (value + st);
-
     #endregion
+
+    #region Split*
 
     #region Split(this string, char, StringSplitOptions)
     /// <summary>
@@ -343,6 +346,8 @@ public static class StringExtensions
         st.Split(new[] { separator }, options);
     #endregion
 
+    #endregion
+
     #region StartsWithAny
     /// <summary>
     /// Determines whether the beginning if this string instance matches any of the specified string.
@@ -356,10 +361,9 @@ public static class StringExtensions
 
     #endregion
 
-    #region StringBuilder methods
+    #region StringBuilder
 
     #region Append
-
     /// <summary>
     /// Appends multiple strings into the string builder.
     /// </summary>
@@ -384,7 +388,39 @@ public static class StringExtensions
     {
         values.ForEach(_ => sb.Append(_));
         return sb.AppendLine();
-    } 
+    }
+    #endregion
+
+    #region AppendLines*
+
+    #region AppendLines(this StringBuilder, params object[])
+    /// <summary>
+    /// Appends multiple strings into the string builder then adds a line break.
+    /// </summary>
+    /// <param name="sb"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static StringBuilder AppendLines(this StringBuilder sb, params object[] values)
+    {
+        values.ForEach(_ => sb.AppendLine(_));
+        return sb;
+    }
+    #endregion
+
+    #region AppendLines(this StringBuilder, IEnumerable<T>)
+    /// <summary>
+    /// Appends multiple strings into the string builder then adds a line break.
+    /// </summary>
+    /// <param name="sb"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static StringBuilder AppendLines<T>(this StringBuilder sb, IEnumerable<T> values)
+    {
+        values.ForEach(_ => sb.AppendLine(_));
+        return sb;
+    }
+    #endregion
+
     #endregion
 
     #region AppendIfNotNull

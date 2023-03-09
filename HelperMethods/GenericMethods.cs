@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HelperExtensions;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -25,6 +24,26 @@ public static class GenericMethods
             : values.Average(_ => GetDoubleValue(_, propertyName));
     #endregion
 
+    #region AreAllNotNull
+    /// <summary>
+    /// Indicates whether every specified value is not null.
+    /// </summary>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool AreAllNotNull(params object[] values) =>
+        values.All(_ => _ is not null);
+    #endregion
+
+    #region AreAllNull
+    /// <summary>
+    /// Indicates whether every specified value is null.
+    /// </summary>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool AreAllNull(params object[] values) =>
+        values.All(_ => _ is null);
+    #endregion
+
     #region AreEqual
     /// <summary>
     /// Indicates whether the specified properties of the given objects have the same values.
@@ -35,32 +54,7 @@ public static class GenericMethods
     /// <param name="properties"></param>
     /// <returns></returns>
     public static bool AreEqual<T>(T obj1, T obj2, params string[] properties) =>
-        properties.IsNullOrEmpty() && properties.Select(typeof(T).GetProperty).All(_ => _.GetValue(obj1).Equals(_.GetValue(obj2)));
-    #endregion
-
-    #region Compare
-    /// <summary>
-    /// Returns a single value according to the comparison method.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="comparison"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T Compare<T>(Func<T, T, bool> comparison, params T[] values)
-    {
-        if (values == null || values.Length == 0)
-            throw new ArgumentException("No values to compare.");
-
-        T selectedValue = values[0];
-        values.ArrayForEach(item =>
-        {
-            if (comparison(item, selectedValue))
-                selectedValue = item;
-        }, 1);
-
-        return selectedValue;
-    }
+        properties.Select(typeof(T).GetProperty).All(_ => _.GetValue(obj1).Equals(_.GetValue(obj2)));
     #endregion
 
     #region GetFirstMatching
@@ -79,8 +73,6 @@ public static class GenericMethods
     #endregion
 
     #region GetFirstNotNull
-
-    #region GetFirstNotNull(params object[])
     /// <summary>
     /// Returns the first not null element of the sequence.
     /// </summary>
@@ -88,19 +80,6 @@ public static class GenericMethods
     /// <returns></returns>
     public static object GetFirstNotNull(params object[] items) =>
         items.FirstOrDefault(_ => _ is not null);
-    #endregion
-
-    #region GetFirstNotNull<T>(params T[])
-    /// <summary>
-    /// Returns the first not null element of the sequence.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static T GetFirstNotNull<T>(params T[] items) =>
-        items.FirstOrDefault(_ => _ is not null);
-    #endregion
-
     #endregion
 
     #region GetMatching
@@ -116,7 +95,27 @@ public static class GenericMethods
         values == null || values.Length == 0 ? throw new ArgumentException("No values to compare.") : values.Where(condition);
     #endregion
 
-    #region Max
+    #region IsAnyNotNull
+    /// <summary>
+    /// Indicates whether any of the specified values is not null.
+    /// </summary>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool IsAnyNotNull(params object[] values) =>
+        values.Any(_ => _ is not null);
+    #endregion
+
+    #region IsAnyNull
+    /// <summary>
+    /// Indicates whether any of the specified values is null.
+    /// </summary>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool IsAnyNull(params object[] values) =>
+        values.Any(_ => _ is null);
+    #endregion
+
+    #region Max*
 
     #region Max (params T[])
     /// <summary>
@@ -147,19 +146,19 @@ public static class GenericMethods
         List<T> selectedObjects = new(values.Length) { values[0] };
         double baseValue = GetDoubleValue(values[0], propertyName);
 
-        values.ArrayForEach(item =>
+        for(int i = 1; i < values.Length; i++)
         {
-            double currentValue = GetDoubleValue(item, propertyName);
+            double currentValue = GetDoubleValue(values[i], propertyName);
 
             if (currentValue > baseValue)
             {
                 baseValue = currentValue;
                 selectedObjects.Clear();
-                selectedObjects.Add(item);
+                selectedObjects.Add(values[i]);
             }
             else if (currentValue == baseValue)
-                selectedObjects.Add(item);
-        }, 1);
+                selectedObjects.Add(values[i]);
+        }
 
         return selectedObjects.ToArray();
     }
@@ -167,7 +166,7 @@ public static class GenericMethods
 
     #endregion
 
-    #region Min
+    #region Min*
 
     #region Min (params T[])
     /// <summary>
@@ -198,19 +197,19 @@ public static class GenericMethods
         List<T> selectedObjects = new(values.Length) { values[0] };
         double baseValue = GetDoubleValue(values[0], propertyName);
 
-        values.ArrayForEach(item =>
+        for (int i = 1; i < values.Length; i++)
         {
-            double currentValue = GetDoubleValue(item, propertyName);
+            double currentValue = GetDoubleValue(values[i], propertyName);
 
             if (currentValue < baseValue)
             {
                 baseValue = currentValue;
                 selectedObjects.Clear();
-                selectedObjects.Add(item);
+                selectedObjects.Add(values[i]);
             }
             else if (currentValue == baseValue)
-                selectedObjects.Add(item);
-        }, 1);
+                selectedObjects.Add(values[i]);
+        }
 
         return selectedObjects.ToArray();
     }
@@ -220,7 +219,7 @@ public static class GenericMethods
 
     #region ReturnFirstNotNull
     /// <summary>
-    /// Returns the first <see cref="Func{TResult}"/> that returns a not null value.
+    /// Gets the first <see cref="Func{TResult}"/> that returns a not null value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>

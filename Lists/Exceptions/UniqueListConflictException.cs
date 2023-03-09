@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lists
+namespace Lists.Exceptions
 {
     public class ConflictException : Exception
     {

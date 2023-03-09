@@ -14,7 +14,7 @@ public static class ColorMethods
 {
     #region Public Methods
 
-    #region GenerateRandomPastelColor
+    #region GenerateRandomPastelColor*
 
     #region GenerateRandomPastelBrush
     /// <summary>
@@ -23,7 +23,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static SolidColorBrush GenerateRandomPastelBrush() =>
-        GetColorFromAhsb(NumberMethods.GetRandomFloat(360), 1, .9f).ToBrush();
+        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToBrush();
     #endregion
 
     #region GenerateRandomPastelColor
@@ -33,7 +33,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static Color GenerateRandomPastelColor() =>
-        GetColorFromAhsb(NumberMethods.GetRandomFloat(360), 1, .9f);
+        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f);
     #endregion
 
     #region GenerateRandomPastelMediaColor
@@ -43,12 +43,12 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static System.Windows.Media.Color GenerateRandomPastelMediaColor() =>
-        GetColorFromAhsb(NumberMethods.GetRandomFloat(360), 1, .9f).ToMediaColor();
+        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToMediaColor();
     #endregion
 
     #endregion
 
-    #region GenerateRandomColor
+    #region GenerateRandomColor*
 
     #region GenerateRandomBrush
     /// <summary>
@@ -82,9 +82,9 @@ public static class ColorMethods
     public static System.Windows.Media.Color GenerateRandomMediaColor() =>
         System.Windows.Media.Color.FromArgb(
             1,
-            (byte)NumberMethods.GetRandomInt(255, true),
-            (byte)NumberMethods.GetRandomInt(255, true),
-            (byte)NumberMethods.GetRandomInt(255, true)
+            (byte)NumberMethods.GetRandomInt(0, 255, true),
+            (byte)NumberMethods.GetRandomInt(0, 255, true),
+            (byte)NumberMethods.GetRandomInt(0, 255, true)
         );
     #endregion
 

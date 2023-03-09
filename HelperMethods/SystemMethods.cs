@@ -1,5 +1,4 @@
-﻿using HelperExtensions;
-using HelperMethods.Enums;
+﻿using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using System;
 using System.Collections.Generic;
@@ -181,14 +180,22 @@ public static class SystemMethods
     #endregion
 
     #region CopyToFolder(string, IEnumerable<string>, ConflictAction)
+
     /// <summary>
     /// Copies the selected files/folders and their contents into the destination folder.
     /// </summary>
     /// <param name="destinationFolder"></param>
     /// <param name="sourceEntries"></param>
     /// <param name="conflictAction"></param>
-    public static void CopyToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction) =>
-        sourceEntries.ForEach(_ => CopyToFolder(_, destinationFolder, conflictAction));
+    public static void CopyToFolder(
+        string destinationFolder,
+        IEnumerable<string> sourceEntries,
+        ConflictAction conflictAction)
+    {
+        foreach (string sourceEntry in sourceEntries)
+            CopyToFolder(sourceEntry, destinationFolder, conflictAction);
+    }
+
     #endregion
 
     #endregion
@@ -323,14 +330,14 @@ public static class SystemMethods
     /// Deletes files, folder and its contents.
     /// </summary>
     /// <param name="paths">Paths to be deleted.</param>
-    public static void Delete(params string[] paths) =>
-        paths.ForEach(path =>
-        {
+    public static void Delete(params string[] paths)
+    {
+        foreach (string path in paths)
             if (IsDirectory(path))
                 Directory.Delete(path, true);
             else
                 File.Delete(path);
-        });
+    }
     #endregion
 
     #region DeleteOS
@@ -352,17 +359,19 @@ public static class SystemMethods
     /// Deletes files, folder and its contents even if they are read only.
     /// </summary>
     /// <param name="entries">Paths to be deleted.</param>
-    public static void ForceDelete(params string[] entries) =>
-        entries.ForEach(entry =>
-        {
+    public static void ForceDelete(params string[] entries)
+    {
+        foreach (string entry in entries)
             if (IsDirectory(entry))
             {
-                Directory.EnumerateFileSystemEntries(entry).ForEach(__ => ForceDelete(__)); //Deletes each folder entry.
+                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(entry))
+                    ForceDelete(fileSystemEntry);
+
                 new DirectoryInfo(entry) { Attributes = FileAttributes.Normal }.Delete();
             }
             else
                 new FileInfo(entry) { Attributes = FileAttributes.Normal }.Delete();
-        });
+    }
     #endregion
 
     #region GenerateRandomFilePath
@@ -558,6 +567,7 @@ public static class SystemMethods
     #endregion
 
     #region IsValidLocalPath
+
     /// <summary>
     /// Indicates whether the selected string represents a valid local path.
     /// </summary>
@@ -567,9 +577,10 @@ public static class SystemMethods
     /// <returns></returns>
     public static bool IsValidLocalPath(string path, bool onlyAbsolute = false, bool onlyExisting = false) =>
         !String.IsNullOrWhiteSpace(path)
-        && !path.ContainsAny(Path.GetInvalidPathChars())
-        && (!onlyAbsolute || Path.IsPathRooted(path))
+        && !Path.GetInvalidPathChars().Any(path.Contains)
+            && (!onlyAbsolute || Path.IsPathRooted(path))
         && (!onlyExisting || CheckPathExists(path));
+
     #endregion
 
     #region ListDirectories
@@ -671,8 +682,11 @@ public static class SystemMethods
     /// <param name="destinationFolder"></param>
     /// <param name="sourceEntries"></param>
     /// <param name="conflictAction"></param>
-    public static void MoveToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction) =>
-        sourceEntries.ForEach(_ => MoveToFolder(_, destinationFolder, conflictAction));
+    public static void MoveToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction)
+    {
+        foreach (string sourceEntry in sourceEntries)
+            MoveToFolder(sourceEntry, destinationFolder, conflictAction);
+    }
     #endregion
 
     #endregion
@@ -870,8 +884,11 @@ public static class SystemMethods
                 return null;
 
             Directory.CreateDirectory(destination); //Creates the folder, if it doesn't exist.
-            Directory.GetFiles(source, "*", SearchOption.TopDirectoryOnly).ForEach(_ => sendToFolder(_, destination, conflictAction)); //Copies the directory files.
-            Directory.GetDirectories(source, "*", SearchOption.TopDirectoryOnly).ForEach(_ => sendToFolder(_, destination, conflictAction)); //Copies the inner directories.
+
+            foreach (string file in Directory.GetFileSystemEntries(source, "*", SearchOption.TopDirectoryOnly))
+            {
+                sendToFolder(file, destination, conflictAction);
+            }
 
             if (!keepOriginal)
                 Delete(source);
@@ -894,7 +911,6 @@ public static class SystemMethods
     #endregion
 
     #region ManageConflictAction
-
     /// <summary>
     /// Manages the conflict action.
     /// </summary>

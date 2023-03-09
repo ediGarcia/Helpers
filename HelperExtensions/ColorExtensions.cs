@@ -7,7 +7,7 @@ public static class ColorExtensions
 {
     #region Public Methods
 
-    #region ToBrush (System.Windows.Media.Color)
+    #region ToBrush
     /// <summary>
     /// Returns the a <see cref="SolidColorBrush"/> representation of this <see cref="Color"/> .
     /// </summary>
@@ -17,7 +17,7 @@ public static class ColorExtensions
         new(color);
     #endregion
 
-    #region ToMediaColor (System.Windows.Media.SolidColorBrush)
+    #region ToMediaColor
     /// <summary>
     /// Returns the a <see cref="Color"/> representation of this <see cref="SolidColorBrush"/> .
     /// </summary>

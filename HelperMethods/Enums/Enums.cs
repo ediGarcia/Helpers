@@ -85,20 +85,19 @@ public enum ConflictAction
 /// </summary>
 public enum FileSizeUnit
 {
+    // ReSharper disable IdentifierTypo
     Byte,
     Kilo,
     Mega,
-    // ReSharper disable once IdentifierTypo
     Giga,
-    // ReSharper disable once IdentifierTypo
     Tera,
-    // ReSharper disable once IdentifierTypo
     Peta,
     Exa,
-    // ReSharper disable once IdentifierTypo
     Zetta,
-    // ReSharper disable once IdentifierTypo
-    Yotta
+    Yotta,
+    Ronna,
+    Quetta
+    // ReSharper restore IdentifierTypo
 }
 
 /// <summary>

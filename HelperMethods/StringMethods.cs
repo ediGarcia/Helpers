@@ -1,5 +1,4 @@
-﻿using HelperExtensions;
-using HelperMethods.Enums;
+﻿using HelperMethods.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -33,7 +32,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static string GetFirstNotEmpty(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !_.IsEmpty());
+        strings?.FirstOrDefault(_ => _ != String.Empty);
     #endregion
 
     #region GetFirstNotNull
@@ -43,7 +42,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static string GetFirstNotNull(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !_.IsNull());
+        strings?.FirstOrDefault(_ => _ is not null);
     #endregion
 
     #region GetFirstNotNullOrEmpty
@@ -53,7 +52,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static string GetFirstNotNullOrEmpty(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !_.IsNullOrEmpty());
+        strings?.FirstOrDefault(_ => !String.IsNullOrEmpty(_));
     #endregion
 
     #region GetFirstNotNullOrWhiteSpace
@@ -63,7 +62,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static string GetFirstNotNullOrWhiteSpace(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !_.IsNullOrWhiteSpace());
+        strings?.FirstOrDefault(_ => !String.IsNullOrWhiteSpace(_));
     #endregion
 
     #region GenerateStringBuilder
@@ -88,7 +87,7 @@ public static class StringMethods
         ignoreWhiteSpace && String.IsNullOrWhiteSpace(text) || String.IsNullOrEmpty(text) ? defaultText : text;
     #endregion
 
-    #region GetRandomString
+    #region GetRandomString*
 
     #region GetRandomString(int, params char[])
     /// <summary>
@@ -342,8 +341,6 @@ public static class StringMethods
     #endregion
 
     #region InsertEllipsis
-
-    #region InsertEllipsis
     /// <summary>
     /// Insert ellipsis in a string.
     /// </summary>
@@ -370,8 +367,6 @@ public static class StringMethods
         InsertEllipsisPrivate(text, maxWidth, true);
     #endregion
 
-    #endregion
-
     #region AreAllEmpty
     /// <summary>
     /// Indicates whether the sequence contains only empty strings.
@@ -379,7 +374,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool AreAllEmpty(params string[] strings) =>
-        strings?.All(_ => _.IsEmpty()) == true;
+        strings?.All(_ => _ == String.Empty) == true;
     #endregion
 
     #region AreAllNull
@@ -389,7 +384,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool AreAllNull(params string[] strings) =>
-        strings?.All(_ => _.IsNull()) == true;
+        strings?.All(_ => _ is null) == true;
     #endregion
 
     #region AreAllNullOrEmpty
@@ -399,7 +394,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool AreAllNullOrEmpty(params string[] strings) =>
-        strings?.All(_ => _.IsNullOrEmpty()) == true;
+        strings?.All(String.IsNullOrEmpty) == true;
     #endregion
 
     #region AreAllNullOrWhiteSpace
@@ -409,7 +404,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool AreAllNullOrWhiteSpace(params string[] strings) =>
-        strings?.All(_ => _.IsNullOrWhiteSpace()) == true;
+        strings?.All(String.IsNullOrWhiteSpace) == true;
     #endregion
 
     #region IsAnyEmpty
@@ -419,7 +414,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool IsAnyEmpty(params string[] strings) =>
-        strings?.Any(_ => _.IsEmpty()) == true;
+        strings?.Any(_ => _ == String.Empty) == true;
     #endregion
 
     #region IsAnyNull
@@ -429,7 +424,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool IsAnyNull(params string[] strings) =>
-        strings?.Any(_ => _.IsNull()) == true;
+        strings?.Any(_ => _ is null) == true;
     #endregion
 
     #region IsAnyNullOrEmpty
@@ -439,7 +434,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool IsAnyNullOrEmpty(params string[] strings) =>
-        strings?.Any(_ => _.IsNullOrEmpty()) == true;
+        strings?.Any(String.IsNullOrEmpty) == true;
     #endregion
 
     #region IsAnyNullOrWhiteSpace
@@ -449,7 +444,7 @@ public static class StringMethods
     /// <param name="strings"></param>
     /// <returns></returns>
     public static bool IsAnyNullOrWhiteSpace(params string[] strings) =>
-        strings?.Any(_ => _.IsNullOrWhiteSpace()) == true;
+        strings?.Any(String.IsNullOrWhiteSpace) == true;
     #endregion
 
     #region IsNumber
@@ -486,11 +481,11 @@ public static class StringMethods
         StringBuilder newText = new();
         bool isSeparator = true;
 
-        text.ToCharArray().ForEach(character =>
+        foreach (char c in text)
         {
-            newText.Append(isSeparator ? Char.ToUpper(character) : character);
-            isSeparator = !Char.IsLetter(character);
-        });
+            newText.Append(isSeparator ? Char.ToUpper(c) : c);
+            isSeparator = !Char.IsLetter(c);
+        }
 
         return newText.ToString();
     }
@@ -573,7 +568,7 @@ public static class StringMethods
         if (maxWidth < 3)
             throw new ArgumentOutOfRangeException(nameof(maxWidth), maxWidth, "The maximum width must be greater or equal to 3.");
         
-        if (text.IsNullOrEmpty() || text.Length <= maxWidth)
+        if (String.IsNullOrEmpty(text) || text.Length <= maxWidth)
             return text;
 
         //Inserts ellipsis at the end.
