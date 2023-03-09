@@ -1,6 +1,8 @@
-﻿using System;
+﻿using HelperMethods;
+using System;
 using System.Linq;
 using System.Text;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -209,6 +211,18 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool IsEmpty(this string st) =>
         st == "";
+    #endregion
+
+    #region IsEqualTo
+    /// <summary>
+    /// Indicates whether the specified string equals the current one.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <param name="comparisonType"></param>
+    /// <returns></returns>
+    public static bool IsEqualTo(this string str, string value, StringComparison comparisonType = StringComparison.Ordinal) =>
+        StringMethods.AreAllNull(str, value) || String.Compare(str, value, comparisonType) == 0;
     #endregion
 
     #region IsNull

@@ -190,7 +190,7 @@ public static class ListExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void FillLeft<T>(this IList<T> list, T value, int quantity)
     {
-        if (quantity < 0)
+        if (quantity <= 0)
             throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
 
         for (int i = 0; i < quantity; i++)
@@ -225,7 +225,7 @@ public static class ListExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void FillRight<T>(this IList<T> list, T value, int quantity)
     {
-        if (quantity < 0)
+        if (quantity <= 0)
             throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
 
         for (int i = 0; i < quantity; i++)
@@ -236,6 +236,8 @@ public static class ListExtensions
     #endregion
 
     #region ForEach
+
+    #region ForEach(this IList<T>, Action<T>, int, [int?])
     /// <summary>
     /// Performs the specified action on each element of the list.
     /// </summary>
@@ -247,12 +249,56 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex = 0, int? length = null)
+    public static void ForEach<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null)
     {
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
-        for (int i = startIndex; i < finalIndex; i++)
+        for (int i = startIndex; i <= finalIndex; i++)
+            action?.Invoke(list[i]);
+    }
+    #endregion
+
+    #region ForEach(this IList<T>, Action<T, int>, int, [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex, int? length = null)
+    {
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i <= finalIndex; i++)
             action?.Invoke(list[i], i);
+    }
+    #endregion
+
+    #endregion
+
+    #region GetSublist
+    /// <summary>
+    /// Retrieves a sublist from the original <see cref="List{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static IList<T> GetSublist<T>(this IList<T> list, int startIndex, int? length = null)
+    {
+        int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
+        List<T> newList = new(finalIndex - startIndex);
+
+        for (int i = startIndex; i < finalIndex; i++)
+            newList.Add(list[i]);
+
+        return newList;
     }
     #endregion
 
@@ -382,7 +428,7 @@ public static class ListExtensions
 
     #region ReverseForEach(this IList<T>, Action<T>, [int?], [int?])
     /// <summary>
-    /// Performs the specified action on each element of the list in the inverse order.
+    /// Performs the specified action on each element of the list in the reverse order.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
@@ -397,14 +443,14 @@ public static class ListExtensions
         startIndex ??= list.LastIndex();
         int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
 
-        for (int i = startIndex.Value; i > lastIndex; i--)
+        for (int i = startIndex.Value; i >= lastIndex; i--)
             action?.Invoke(list[i]);
     }
     #endregion
 
     #region ReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
     /// <summary>
-    /// Performs the specified action on each element of the list in the inverse order.
+    /// Performs the specified action on each element of the list in the reverse order.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
@@ -419,11 +465,33 @@ public static class ListExtensions
         startIndex ??= list.LastIndex();
         int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
 
-        for (int i = startIndex.Value; i > lastIndex; i--)
+        for (int i = startIndex.Value; i >= lastIndex; i--)
             action?.Invoke(list[i], i);
     }
     #endregion
 
+    #endregion
+
+    #region ToArray
+    /// <summary>
+    /// Retrieves an array from the original <see cref="List{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static T[] ToArray<T>(this IList<T> list, int startIndex, int? length)
+    {
+        int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
+        T[] newArray = new T[finalIndex - startIndex];
+        int index = 0;
+
+        for (int i = startIndex; i < finalIndex; i++)
+            newArray[index++] = list[i];
+
+        return newArray;
+    }
     #endregion
 
     #endregion

@@ -18,7 +18,7 @@ namespace HelperMethods;
 public static class StringMethods
 {
     public const string SpecialChars = "!\"#$%&'()#+,-./:;<>=?@[]^_`´{}|~";
-    public const string SpaceChar = " \t";
+    public const string SpaceChars = " \t";
     public const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
     public const string NumericChars = "0123456789";
@@ -294,12 +294,10 @@ public static class StringMethods
 
         //Calculates the maximum string width.
         using (Graphics graphics = new Control().CreateGraphics())
-        {
             do
             {
                 stringTest.Append("a");
             } while (graphics.MeasureString(stringTest.ToString(), font, Point.Empty, StringFormat.GenericTypographic).Width < desiredWidth);
-        }
 
         return InsertEllipsisPrivate(text, stringTest.Length, false);
     }
@@ -318,12 +316,16 @@ public static class StringMethods
     public static string FormatXml(string xml, string indentChars = "\t")
     {
         using StreamReader reader = new(new MemoryStream());
-        using (XmlWriter writer = XmlWriter.Create(reader.BaseStream, new()
-               {
-                   Indent = true,
-                   IndentChars = indentChars,
-                   ConformanceLevel = ConformanceLevel.Document
-               }))
+        using (
+            XmlWriter writer =
+                XmlWriter.Create(
+                       reader.BaseStream,
+                       new()
+                   {
+                       Indent = true,
+                       IndentChars = indentChars,
+                       ConformanceLevel = ConformanceLevel.Document
+                   }))
         {
             XmlDocument document = new();
             document.LoadXml(xml);
@@ -568,15 +570,10 @@ public static class StringMethods
     /// <exception cref="ArgumentOutOfRangeException" />
     private static string InsertEllipsisPrivate(string text, int maxWidth, bool isAtTheEnd)
     {
-        //Checks if the string is null or empty.
-        if (String.IsNullOrEmpty(text))
-            return null;
-
         if (maxWidth < 3)
             throw new ArgumentOutOfRangeException(nameof(maxWidth), maxWidth, "The maximum width must be greater or equal to 3.");
-
-        //Checks if the maximum width is greater than the text width.
-        if (text.Length <= maxWidth)
+        
+        if (text.IsNullOrEmpty() || text.Length <= maxWidth)
             return text;
 
         //Inserts ellipsis at the end.
@@ -588,7 +585,7 @@ public static class StringMethods
         int previousWidth = (int)Math.Ceiling(maxWidth / 2.0);
         int posteriorWidth = (int)Math.Floor(maxWidth / 2.0);
 
-        return text.Substring(0, previousWidth) + "..." + text.Substring(text.Length - posteriorWidth);
+        return $"{text.Substring(0, previousWidth)}...{text.Substring(text.Length - posteriorWidth)}";
     }
     #endregion
 
@@ -622,7 +619,7 @@ public static class StringMethods
 
         if (classes.HasFlag(CharacterClass.All))
             characters.Append(SpecialChars)
-                .Append(SpaceChar)
+                .Append(SpaceChars)
                 .Append(UpperCaseChars)
                 .Append(LowerCaseChars)
                 .Append(NumericChars)
@@ -630,7 +627,7 @@ public static class StringMethods
         else
         {
             if (classes.HasFlag(CharacterClass.Space))
-                characters.Append(SpaceChar);
+                characters.Append(SpaceChars);
 
             if (classes.HasFlag(CharacterClass.Special))
                 characters.Append(SpecialChars);
