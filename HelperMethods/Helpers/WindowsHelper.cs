@@ -101,6 +101,17 @@ internal static class WindowsHelper
         private readonly string _lpszProgressTitle;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ShStockIconInfo
+    {
+        public uint cbSize;
+        public IntPtr hIcon;
+        public int iSysIconIndex;
+        public int iIcon;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        public string szPath;
+    }
+
     #endregion
 
     #region DLL Imports
@@ -125,6 +136,9 @@ internal static class WindowsHelper
         uint cbFileInfo,
         uint uFlags
     );
+
+    [DllImport("shell32.dll")]
+    public static extern int SHGetStockIconInfo(uint siId, uint uFlags, ref ShStockIconInfo stockIconInfo);
 
     #endregion
 }

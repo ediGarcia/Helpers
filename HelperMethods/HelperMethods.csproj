@@ -55,6 +55,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionMethods.cs" />
     <Compile Include="ListMethods.cs" />
     <Compile Include="BytesMethods.cs" />
     <Compile Include="Classes\CommemorativeDay.cs" />

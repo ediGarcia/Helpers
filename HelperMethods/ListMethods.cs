@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -64,6 +66,31 @@ public static class ListMethods
     }
     #endregion
 
+    #endregion
+
+    #region GetSortedList
+    /// <summary>
+    /// Retrieves a sorted list from the original <see cref="IList{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="keySelector"></param>
+    /// <returns></returns>
+    public static IList<T> GetSortedList<T, TKey>(IEnumerable<T> list, Func<T, TKey> keySelector) =>
+        list.OrderBy(keySelector).ToList();
+    #endregion
+
+    #region Sort
+    /// <summary>
+    /// Sorts the specified <see cref="IList{T}"/>/
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="keySelector"></param>
+    public static void Sort<T, TKey>(ref IList<T> list, Func<T, TKey> keySelector) =>
+        list = list.OrderBy(keySelector).ToList();
     #endregion
 
     #endregion

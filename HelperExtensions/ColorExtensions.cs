@@ -7,6 +7,8 @@ public static class ColorExtensions
 {
     #region Public Methods
 
+    #region Color
+
     #region ToBrush
     /// <summary>
     /// Returns the a <see cref="SolidColorBrush"/> representation of this <see cref="Color"/> .
@@ -17,6 +19,10 @@ public static class ColorExtensions
         new(color);
     #endregion
 
+    #endregion
+
+    #region SolidColorBrush
+
     #region ToMediaColor
     /// <summary>
     /// Returns the a <see cref="Color"/> representation of this <see cref="SolidColorBrush"/> .
@@ -25,6 +31,8 @@ public static class ColorExtensions
     /// <returns></returns>
     public static Color ToMediaColor(this SolidColorBrush color) =>
         color.Color;
+    #endregion
+
     #endregion
 
     #endregion

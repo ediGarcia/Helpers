@@ -2,7 +2,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Media;
-using Color = System.Drawing.Color;
+using Color = System.Windows.Media.Color;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -32,7 +33,7 @@ public static class ColorMethods
     /// </summary>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static Color GenerateRandomPastelColor() =>
+    public static System.Drawing.Color GenerateRandomPastelColor() =>
         GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f);
     #endregion
 
@@ -42,7 +43,7 @@ public static class ColorMethods
     /// </summary>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static System.Windows.Media.Color GenerateRandomPastelMediaColor() =>
+    public static Color GenerateRandomPastelMediaColor() =>
         GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToMediaColor();
     #endregion
 
@@ -65,8 +66,8 @@ public static class ColorMethods
     /// Returns a random color.
     /// </summary>
     /// <returns></returns>
-    public static Color GenerateRandomColor() =>
-        Color.FromArgb(
+    public static System.Drawing.Color GenerateRandomColor() =>
+        System.Drawing.Color.FromArgb(
             NumberMethods.GetRandomInt(255),
             NumberMethods.GetRandomInt(255),
             NumberMethods.GetRandomInt(255)
@@ -79,8 +80,8 @@ public static class ColorMethods
     /// </summary>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static System.Windows.Media.Color GenerateRandomMediaColor() =>
-        System.Windows.Media.Color.FromArgb(
+    public static Color GenerateRandomMediaColor() =>
+        Color.FromArgb(
             1,
             (byte)NumberMethods.GetRandomInt(0, 255, true),
             (byte)NumberMethods.GetRandomInt(0, 255, true),
@@ -137,7 +138,7 @@ public static class ColorMethods
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once IdentifierTypo
-    public static Color GetColorFromAhsb(int alpha, float hue, float saturation, float brightness)
+    public static System.Drawing.Color GetColorFromAhsb(int alpha, float hue, float saturation, float brightness)
     {
         if (alpha is < 0 or > 255)
             throw new ArgumentOutOfRangeException(nameof(alpha), alpha, "The alpha value must be between 0 e 255.");
@@ -151,7 +152,7 @@ public static class ColorMethods
         if (saturation == 0f)
         {
             int grayValue = (int)brightness * 255;
-            return Color.FromArgb(alpha, grayValue, grayValue, grayValue);
+            return System.Drawing.Color.FromArgb(alpha, grayValue, grayValue, grayValue);
         }
 
         float fMax, fMin;
@@ -182,12 +183,12 @@ public static class ColorMethods
 
         return iSextant switch
         {
-            1 => Color.FromArgb(alpha, iMid, iMax, iMin),
-            2 => Color.FromArgb(alpha, iMin, iMax, iMid),
-            3 => Color.FromArgb(alpha, iMin, iMid, iMax),
-            4 => Color.FromArgb(alpha, iMid, iMin, iMax),
-            5 => Color.FromArgb(alpha, iMax, iMin, iMid),
-            _ => Color.FromArgb(alpha, iMax, iMid, iMin)
+            1 => System.Drawing.Color.FromArgb(alpha, iMid, iMax, iMin),
+            2 => System.Drawing.Color.FromArgb(alpha, iMin, iMax, iMid),
+            3 => System.Drawing.Color.FromArgb(alpha, iMin, iMid, iMax),
+            4 => System.Drawing.Color.FromArgb(alpha, iMid, iMin, iMax),
+            5 => System.Drawing.Color.FromArgb(alpha, iMax, iMin, iMid),
+            _ => System.Drawing.Color.FromArgb(alpha, iMax, iMid, iMin)
         };
     }
     #endregion
@@ -202,10 +203,32 @@ public static class ColorMethods
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once IdentifierTypo
-    public static Color GetColorFromAhsb(float hue, float saturation, float brightness) =>
+    public static System.Drawing.Color GetColorFromAhsb(float hue, float saturation, float brightness) =>
         GetColorFromAhsb(255, hue, saturation, brightness);
     #endregion
 
+    #endregion
+
+    #region GetDarkerBrush
+    /// <summary>
+    /// Returns a darker shade of the specified color.
+    /// </summary>
+    /// <param name="brush"></param>
+    /// <param name="percentage"></param>
+    /// <returns></returns>
+    public static SolidColorBrush GetDarkerBrush(SolidColorBrush brush, double percentage) =>
+        MultiplyBrushByConstant(brush, 1 - percentage / 100);
+    #endregion
+
+    #region GetLighterBrush
+    /// <summary>
+    /// Returns a lighter shade of the specified color.
+    /// </summary>
+    /// <param name="brush"></param>
+    /// <param name="percentage"></param>
+    /// <returns></returns>
+    public static SolidColorBrush GetLighterBrush(SolidColorBrush brush, double percentage) =>
+        MultiplyBrushByConstant(brush, 1 + percentage / 100);
     #endregion
 
     #region GetMediaColorFromAhsb*
@@ -221,7 +244,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
-    public static System.Windows.Media.Color GetMediaColorFromAhsb(int alpha, float hue, float saturation, float brightness) =>
+    public static Color GetMediaColorFromAhsb(int alpha, float hue, float saturation, float brightness) =>
         GetColorFromAhsb(alpha, hue, saturation, brightness).ToMediaColor();
     #endregion
 
@@ -236,7 +259,7 @@ public static class ColorMethods
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
-    public static System.Windows.Media.Color GetMediaColorFromAhsb(float hue, float saturation, float brightness) =>
+    public static Color GetMediaColorFromAhsb(float hue, float saturation, float brightness) =>
         GetMediaColorFromAhsb(255, hue, saturation, brightness);
     #endregion 
 
@@ -261,7 +284,7 @@ public static class ColorMethods
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
-    public static bool NeedsWhiteForeground(Color color) =>
+    public static bool NeedsWhiteForeground(System.Drawing.Color color) =>
         (color.R * 299 + color.G * 587 + color.B * 144) / 1000 <= 123;
     #endregion
 
@@ -272,10 +295,42 @@ public static class ColorMethods
     /// <param name="color"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static bool NeedsWhiteForeground(System.Windows.Media.Color color) =>
+    public static bool NeedsWhiteForeground(Color color) =>
         (color.R * 299 + color.G * 587 + color.B * 144) / 1000 <= 123;
     #endregion
 
+    #endregion
+
+    #endregion
+
+    #region Private Methods
+
+    #region MultiplyBrushByConstant
+    /// <summary>
+    /// Multiplies each part of the color by a constant value.
+    /// </summary>
+    /// <param name="brush"></param>
+    /// <param name="constant"></param>
+    /// <returns></returns>
+    private static SolidColorBrush MultiplyBrushByConstant(SolidColorBrush brush, double constant)
+    {
+        Color color = brush.Color;
+
+        if (color is { R: 0, G: 0, B: 0 })
+        {
+            if (constant < 1)
+                return brush;
+
+            color = Color.FromArgb(color.A, 1, 1, 1);
+        }
+
+
+        byte red = (byte)GenericMethods.Max(GenericMethods.Min(color.R * constant, 255), 0);
+        byte green = (byte)GenericMethods.Max(GenericMethods.Min(color.G * constant, 255), 0);
+        byte blue = (byte)GenericMethods.Max(GenericMethods.Min(color.B * constant, 255), 0);
+
+        return new(Color.FromArgb(color.A, red, green, blue));
+    }
     #endregion
 
     #endregion

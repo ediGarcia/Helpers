@@ -440,24 +440,32 @@ public static class SystemMethods
     }
     #endregion
 
-    #region GetFullPath
+    #region GetDefaultDirectoryIcon
     /// <summary>
-    /// Returns the absolute path for the specified path string.
+    /// Retrieves the system's default directory icon.
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="largeIcon"></param>
+    /// <param name="showLinkOverlay"></param>
     /// <returns></returns>
-    public static string GetFullPath(string path) =>
-        Path.GetFullPath(path);
-    #endregion
+    public static ImageSource GetDefaultDirectoryIcon(bool largeIcon, bool showLinkOverlay = false)
+    {
+        // ReSharper disable CommentTypo
+        WindowsHelper.ShStockIconInfo info = new();
+        info.cbSize = (uint)Marshal.SizeOf(info);
 
-    #region GetParentDirectory
-    /// <summary>
-    /// Retrieves the parent directory name for the specified path.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static string GetParentDirectory(string path) =>
-        Path.GetDirectoryName(path.TrimEnd('/', '\\'));
+        uint flags = 0x100 | (largeIcon ? 0U : 1U);
+
+        if (showLinkOverlay)
+            flags += 0x8000; //SHGFI_LINKOVERLAY;
+
+        WindowsHelper.SHGetStockIconInfo(0x3/*SHSIID_FOLDER*/, flags, ref info);
+
+        Icon icon = (Icon)Icon.FromHandle(info.hIcon).Clone(); // Get a copy that doesn't use the original handle.
+        WindowsHelper.DestroyIcon(info.hIcon); // Clean up native icon to prevent resource leak.
+
+        return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        // ReSharper restore CommentTypo
+    }
     #endregion
 
     #region GetDirectorySize
@@ -474,6 +482,16 @@ public static class SystemMethods
     }
     #endregion
 
+    #region GetFullPath
+    /// <summary>
+    /// Returns the absolute path for the specified path string.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string GetFullPath(string path) =>
+        Path.GetFullPath(path);
+    #endregion
+
     #region GetFileSize
     /// <summary>
     /// Retrieves the size of the specified file.
@@ -488,10 +506,10 @@ public static class SystemMethods
     /// <summary>
     /// Returns an icon for a given file.
     /// </summary>
-    /// <param name="name">Pathname for file.</param>
+    /// <param name="path">Pathname for file.</param>
     /// <param name="largeIcon">Indicates whether the method should return the large version of the icon</param>
     /// <param name="showLinkOverlay">Whether to include the link icon</param>
-    public static ImageSource GetIcon(string name, bool largeIcon, bool showLinkOverlay)
+    public static ImageSource GetIcon(string path, bool largeIcon, bool showLinkOverlay = false)
     {
         // ReSharper disable CommentTypo
         WindowsHelper.ShFileInfo shFileInfo = new();
@@ -502,7 +520,7 @@ public static class SystemMethods
 
         flags += largeIcon ? 0U : 1U;
 
-        WindowsHelper.SHGetFileInfo(name,
+        WindowsHelper.SHGetFileInfo(path,
             0x10, //FILE_ATTRIBUTE_DIRECTORY
             ref shFileInfo,
             (uint)Marshal.SizeOf(shFileInfo),
@@ -514,6 +532,16 @@ public static class SystemMethods
         return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         // ReSharper restore CommentTypo
     }
+    #endregion
+
+    #region GetParentDirectory
+    /// <summary>
+    /// Retrieves the parent directory name for the specified path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string GetParentDirectory(string path) =>
+        Path.GetDirectoryName(path.TrimEnd('/', '\\'));
     #endregion
 
     #region GetSize
@@ -741,11 +769,23 @@ public static class SystemMethods
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
+    /// <param name="preventIOException">Indicates if any <see cref="IOException"/> should be suppressed.</param>
     /// <returns></returns>
-    public static T RetrieveDataFromFile<T>(string path)
+    // ReSharper disable once InconsistentNaming
+    public static T RetrieveDataFromFile<T>(string path, bool preventIOException = false)
     {
-        using FileStream stream = new(path, FileMode.Open);
-        return (T)new BinaryFormatter().Deserialize(stream);
+        try
+        {
+            using FileStream stream = new(path, FileMode.Open);
+            return (T)new BinaryFormatter().Deserialize(stream);
+        }
+        catch (Exception ex)
+        {
+            if (preventIOException && ex is IOException)
+                return default;
+
+            throw;
+        }
     }
     #endregion
 
@@ -774,16 +814,30 @@ public static class SystemMethods
         });
     #endregion
 
+    #region RunFile
+    /// <summary>
+    /// Opens a file in the current operational system.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="arguments"></param>
+    /// <param name="workingFolder"></param>
+    /// <param name="runAsAdmin"></param>
+    /// <returns></returns>
+    public static Process RunFile(string path, string arguments = null, string workingFolder = null, bool runAsAdmin = false) =>
+            Run("explorer", $"\"{path}\" {arguments}", workingFolder, runAsAdmin, true);
+    #endregion
+
     #region SaveDataToFile
     /// <summary>
-    /// Saves the data into the selected file (if it exists, will be overwritten, otherwise, will be created).
+    /// Saves the data into the selected file.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
     /// <param name="data"></param>
-    public static void SaveDataToFile<T>(string path, T data)
+    /// <param name="mode"></param>
+    public static void SaveDataToFile<T>(string path, T data, FileMode mode = FileMode.OpenOrCreate)
     {
-        using FileStream stream = new(path, FileMode.OpenOrCreate);
+        using FileStream stream = new(path, mode);
         new BinaryFormatter().Serialize(stream, data);
     }
     #endregion
