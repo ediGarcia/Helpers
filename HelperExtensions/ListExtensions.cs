@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -141,7 +142,7 @@ public static class ListExtensions
         list.Count - 1;
     #endregion
 
-    #region Remove
+    #region RemoveFirst
     /// <summary>
     /// Removes the first element that matches the specified criteria.
     /// </summary>
@@ -149,7 +150,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool Remove<T>(this ICollection<T> list, Func<T, bool> predicate) =>
+    public static bool RemoveFirst<T>(this ICollection<T> list, Func<T, bool> predicate) =>
         list.FirstOrDefault(predicate) is { } itemToRemove && list.Remove(itemToRemove);
     #endregion
 
@@ -325,6 +326,62 @@ public static class ListExtensions
 
     #endregion
 
+    #region ConcurrentForEach*
+
+    #region ConcurrentForEach(this IList<T>, Action<T>, int, [int?])
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <param name="callback"></param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ConcurrentForEach<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null, Action callback = null)
+    {
+        List<Task> tasks = new(length ?? list.Count);
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i <= finalIndex; i++)
+            tasks.Add(Task.Run(() => action(list[i])));
+
+        tasks.ForEach(_ => _.Wait());
+        callback?.Invoke();
+    }
+    #endregion
+
+    #region ConcurrentForEach(this IList<T>, Action<T, int>, int, [int?])
+    /// <summary>
+    /// Asynchronously performs the specified action on each element of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <param name="callback"></param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ConcurrentForEach<T>(this IList<T> list, Action<T, int> action, int startIndex, int? length = null, Action callback = null)
+    {
+        List<Task> tasks = new(length ?? list.Count);
+        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
+
+        for (int i = startIndex; i <= finalIndex; i++)
+            tasks.Add(Task.Run(() => action(list[i], i)));
+
+        tasks.ForEach(_ => _.Wait());
+        callback?.Invoke();
+    }
+    #endregion
+
+    #endregion
+
     #region FillLeft*
 
     #region FillLeft(this IList<T>, int)
@@ -436,63 +493,6 @@ public static class ListExtensions
 
         for (int i = startIndex; i <= finalIndex; i++)
             action(list[i], i);
-    }
-    #endregion
-
-    #endregion
-
-    #region ForEachAsync*
-
-    #region ForEachAsync(this IList<T>, Action<T>, int, [int?])
-
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <param name="callback"></param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEachAsync<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null, Action callback = null)
-    {
-        List<Task> tasks = new(length ?? list.Count);
-        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(list[i])));
-
-        tasks.ForEach(_ => _.Wait());
-        callback?.Invoke();
-    }
-    #endregion
-
-    #region ForEachAsync(this IList<T>, Action<T, int>, int, [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <param name="callback"></param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEachAsync<T>(this IList<T> list, Action<T, int> action, int startIndex, int? length = null, Action callback = null)
-    {
-        List<Task> tasks = new(length ?? list.Count);
-        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(list[i], i)));
-
-        tasks.ForEach(_ => _.Wait());
-        callback?.Invoke();
     }
     #endregion
 
@@ -713,6 +713,296 @@ public static class ListExtensions
 
     #endregion
 
+    #region IEnumarable
+
+    #region All
+    /// <summary>
+    /// Determines whether all the elements of a sequence satisfy a condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static bool All<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    {
+        foreach (T item in iEnumerable)
+            if (!predicate(item))
+                return false;
+
+        return true;
+    }
+    #endregion
+
+    #region Any
+    /// <summary>
+    /// Determines whether any the elements of a sequence satisfy a condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    {
+        foreach (T item in iEnumerable)
+            if (predicate(item))
+                return true;
+
+        return false;
+    }
+    #endregion
+
+    #region ConcurrentForEach*
+
+    #region ConcurrentForEach(this IEnumerable, Action<T>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ConcurrentForEach<T>(
+        this IEnumerable iEnumerable,
+        Action<T> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+        List<Task> tasks = new();
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                tasks.Add(Task.Run(() => action(item)));
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+
+        Task.WaitAll(tasks.ToArray());
+    }
+    #endregion
+
+    #region ConcurrentForEach(this IEnumerable, Action<T, int>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ConcurrentForEach<T>(
+        this IEnumerable iEnumerable,
+        Action<T, int> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+        List<Task> tasks = new();
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                tasks.Add(Task.Run(() => action(item, currentIndex)));
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+
+        Task.WaitAll(tasks.ToArray());
+    }
+    #endregion
+
+    #endregion
+
+    #region ForEach*
+
+    #region ForEach(this IEnumerable, Action<T>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ForEach<T>(
+        this IEnumerable iEnumerable,
+        Action<T> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                action(item);
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+    }
+    #endregion
+
+    #region ForEach(this IEnumerable, Action<T, int>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ForEach<T>(
+        this IEnumerable iEnumerable,
+        Action<T, int> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                action(item, currentIndex);
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+    }
+    #endregion
+
+    #endregion
+
+    #region Select
+    /// <summary>
+    /// Projects each element of a sequence into a new form.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<T2> Select<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> selector)
+    {
+        List<T2> items = new();
+        iEnumerable.ForEach<T1>(_ => items.Add(selector(_)));
+        return items;
+    }
+    #endregion
+
+    #region ToList
+    /// <summary>
+    /// Create a <see cref="List{T2}"/> out of the specific type from the <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    public static List<T> ToList<T>(this IEnumerable iEnumerable, int startIndex = 0, int? maxLength = null)
+    {
+        List<T> result = new();
+        int currentIndex = 0;
+        int reachedLength = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex > startIndex)
+            {
+                result.Add(item);
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+
+        return result;
+    }
+    #endregion
+
+    #region Where
+    /// <summary>
+    /// Filters a sequence of values based on a predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Where<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    {
+        List<T> items = new();
+
+        iEnumerable.ForEach<T>(_ =>
+        {
+            if (predicate(_))
+                items.Add(_);
+        });
+
+        return items;
+    }
+    #endregion
+
+    #endregion
+
     #region IEnumerable<T>
 
     #region Cast
@@ -726,6 +1016,98 @@ public static class ListExtensions
     /// <returns></returns>
     public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
         iEnumerable.Select(func);
+    #endregion
+
+    #region ConcurrentForEach*
+
+    #region ConcurrentForEach(this IEnumerable<T>, Action<T>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ConcurrentForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+        List<Task> tasks = new();
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                tasks.Add(Task.Run(() => action(item)));
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+
+        Task.WaitAll(tasks.ToArray());
+    }
+    #endregion
+
+    #region ConcurrentForEach(this IEnumerable<T>, Action<T, int>, [int?], [int?])
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ConcurrentForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T, int> action,
+        int startIndex = 0,
+        int? maxLength = null)
+    {
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+        List<Task> tasks = new();
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                tasks.Add(Task.Run(() => action(item, currentIndex)));
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
+
+        Task.WaitAll(tasks.ToArray());
+    }
+    #endregion
+
     #endregion
 
     #region ContainsAll
@@ -754,76 +1136,85 @@ public static class ListExtensions
 
     #region ForEach*
 
-    #region ForEach(this IEnumerable<T>, Action<T>)
+    #region ForEach(this IEnumerable<T>, Action<T>, [int?], [int?])
     /// <summary>
-    /// Performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action)
-    {
-        foreach (T value in iEnumerable)
-            action(value);
-    }
-
-    #endregion
-
-    #region ForEach(this IEnumerable<T>, Action<T, int>)
-    /// <summary>
-    /// Performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action)
-    {
-        int index = 0;
-
-        foreach (T value in iEnumerable)
-            action(value, index++);
-    }
-
-    #endregion
-
-    #endregion
-
-    #region ForEachAsync*
-
-    #region ForEachAsync<T>(this IEnumerable<T>, Action<T>)
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the array.
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="action"></param>
-    /// <param name="callback">Action to be executed right after every execution has finished.</param>
-    public static void ForEachAsync<T>(this IEnumerable<T> iEnumerable, Action<T> action, Action callback = null)
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T> action,
+        int startIndex = 0,
+        int? maxLength = null)
     {
-        iEnumerable.Select(value => Task.Run(() => action(value))).ForEach(_ => _.Wait());
-        callback?.Invoke();
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                action(item);
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
     }
     #endregion
 
-    #region ForEachAsync<T>(this IEnumerable<T>, Action<T, int>)
+    #region ForEach(this IEnumerable<T>, Action<T, int>, [int?], [int?])
     /// <summary>
-    /// Asynchronously performs the specified action on each element of the array.
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="action"></param>
-    /// <param name="callback">Action to be executed right after every execution has finished.</param>
-    public static void ForEachAsync<T>(this IEnumerable<T> iEnumerable, Action<T, int> action, Action callback = null)
+    /// <param name="startIndex"></param>
+    /// <param name="maxLength"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T, int> action,
+        int startIndex = 0,
+        int? maxLength = null)
     {
-        int index = 0;
-        iEnumerable.Select(value => Task.Run(() => action(value, index++))).ForEach(_ => _.Wait());
-        callback?.Invoke();
+        if (startIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
+
+        if (maxLength < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
+
+        int currentIndex = 0;
+        int reachedLength = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (reachedLength >= maxLength)
+                break;
+
+            if (currentIndex >= startIndex)
+            {
+                action(item, currentIndex);
+                reachedLength++;
+            }
+
+            currentIndex++;
+        }
     }
     #endregion
 
