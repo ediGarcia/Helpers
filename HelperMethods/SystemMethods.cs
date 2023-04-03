@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -145,13 +146,18 @@ public static class SystemMethods
     #endregion
 
     #region CopyOS
+
     /// <summary>
     /// Copies files and folders and its contents using the system's UI.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="destination"></param>
-    public static void CopyOs(string source, string destination) =>
-        CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoCopy, 0);
+    public static async Task CopyOs(string source, string destination)
+    {
+int resultCode = await Task.Run(() => CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoCopy, 0));
+WindowsHelper.GetWindowsErrorMessage(resultCode, true);
+    }
+
     #endregion
 
     #region CopyToFolder*
@@ -345,12 +351,13 @@ public static class SystemMethods
     /// Deletes files and folders and its contents using the system's UI.
     /// </summary>
     /// <param name="path"></param>
-    public static void DeleteOs(string path)
+    public static async Task DeleteOs(string path)
     {
         if (!CheckPathExists(path))
             throw new IOException($"Could not find file {path}.");
-
-        CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0);
+        
+        int resultCode = await Task.Run(() => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0));
+        WindowsHelper.GetWindowsErrorMessage(resultCode, true);
     }
     #endregion
 
@@ -544,6 +551,19 @@ public static class SystemMethods
         Path.GetDirectoryName(path.TrimEnd('/', '\\'));
     #endregion
 
+    #region GetProcesses
+    /// <summary>
+    /// Gets process which names matches the specified search pattern.
+    /// </summary>
+    /// <param name="searchPattern"></param>
+    /// <returns></returns>
+    public static Process[] GetProcesses(string searchPattern)
+    {
+        Regex regex = new(searchPattern.Replace(".", "\\."), RegexOptions.IgnoreCase);
+        return Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName)).ToArray();
+    }
+    #endregion
+
     #region GetSize
     /// <summary>
     /// Retrieves the size of a path (if it is a directory, it will be calculated recursively).
@@ -594,6 +614,17 @@ public static class SystemMethods
         CheckFileExists(path) && !IsDirectory(path);
     #endregion
 
+    #region IsParentDirectory
+    /// <summary>
+    /// Indicates whether a given path is a child of a specified directory.
+    /// </summary>
+    /// <param name="childPath">The path to be tested.</param>
+    /// <param name="directoryPath">The possible parent directory.</param>
+    /// <returns></returns>
+    public static bool IsParentDirectory(string childPath, string directoryPath) =>
+Path.GetFullPath(childPath).StartsWith(Path.GetFullPath(directoryPath) + "\\");
+    #endregion
+
     #region IsValidLocalPath
 
     /// <summary>
@@ -608,6 +639,37 @@ public static class SystemMethods
         && !Path.GetInvalidPathChars().Any(path.Contains)
             && (!onlyAbsolute || Path.IsPathRooted(path))
         && (!onlyExisting || CheckPathExists(path));
+
+    #endregion
+
+    #region KillProcesses*
+
+    #region KillProcess(params Process[])
+    /// <summary>
+    /// Kill the specified processes.
+    /// </summary>
+    /// <param name="processes"></param>
+    public static void KillProcesses(params Process[] processes)
+    {
+        foreach (Process process in processes)
+            process.Kill();
+    }
+    #endregion
+
+    #region KillProcesses(string)
+    /// <summary> 
+    /// Kill process found through he search pattern.
+    /// </summary>
+    /// <param name="searchPattern"></param>
+    /// <returns>The number of processes killed.</returns>
+    public static int KillProcesses(string searchPattern)
+    {
+        Process[] processes = GetProcesses(searchPattern);
+        KillProcesses(processes);
+
+        return processes.Length;
+    }
+    #endregion
 
     #endregion
 
@@ -902,7 +964,7 @@ public static class SystemMethods
     /// <param name="fileOperationType"></param>
     /// <param name="flags"></param>
     /// <param name="pathFrom"></param>
-    private static void CallSystemFileOperation(string pathFrom, string pathTo, WindowsHelper.FileOperationType fileOperationType, WindowsHelper.FileOperationFlags flags)
+    private static int CallSystemFileOperation(string pathFrom, string pathTo, WindowsHelper.FileOperationType fileOperationType, WindowsHelper.FileOperationFlags flags)
     {
         WindowsHelper.ShFileOpStruct fs = new()
         {
@@ -914,7 +976,7 @@ public static class SystemMethods
         if (fileOperationType is WindowsHelper.FileOperationType.FoCopy or WindowsHelper.FileOperationType.FoMove)
             fs.PTo = pathTo;
 
-        WindowsHelper.SHFileOperation(ref fs);
+        return WindowsHelper.SHFileOperation(ref fs);
     }
     #endregion
 

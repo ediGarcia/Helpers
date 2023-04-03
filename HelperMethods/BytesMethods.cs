@@ -41,20 +41,52 @@ public static class BytesMethods
     }
     #endregion
 
-    #region GenerateString
+    #region GenerateString*
+
+    #region GenerateString(double, FileSizeUnit, [int])
+    /// <summary>
+    /// Generates string for a file size value.
+    /// </summary>
+    /// <param name="valor"></param>
+    /// <param name="unit"></param>
+    /// <param name="decimalPlaces"></param>
+    /// <returns></returns>
+    public static string GenerateString(double valor, FileSizeUnit unit, int decimalPlaces = 0)
+    {
+        string unitSign = unit switch
+        {
+            FileSizeUnit.Kilo => "KB",
+            FileSizeUnit.Mega => "MB",
+            FileSizeUnit.Giga => "GB",
+            FileSizeUnit.Tera => "TB",
+            FileSizeUnit.Peta => "PB",
+            FileSizeUnit.Exa => "EB",
+            FileSizeUnit.Zetta => "ZB",
+            FileSizeUnit.Yotta => "YB",
+            FileSizeUnit.Ronna => "RB",
+            FileSizeUnit.Quetta => "QB",
+            _ => "B"
+        };
+
+        return $"{valor.ToString("0.".PadRight(decimalPlaces + 2, '#'))} {unitSign}";
+    }
+    #endregion
+
+    #region GenerateString(double, [int], [bool], [FileSizeUnit])
     /// <summary>
     /// Returns a string representation of the bytes in the best unit.
     /// </summary>
     /// <param name="bytes"></param>
     /// <param name="decimalPlaces"></param>
-    /// <param name = "useBase10">Indicates if the calculations should use the decimal (1000)(true) or binary(1024)(false) value for one kilobyte.</param>
+    /// <param name = "useBase10">Indicates if the calculations should use the decimal (1000)[true] or binary(1024)[false] value for one kilobyte.</param>
+    /// <param name="maxUnit">Determines the highest possible size unit.</param>
     /// <returns></returns>
-    public static string GenerateString(double bytes, int decimalPlaces = 0, bool useBase10 = false)
+    public static string GenerateString(double bytes, int decimalPlaces = 0, bool useBase10 = false, FileSizeUnit maxUnit = FileSizeUnit.Quetta)
     {
         FileSizeUnit unit = FileSizeUnit.Byte;
         double baseValueInt = useBase10 ? 1000d : 1024d;
 
-        while (bytes >= baseValueInt && unit < FileSizeUnit.Quetta)
+        while (bytes >= baseValueInt && unit < maxUnit)
         {
             bytes /= baseValueInt;
             unit++;
@@ -64,7 +96,9 @@ public static class BytesMethods
     }
     #endregion
 
-    #region GetFileSize
+    #endregion
+
+    #region GetFileSize*
 
     #region GetFileSize(string)
     /// <summary>
@@ -153,39 +187,6 @@ public static class BytesMethods
     }
     #endregion
 
-    #endregion
-
-    #endregion
-
-    #region Private methods
-
-    #region GenerateString
-    /// <summary>
-    /// Generates string for a file size value.
-    /// </summary>
-    /// <param name="valor"></param>
-    /// <param name="unit"></param>
-    /// <param name="decimalPlaces"></param>
-    /// <returns></returns>
-    private static string GenerateString(double valor, FileSizeUnit unit, int decimalPlaces = 2)
-    {
-        string unitSign = unit switch
-        {
-            FileSizeUnit.Kilo => "KB",
-            FileSizeUnit.Mega => "MB",
-            FileSizeUnit.Giga => "GB",
-            FileSizeUnit.Tera => "TB",
-            FileSizeUnit.Peta => "PB",
-            FileSizeUnit.Exa => "EB",
-            FileSizeUnit.Zetta => "ZB",
-            FileSizeUnit.Yotta => "YB",
-            FileSizeUnit.Ronna => "RB",
-            FileSizeUnit.Quetta => "QB",
-            _ => "B"
-        };
-
-        return $"{valor.ToString("0.".PadRight(decimalPlaces + 2, '#'))} {unitSign}";
-    }
     #endregion
 
     #endregion
