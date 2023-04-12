@@ -14,218 +14,6 @@ public static class ListExtensions
 
     #region T[]
 
-    #region ArrayConcurrentForEach*
-
-    #region ArrayConcurrentForEach(this T[], Action<T>, int, [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <param name="callback"></param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayConcurrentForEach<T>(this T[] array, Action<T> action, int startIndex, int? length = null, Action callback = null)
-    {
-        List<Task> tasks = new(length ?? array.Length);
-        int finalIndex = length is null ? array.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(array[i])));
-
-        Task.WaitAll(tasks.ToArray());
-        callback?.Invoke();
-    }
-    #endregion
-
-    #region ArrayConcurrentForEach(this T[], Action<T, int>, int, [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <param name="callback"></param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayConcurrentForEach<T>(this T[] array, Action<T, int> action, int startIndex, int? length = null, Action callback = null)
-    {
-        List<Task> tasks = new(length ?? array.Length);
-        int finalIndex = length is null ? array.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(array[i], i)));
-
-        tasks.ForEach(_ => _.Wait());
-        callback?.Invoke();
-    }
-    #endregion
-
-    #endregion
-
-    #region ArrayConcurrentReverseForEach*
-
-    #region ArrayConcurrentReverseForEach(this T[], Action<T>, [int?], [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the array in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayConcurrentReverseForEach<T>(
-        this T[] array,
-        Action<T> action,
-        int? startIndex = null,
-        int? length = null)
-    {
-        startIndex ??= array.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-        List<Task> tasks = new(array.Length);
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            tasks.Add(Task.Run(() => action(array[i])));
-
-        Task.WaitAll(tasks.ToArray());
-    }
-    #endregion
-
-    #region ConcurrentReverseReverseForEach(this T[], Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the array in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseReverseForEach<T>(
-        this T[] array,
-        Action<T, int> action,
-        int? startIndex = null,
-        int? length = null)
-    {
-        startIndex ??= array.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-        List<Task> tasks = new(array.Length);
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            tasks.Add(Task.Run(() => action(array[i], i)));
-
-        Task.WaitAll(tasks.ToArray());
-    }
-    #endregion
-
-    #endregion
-
-    #region ArrayForEach*
-
-    #region ArrayForEach<T>(this T[], Action<T>, [int], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayForEach<T>(this T[] array, Action<T> action, int startIndex = 0, int? length = null)
-    {
-        length ??= array.Length - startIndex;
-
-        for (int i = startIndex; i < startIndex + length; i++)
-            action?.Invoke(array[i]);
-    }
-    #endregion
-
-    #region ArrayForEach<T>(this T[], Action<T, int>, [int], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the array.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="array"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the array.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayForEach<T>(this T[] array, Action<T, int> action, int startIndex = 0, int? length = null)
-    {
-        length ??= array.Length - startIndex;
-
-        for (int i = startIndex; i < startIndex + length; i++)
-            action?.Invoke(array[i], i);
-    }
-    #endregion
-
-    #endregion
-
-    #region ArrayReverseForEach*
-
-    #region ArrayReverseForEach(this T[], Action<T>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the array in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayReverseForEach<T>(this T[] list, Action<T> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            action(list[i]);
-    }
-    #endregion
-
-    #region ReverseForEach(this T[], Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the array in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ArrayReverseForEach<T>(this T[] list, Action<T, int> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            action(list[i], i);
-    }
-    #endregion
-
-    #endregion
-
     #region GetSubArray
     /// <summary>
     /// Retrieves a sub-array from this instance. The sub-array starts at a specified position and has a specified length.
@@ -254,18 +42,18 @@ public static class ListExtensions
 
     #region AddMany
     /// <summary>
-    /// Adds multiple items to the list.
+    /// Adds multiple items to the collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <param name="items"></param>
-    public static void AddMany<T>(this ICollection<T> list, params T[] items) =>
-        items.ForEach(list.Add);
+    public static void AddMany<T>(this ICollection<T> collection, params T[] items) =>
+        items.ForEach(collection.Add);
     #endregion
 
     #region AddRange
     /// <summary>
-    /// Adds the items into the current <see cref="ICollection{T}"/>.
+    /// Adds the items into the current collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -276,36 +64,36 @@ public static class ListExtensions
 
     #region Contains
     /// <summary>
-    /// Determines whether <see cref="List{T}"/> contains all of the specified values.
+    /// Determines whether current collection contains all of the specified values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static bool Contains<T>(this ICollection<T> list, params T[] items) =>
-        items.All(list.Contains);
+    public static bool Contains<T>(this ICollection<T> collection, params T[] items) =>
+        items.All(collection.Contains);
     #endregion
 
     #region ContainsAny
     /// <summary>
-    /// Determines whether <see cref="List{T}"/> contains any of the specified values.
+    /// Determines whether current collection contains any of the specified values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static bool ContainsAny<T>(this ICollection<T> list, params T[] items) =>
-        items.Any(list.Contains);
+    public static bool ContainsAny<T>(this ICollection<T> collection, params T[] items) =>
+        items.Any(collection.Contains);
     #endregion
 
     #region LastIndex
     /// <summary>
     /// Returns the last index of the list.
     /// </summary>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <returns></returns>
-    public static int LastIndex<T>(this ICollection<T> list) =>
-        list.Count - 1;
+    public static int LastIndex<T>(this ICollection<T> collection) =>
+        collection.Count - 1;
     #endregion
 
     #region RemoveFirst
@@ -313,11 +101,11 @@ public static class ListExtensions
     /// Removes the first element that matches the specified criteria.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool RemoveFirst<T>(this ICollection<T> list, Func<T, bool> predicate) =>
-        list.FirstOrDefault(predicate) is { } itemToRemove && list.Remove(itemToRemove);
+    public static bool RemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
+        collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
     #endregion
 
     #region RemoveAll
@@ -325,19 +113,19 @@ public static class ListExtensions
     /// Removes every element that matches the specified criteria.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
+    /// <param name="collection"></param>
     /// <param name="action"></param>
     /// <returns>The number of items removed.</returns>
-    public static int RemoveAll<T>(this ICollection<T> list, Func<T, bool> action)
+    public static int RemoveAll<T>(this ICollection<T> collection, Func<T, bool> action)
     {
         int itemsRemovedCount = 0;
-        T[] originalItems = list.ToArray();
+        T[] originalItems = collection.ToArray();
 
         originalItems.ForEach(_ =>
         {
             if (action(_))
             {
-                list.Remove(_);
+                collection.Remove(_);
                 itemsRemovedCount++;
             }
         });
@@ -579,7 +367,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ConcurrentReverseReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
+    #region ConcurrentReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
     /// <summary>
     /// Asynchronously performs the specified action on each element of the list in the reverse order.
     /// </summary>
@@ -591,7 +379,7 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseReverseForEach<T>(
+    public static void ConcurrentReverseForEach<T>(
         this IList<T> list,
         Action<T, int> action,
         int? startIndex = null,
@@ -979,6 +767,19 @@ public static class ListExtensions
     }
     #endregion
 
+    #region Cast
+    /// <summary>
+    /// Casts the elements of an <see cref="IEnumerable"/> to an specific type.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="converterFunction"></param>
+    /// <returns></returns>
+    public static IEnumerable Cast<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> converterFunction) =>
+        iEnumerable.Select(converterFunction);
+    #endregion
+
     #region ConcurrentForEach*
 
     #region ConcurrentForEach(this IEnumerable, Action<T>, [int?], [int?])
@@ -1215,7 +1016,7 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Where<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    public static IEnumerable Where<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
     {
         List<T> items = new();
 
@@ -1240,10 +1041,10 @@ public static class ListExtensions
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
     /// <param name="iEnumerable"></param>
-    /// <param name="func"></param>
+    /// <param name="converterFunction"></param>
     /// <returns></returns>
-    public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
-        iEnumerable.Select(func);
+    public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> converterFunction) =>
+        iEnumerable.Select(converterFunction);
     #endregion
 
     #region ConcurrentForEach*
