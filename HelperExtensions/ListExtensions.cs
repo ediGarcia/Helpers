@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using HelperMethods;
 // ReSharper disable UnusedMember.Global
@@ -137,6 +138,24 @@ public static class ListExtensions
     #endregion
 
     #region IDictionary<T1, T2>
+
+    #region AddOrEdit
+    /// <summary>
+    /// Adds a new key or edits the value of an already existing entry.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    public static void AddOrEdit<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 value)
+    {
+        if (dictionary.ContainsKey(key))
+            dictionary[key] = value;
+        else
+            dictionary[key] = value;
+    }
+    #endregion
 
     #region ForEach*
 
