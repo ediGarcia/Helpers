@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -203,6 +205,17 @@ public static class StringExtensions
     }
     #endregion
 
+    #region GetMatches
+    /// <summary>
+    /// Retrieves the regex matches for the specified string.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="pattern"></param>
+    /// <returns></returns>
+    public static string[] GetMatches(this string st, string pattern) =>
+        (from Match match in Regex.Matches(st, pattern) select match.Value).ToArray();
+    #endregion
+
     #region GetValueOrDefault
     /// <summary>
     /// Returns the default value if the current string is null.
@@ -274,6 +287,17 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool IsWhiteSpace(this string st) =>
         st != null && String.IsNullOrWhiteSpace(st);
+    #endregion
+
+    #region Matches
+    /// <summary>
+    /// Indicates whether the specified regular expression finds a match in the current string.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="pattern"></param>
+    /// <returns></returns>
+    public static bool Matches(this string st, string pattern) =>
+        Regex.IsMatch(st, pattern);
     #endregion
 
     #region Prepend
