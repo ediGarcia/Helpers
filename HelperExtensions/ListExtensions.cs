@@ -1,10 +1,9 @@
-﻿using System;
+﻿using HelperMethods;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using System.Threading.Tasks;
-using HelperMethods;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -268,6 +267,50 @@ public static class ListExtensions
     #endregion
 
     #region IList<T>
+
+    #region All
+    /// <summary>
+    /// Determines whether all the elements of a sequence satisfy the specified condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static bool All<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length)
+    {
+        int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
+
+        for (int i = startIndex; i < finalIndex; i++)
+            if (!predicate(list[i]))
+                return false;
+
+        return true;
+    }
+    #endregion
+
+    #region Any
+    /// <summary>
+    /// Determines whether any of the elements of a sequence satisfies the specified condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static bool Any<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length)
+    {
+        int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
+
+        for (int i = startIndex; i < finalIndex; i++)
+            if (predicate(list[i]))
+                return true;
+
+        return false;
+    }
+    #endregion
 
     #region BinarySearch*
 
@@ -752,7 +795,7 @@ public static class ListExtensions
 
     #region All
     /// <summary>
-    /// Determines whether all the elements of a sequence satisfy a condition.
+    /// Determines whether all the elements of a sequence satisfy the specified condition.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
@@ -770,7 +813,7 @@ public static class ListExtensions
 
     #region Any
     /// <summary>
-    /// Determines whether any the elements of a sequence satisfy a condition.
+    /// Determines whether any of the elements of a sequence satisfies the specified condition.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
