@@ -1108,97 +1108,17 @@ public static class ListExtensions
     public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> converterFunction) =>
         iEnumerable.Select(converterFunction);
     #endregion
-
-    #region ConcurrentForEach*
-
-    #region ConcurrentForEach(this IEnumerable<T>, Action<T>, [int?], [int?])
+    
+    #region ConcurrentForEach
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="action"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="maxLength"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ConcurrentForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T> action,
-        int startIndex = 0,
-        int? maxLength = null)
-    {
-        if (startIndex < 0)
-            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
-
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
-
-        int currentIndex = 0;
-        int reachedLength = 0;
-        List<Task> tasks = new();
-
-        foreach (T item in iEnumerable)
-        {
-            if (reachedLength >= maxLength)
-                break;
-
-            if (currentIndex >= startIndex)
-            {
-                tasks.Add(Task.Run(() => action(item)));
-                reachedLength++;
-            }
-
-            currentIndex++;
-        }
-
-        Task.WaitAll(tasks.ToArray());
-    }
-    #endregion
-
-    #region ConcurrentForEach(this IEnumerable<T>, Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="maxLength"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ConcurrentForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T, int> action,
-        int startIndex = 0,
-        int? maxLength = null)
-    {
-        if (startIndex < 0)
-            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
-
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
-
-        int currentIndex = 0;
-        int reachedLength = 0;
-        List<Task> tasks = new();
-
-        foreach (T item in iEnumerable)
-        {
-            if (reachedLength >= maxLength)
-                break;
-
-            if (currentIndex >= startIndex)
-            {
-                tasks.Add(Task.Run(() => action(item, currentIndex)));
-                reachedLength++;
-            }
-
-            currentIndex++;
-        }
-
-        Task.WaitAll(tasks.ToArray());
-    }
-    #endregion
-
+    public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action) =>
+        Task.WaitAll(iEnumerable.Select(item => Task.Run(() => action(item))).ToArray());
     #endregion
 
     #region ContainsAll
@@ -1225,90 +1145,19 @@ public static class ListExtensions
         items.Any(iEnumerable.Contains);
     #endregion
 
-    #region ForEach*
-
-    #region ForEach(this IEnumerable<T>, Action<T>, [int?], [int?])
+    #region ForEach
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="action"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="maxLength"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T> action,
-        int startIndex = 0,
-        int? maxLength = null)
+    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action)
     {
-        if (startIndex < 0)
-            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
-
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
-
-        int currentIndex = 0;
-        int reachedLength = 0;
-
         foreach (T item in iEnumerable)
-        {
-            if (reachedLength >= maxLength)
-                break;
-
-            if (currentIndex >= startIndex)
-            {
-                action(item);
-                reachedLength++;
-            }
-
-            currentIndex++;
-        }
+            action(item);
     }
-    #endregion
-
-    #region ForEach(this IEnumerable<T>, Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="maxLength"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T, int> action,
-        int startIndex = 0,
-        int? maxLength = null)
-    {
-        if (startIndex < 0)
-            throw new ArgumentOutOfRangeException(nameof(startIndex), "The start index must be greater that 0.");
-
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength), "The maximum length must be greater that 0.");
-
-        int currentIndex = 0;
-        int reachedLength = 0;
-
-        foreach (T item in iEnumerable)
-        {
-            if (reachedLength >= maxLength)
-                break;
-
-            if (currentIndex >= startIndex)
-            {
-                action(item, currentIndex);
-                reachedLength++;
-            }
-
-            currentIndex++;
-        }
-    }
-    #endregion
-
     #endregion
 
     #region IsNullOrEmpty

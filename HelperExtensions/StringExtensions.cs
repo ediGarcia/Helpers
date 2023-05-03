@@ -14,7 +14,6 @@ public static class StringExtensions
     #region String
 
     #region Append
-
     /// <summary>
     /// Appends the strings into the current one.
     /// </summary>
@@ -131,7 +130,7 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static bool EndsWithAny(this string st, params string[] values) =>
-        values.Any(st.StartsWith);
+        values.Any(st.EndsWith);
     #endregion
 
     #region EqualsAny*
