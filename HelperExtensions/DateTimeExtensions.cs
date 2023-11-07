@@ -1,5 +1,5 @@
-﻿using System;
-using HelperMethods;
+﻿using HelperMethods;
+using System;
 
 namespace HelperExtensions;
 
@@ -18,7 +18,7 @@ public static class DateTimeExtensions
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static bool IsWeekday(this DateTime dateTime) =>
-        dateTime.DayOfWeek != DayOfWeek.Saturday && dateTime.DayOfWeek != DayOfWeek.Sunday;
+        dateTime.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday;
     #endregion
 
     #region IsWeekend
@@ -29,7 +29,7 @@ public static class DateTimeExtensions
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static bool IsWeekend(this DateTime dateTime) =>
-        dateTime.DayOfWeek == DayOfWeek.Saturday || dateTime.DayOfWeek == DayOfWeek.Sunday;
+        dateTime.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
     #endregion
 
     #region ToBrazilianShortDateString
@@ -68,6 +68,122 @@ public static class DateTimeExtensions
     #endregion
 
     #region TimeSpan
+
+    #region AddDays
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of days to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan AddDays(this TimeSpan time, double value) =>
+        time.Add(TimeSpan.FromDays(value));
+    #endregion
+
+    #region AddHours
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of hours to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan AddHours(this TimeSpan time, double value) =>
+        time.Add(TimeSpan.FromHours(value));
+    #endregion
+
+    #region FromMilliseconds
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of milliseconds to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan FromMilliseconds(this TimeSpan time, double value) =>
+        time.Add(TimeSpan.FromMilliseconds(value));
+    #endregion
+
+    #region AddMinutes
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of minutes to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan AddMinutes(this TimeSpan time, double value) =>
+        time.Add(TimeSpan.FromMinutes(value));
+    #endregion
+
+    #region AddSeconds
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of seconds to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan AddSeconds(this TimeSpan time, double value) =>
+        time.Add(TimeSpan.FromSeconds(value));
+    #endregion
+
+    #region AddTicks
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that adds the specified number of ticks to the value of this instance.
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static TimeSpan AddTicks(this TimeSpan time, long value) =>
+        time.Add(TimeSpan.FromTicks(value));
+    #endregion
+
+    #region RoundToDays
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's days.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static TimeSpan RoundToDays(this TimeSpan timeSpan) =>
+        TimeSpan.FromDays(Math.Round(timeSpan.TotalDays));
+    #endregion
+
+    #region RoundToHours
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's hours.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static TimeSpan RoundToHours(this TimeSpan timeSpan) =>
+        TimeSpan.FromHours(Math.Round(timeSpan.TotalHours));
+    #endregion
+
+    #region RoundToMilliseconds
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's milliseconds.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static TimeSpan RoundToMilliseconds(this TimeSpan timeSpan) =>
+        TimeSpan.FromMilliseconds(Math.Round(timeSpan.TotalMilliseconds));
+    #endregion
+    
+    #region RoundToMinutes
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's minutes.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static TimeSpan RoundToMinutes(this TimeSpan timeSpan) =>
+        TimeSpan.FromMinutes(Math.Round(timeSpan.TotalMinutes));
+    #endregion
+
+    #region RoundToSeconds
+    /// <summary>
+    /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's seconds.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static TimeSpan RoundToSeconds(this TimeSpan timeSpan) =>
+        TimeSpan.FromSeconds(Math.Round(timeSpan.TotalSeconds));
+    #endregion
 
     #region ToShortTimeString
     /// <summary>

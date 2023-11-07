@@ -59,6 +59,21 @@ public static class StringExtensions
         st?.Contains(value) == true ? st : (st + value);
     #endregion
 
+    #region Contains
+    /// <summary>
+    /// Returns a value indicating whether the specified string occurs within this string, using the specified comparison rules.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="comparisonType"></param>
+    /// <returns></returns>
+    public static bool Contains(
+        this string st,
+        string value,
+        StringComparison comparisonType = StringComparison.Ordinal) =>
+        st?.IndexOf(value, comparisonType) >= 0;
+    #endregion
+
     #region ContainsAny*
 
     #region ContainsAny(this string, params string[])
@@ -133,20 +148,7 @@ public static class StringExtensions
         values.Any(st.EndsWith);
     #endregion
 
-    #region EqualsAny*
-
-    #region EqualsAny(params string[])
-    /// <summary>
-    /// Determines whether this instance and any another specified <see cref="T:System.String" /> object have the same value.
-    /// </summary>
-    /// <param name="st"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static bool EqualsAny(this string st, params string[] values) =>
-        values.Any(_ => st?.Equals(_) == true);
-    #endregion
-
-    #region EqualsAny(StringComparison, params string[])
+    #region EqualsAny
     /// <summary>
     /// Determines whether this instance and any another specified <see cref="T:System.String" /> object have the same value.
     /// </summary>
@@ -154,10 +156,8 @@ public static class StringExtensions
     /// <param name="comparison"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool EqualsAny(this string st, StringComparison comparison, params string[] values) =>
+    public static bool EqualsAny(this string st, StringComparison comparison = StringComparison.Ordinal, params string[] values) =>
         values.Any(_ => st?.Equals(_, comparison) == true);
-    #endregion
-
     #endregion
 
     #region FillLeft
@@ -224,6 +224,51 @@ public static class StringExtensions
     /// <returns></returns>
     public static string GetValueOrDefault(this string st, string defaultValue = null) =>
         st ?? defaultValue;
+    #endregion
+
+    #region IsContainedBy
+    /// <summary>
+    /// Indicates whether the current string is contained by the specified value.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="comparisonType"></param>
+    /// <returns></returns>
+    public static bool IsContainedBy(
+        this string st,
+        string value,
+        StringComparison comparisonType = StringComparison.Ordinal) =>
+        value?.Contains(st, comparisonType) == true;
+    #endregion
+
+    #region IsContainedAll
+    /// <summary>
+    /// Indicates whether the current string is contained by all of the specified values.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="comparisonType"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool IsContainedByAll(
+        this string st,
+        StringComparison comparisonType = StringComparison.Ordinal,
+        params string[] values) =>
+        values.All(_ => _.Contains(st, comparisonType));
+    #endregion
+
+    #region IsContainedAny
+    /// <summary>
+    /// Indicates whether the current string is contained by any of the specified values.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="comparisonType"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool IsContainedByAny(
+        this string st,
+        StringComparison comparisonType = StringComparison.Ordinal,
+        params string[] values) =>
+        values.Any(_ => _.Contains(st, comparisonType));
     #endregion
 
     #region IsEmpty

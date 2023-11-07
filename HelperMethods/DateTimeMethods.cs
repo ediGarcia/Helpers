@@ -1,4 +1,5 @@
 ﻿using HelperMethods.Classes;
+using HelperMethods.Enums;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
-using HelperMethods.Enums;
 
 // ReSharper disable UnusedMember.Global
 
@@ -79,21 +79,23 @@ public static class DateTimeMethods
     /// <summary>
     /// Gets the selected date month's first day.
     /// </summary>
-    /// <param name="baseDay"></param>
+    /// <param name="baseDate"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstDayOfMonth(DateTime baseDay) =>
-        new(baseDay.Year, baseDay.Month, 1);
+    public static DateTime GetFirstDayOfMonth(DateTime baseDate) =>
+        GetFirstDayOfMonth(baseDate.Month, baseDate.Year);
     #endregion
 
-    #region GetFirstDayOfMonth(int)
+    #region GetFirstDayOfMonth(int, [int])
+
     /// <summary>
     /// Gets the selected month's last day.
     /// </summary>
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
+    /// <param name="year"></param>
     /// <returns></returns>
-    public static DateTime GetFirstDayOfMonth(int month) =>
-        new(DateTime.Today.Year, month, 1);
+    public static DateTime GetFirstDayOfMonth(int month, int? year = null) =>
+        new(year ?? DateTime.Today.Year, month, 1);
     #endregion
 
     #endregion
@@ -174,7 +176,6 @@ public static class DateTimeMethods
     /// Gets the current month's last day.
     /// </summary>
     /// <returns></returns>
-
     // ReSharper disable once UnusedMember.Global
     public static DateTime GetLastDayOfMonth() =>
         GetLastDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
@@ -191,28 +192,16 @@ public static class DateTimeMethods
         GetLastDayOfMonth(baseDay.Year, baseDay.Month);
     #endregion
 
-    #region GetLastDayOfMonth(int)
-    /// <summary>
-    /// Gets the selected month's last day for the current year.
-    /// </summary>
-    /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
-    /// <returns></returns>
-
-    // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastDayOfMonth(int month) =>
-        GetLastDayOfMonth(DateTime.Today.Year, month);
-    #endregion
-
-    #region GetLastDayOfMonth(int, int)
+    #region GetLastDayOfMonth(int, [int])
     /// <summary>
     /// Gets the selected month's last day for the selected year.
     /// </summary>
     /// <param name="year"></param>
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
     /// <returns></returns>
-    public static DateTime GetLastDayOfMonth(int year, int month)
+    public static DateTime GetLastDayOfMonth(int month, int? year = null)
     {
-        DateTime firstDay = new(year, month, 1);
+        DateTime firstDay = new(year ?? DateTime.Today.Year, month, 1);
         return firstDay.AddMonths(1).AddDays(-1);
     }
     #endregion
@@ -483,8 +472,11 @@ public static class DateTimeMethods
         XmlDocument holidayXml = new();
 
         //Retrieves data from the API.
-        using (WebClient web = new() { Encoding = Encoding.UTF8 })
+        using (WebClient web = new())
+        {
+            web.Encoding = Encoding.UTF8;
             holidayXml.LoadXml(web.DownloadString($"http://www.calendario.com.br/api/api_feriados.php?ano={year}&estado={GetState(state)}&cidade={StringMethods.RemoveAccentuation(city).Replace("'", "").Replace(" ", "_")}&token=ZWRkeS5nYXJjaWEwN0BnbWFpbC5jb20maGFzaD00MTU2MjUxNw=="));
+        }
 
         if (holidayXml["events"] != null)
             days.AddRange(from XmlNode node in holidayXml["events"]?.ChildNodes

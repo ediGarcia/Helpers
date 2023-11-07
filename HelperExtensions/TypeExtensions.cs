@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -6,6 +8,18 @@ namespace HelperExtensions;
 public static class TypeExtensions
 {
     #region Public Methods
+
+    #region ContainsProperty
+    /// <summary>
+    /// Indicates whether the specified property exists in the current type.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="propertyName"></param>
+    /// <param name="comparisonType"></param>
+    /// <returns></returns>
+    public static bool ContainsProperty(this Type type, string propertyName, StringComparison comparisonType = StringComparison.Ordinal) =>
+        type.GetProperties().Any<PropertyInfo>(_ => propertyName.Equals(_.Name, comparisonType));
+    #endregion
 
     #region GetCode
     /// <summary>
@@ -15,6 +29,16 @@ public static class TypeExtensions
     /// <returns></returns>
     public static TypeCode GetCode(this Type type) =>
         Type.GetTypeCode(type);
+    #endregion
+
+    #region GetDefaultValue
+    /// <summary>
+    /// Returns the default value for a given type. If type is a value type, this method returns null.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static object GetDefaultValue(this Type type) =>
+        type.IsValueType ? Activator.CreateInstance(type) : null;
     #endregion
 
     #region IsBuiltIn

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
@@ -62,6 +63,22 @@ public static class ListExtensions
         items.ForEach(collection.Add);
     #endregion
 
+    #region Clone
+    /// <summary>
+    /// Creates a copy of the current collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static ICollection<T> Clone<T>(this ICollection<T> collection)
+    {
+        Collection<T> cloned = new();
+        collection.ForEach(cloned.Add);
+
+        return cloned;
+    }
+    #endregion
+
     #region Contains
     /// <summary>
     /// Determines whether current collection contains all of the specified values.
@@ -96,6 +113,32 @@ public static class ListExtensions
         collection.Count - 1;
     #endregion
 
+    #region Remove
+    /// <summary>
+    /// Removes every element that matches the specified criteria.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="predicate"></param>
+    /// <returns>The number of items removed.</returns>
+    public static int Remove<T>(this ICollection<T> collection, Func<T, bool> predicate)
+    {
+        int itemsRemovedCount = 0;
+        T[] originalItems = collection.ToArray();
+
+        originalItems.ForEach(_ =>
+        {
+            if (predicate(_))
+            {
+                collection.Remove(_);
+                itemsRemovedCount++;
+            }
+        });
+
+        return itemsRemovedCount;
+    }
+    #endregion
+
     #region RemoveFirst
     /// <summary>
     /// Removes the first element that matches the specified criteria.
@@ -106,32 +149,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool RemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
         collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
-    #endregion
-
-    #region RemoveAll
-    /// <summary>
-    /// Removes every element that matches the specified criteria.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="action"></param>
-    /// <returns>The number of items removed.</returns>
-    public static int RemoveAll<T>(this ICollection<T> collection, Func<T, bool> action)
-    {
-        int itemsRemovedCount = 0;
-        T[] originalItems = collection.ToArray();
-
-        originalItems.ForEach(_ =>
-        {
-            if (action(_))
-            {
-                collection.Remove(_);
-                itemsRemovedCount++;
-            }
-        });
-
-        return itemsRemovedCount;
-    }
     #endregion
 
     #endregion
@@ -153,6 +170,23 @@ public static class ListExtensions
             dictionary[key] = value;
         else
             dictionary.Add(key, value);
+    }
+    #endregion
+
+    #region Clone
+    /// <summary>
+    /// Creates a copy of the current dictionary.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <returns></returns>
+    public static Dictionary<T1, T2> Clone<T1, T2>(this IDictionary<T1, T2> dictionary)
+    {
+        Dictionary<T1, T2> cloned = new();
+        dictionary.ForEach(cloned.Add);
+
+        return cloned;
     }
     #endregion
 
@@ -442,8 +476,13 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="targetValue"></param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T> =>
-        ListMethods.BinarySearch(list, targetValue);
+    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T>
+    {
+        if (list is List<T> listImplementation)
+            return listImplementation.BinarySearch(targetValue);
+
+        return ListMethods.BinarySearch(list, targetValue);
+    }
     #endregion
 
     #region BinarySearch(this IList<T>, T, Func<T, T, int>)
@@ -453,13 +492,29 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="targetValue"></param>
-    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal; 
+    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal;
     /// 1 if the first value is greater than the second; -1 if the first value is less than the second.</param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
     public static int BinarySearch<T>(this IList<T> list, T targetValue, Func<T, T, int> comparisonFunction) =>
         ListMethods.BinarySearch(list, targetValue, comparisonFunction);
     #endregion
 
+    #endregion
+
+    #region Clone
+    /// <summary>
+    /// Creates a copy of the current list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static List<T> Clone<T>(this IList<T> list)
+    {
+        List<T> cloned = new();
+        list.ForEach(cloned.Add);
+
+        return cloned;
+    }
     #endregion
 
     #region ConcurrentForEach*
@@ -778,10 +833,6 @@ public static class ListExtensions
     public static bool MoveDown<T>(this IList<T> list, T item)
     {
         int index = list.IndexOf(item);
-
-        if (index < 0)
-            return false;
-
         list.MoveDownAt(index);
         return true;
     }
@@ -794,13 +845,8 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="index"></param>
-    public static void MoveDownAt<T>(this IList<T> list, int index)
-    {
-        if (index == list.LastIndex())
-            return;
-
+    public static void MoveDownAt<T>(this IList<T> list, int index) =>
         list.MoveAt(index, index + 1);
-    }
     #endregion
 
     #region MoveUp
@@ -814,10 +860,6 @@ public static class ListExtensions
     public static bool MoveUp<T>(this IList<T> list, T item)
     {
         int index = list.IndexOf(item);
-
-        if (index < 0)
-            return false;
-
         list.MoveUpAt(index);
         return true;
     }
@@ -830,13 +872,9 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="index"></param>
-    public static void MoveUpAt<T>(this IList<T> list, int index)
-    {
-        if (index == 0)
-            return;
-
+    public static void MoveUpAt<T>(this IList<T> list, int index) =>
         list.MoveAt(index, index - 1);
-    }
+
     #endregion
 
     #region ReverseForEach*
@@ -931,7 +969,20 @@ public static class ListExtensions
     }
     #endregion
 
-    #region Any
+    #region Any*
+
+    #region Any(this IEnumerable)
+    /// <summary>
+    /// Determines whether the current <see cref="IEnumerable" /> is defined and contains any item.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool Any(this IEnumerable iEnumerable) => 
+        iEnumerable is not null && Enumerable.Any(iEnumerable.Cast<object>());
+
+    #endregion
+
+    #region Any(this IEnumerable, Func<T, bool>)
     /// <summary>
     /// Determines whether any of the elements of a sequence satisfies the specified condition.
     /// </summary>
@@ -947,6 +998,8 @@ public static class ListExtensions
 
         return false;
     }
+    #endregion
+
     #endregion
 
     #region Cast
@@ -984,7 +1037,8 @@ public static class ListExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void ForEach<T>(this IEnumerable iEnumerable, Action<T> action)
     {
-        foreach (T item in iEnumerable) action(item);
+        foreach (T item in iEnumerable)
+            action(item);
     }
     #endregion
 
@@ -1061,7 +1115,7 @@ public static class ListExtensions
     public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> converterFunction) =>
         iEnumerable.Select(converterFunction);
     #endregion
-    
+
     #region ConcurrentForEach
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the collection.
@@ -1148,6 +1202,23 @@ public static class ListExtensions
     /// <returns></returns>
     public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
         iEnumerable.Select(func).ToList();
+    #endregion
+
+    #region Sum
+    /// <summary>
+    /// Computes the sequence of <see cref="TimeSpan"/> values that are obtained by invoking a transform function on each element of the input sequence.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static TimeSpan Sum<T>(this IEnumerable<T> source, Func<T, TimeSpan> selector)
+    {
+        TimeSpan result = TimeSpan.Zero;
+        source.ForEach(_ => result += selector(_));
+
+        return result;
+    }
     #endregion
 
     #endregion

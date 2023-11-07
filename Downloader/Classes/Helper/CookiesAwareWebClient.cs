@@ -5,10 +5,7 @@ namespace Downloader.Classes.Helper
 {
     public class CookiesAwareWebClient : WebClient
     {
-        public CookieContainer CookieContainer;
-
-        public CookiesAwareWebClient() =>
-            CookieContainer = new CookieContainer();
+        public CookieContainer CookieContainer = new CookieContainer();
 
         #region Public Methods
 

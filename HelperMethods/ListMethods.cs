@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 // ReSharper disable UnusedMember.Global
 
@@ -9,6 +10,8 @@ namespace HelperMethods;
 public static class ListMethods
 {
     #region Public Methods
+
+    #region IList<T>
 
     #region BinarySearch*
 
@@ -66,6 +69,49 @@ public static class ListMethods
     }
     #endregion
 
+    #region BinarySearch<T>(IList<T>, string, object)
+    /// <summary>
+    /// Performs a binary search and retrieves the index of the target item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="propertyName"></param>
+    /// <param name="targetValue"></param>
+    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static int BinarySearch<T>(IList<T> values, string propertyName, object targetValue)
+    {
+        int startIndex = 0;
+        int finalIndex = values.Count - 1;
+        PropertyInfo property = typeof(T).GetProperty(propertyName);
+
+        while (startIndex <= finalIndex)
+        {
+            int middleIndex = (int)Math.Round((startIndex + finalIndex) / 2d);
+            IComparable currentValue = (IComparable)property.GetValue(values[middleIndex]);
+
+            switch (currentValue.CompareTo(targetValue))
+            {
+                case 0:
+                    return middleIndex;
+
+                case 1:
+                    startIndex = middleIndex + 1;
+                    break;
+
+                case -1:
+                    finalIndex = middleIndex - 1;
+                    break;
+
+                default:
+                    throw new InvalidOperationException("The comparison function must return 0, 1 or -1.");
+            }
+        }
+
+        return -1;
+    }
+    #endregion
+
     #endregion
 
     #region GetSortedList
@@ -91,6 +137,8 @@ public static class ListMethods
     /// <param name="keySelector"></param>
     public static void Sort<T, TKey>(ref IList<T> list, Func<T, TKey> keySelector) =>
         list = list.OrderBy(keySelector).ToList();
+    #endregion
+
     #endregion
 
     #endregion

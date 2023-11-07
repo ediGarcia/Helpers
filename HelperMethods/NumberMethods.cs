@@ -30,7 +30,37 @@ public static class NumberMethods
             : Rand.NextDouble() * (maximum - minimum) + minimum;
     #endregion
 
-    #region GetRandomInt
+    #region GetRandomInt*
+
+    #region GetRandomInt()
+    /// <summary>
+    /// Returns a random int value.
+    /// </summary>
+    /// <param name="allowNegative">Indicates whether the method may return negative values.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException" />
+    public static int GetRandomInt(bool allowNegative = false) =>
+        Rand.Next(allowNegative ? Int32.MinValue : 0, Int32.MaxValue);
+    #endregion
+
+    #region GetRandomInt(int, [bool])
+    /// <summary>
+    /// Returns a random int value between zero and [maximum].
+    /// </summary>
+    /// <param name="maximum"></param>
+    /// <param name="isInclusive"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException" />
+    public static int GetRandomInt(int maximum, bool isInclusive = false)
+    {
+        if (isInclusive)
+            maximum++;
+
+        return Rand.Next(0, maximum);
+    }
+    #endregion
+
+    #region GetRandomInt(int, int, [bool])
     /// <summary>
     /// Returns a random int value between [minimum] and [maximum].
     /// </summary>
@@ -39,13 +69,16 @@ public static class NumberMethods
     /// <param name="isInclusive"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
-    public static int GetRandomInt(int minimum = Int32.MinValue, int maximum = Int32.MaxValue, bool isInclusive = false)
+    public static int GetRandomInt(int minimum, int maximum, bool isInclusive = false)
     {
-        if (isInclusive && maximum < minimum)
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        if (isInclusive && maximum < minimum && maximum < Int32.MaxValue)
             maximum++;
 
         return Rand.Next(minimum, maximum);
     }
+    #endregion
+
     #endregion
 
     #endregion

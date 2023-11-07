@@ -243,17 +243,6 @@ public static class SystemMethods
         File.Exists(path);
     #endregion
 
-    #region CreateEmptyFile
-    /// <summary>
-    /// Creates an empty file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="conflictAction">Indicates the conflict action taken when the selected path already exists.</param>
-    /// <exception cref="IOException" />
-    public static string CreateEmptyFile(string path, ConflictAction conflictAction) =>
-        CreateFile(path, null, conflictAction);
-    #endregion
-
     #region CreateFile
     /// <summary>
     /// Create a file with the selected content and returns the new file's path.
@@ -262,13 +251,15 @@ public static class SystemMethods
     /// <param name="content"></param>
     /// <param name="conflictAction">Indicates the conflict action taken when the selected path already exists.</param>
     /// <exception cref="IOException" />
-    public static string CreateFile(string path, string content, ConflictAction conflictAction)
+    public static string CreateFile(string path, string content = "", ConflictAction conflictAction = ConflictAction.Break)
     {
-        if ((path = ManageConflictAction(path, false, conflictAction, false)) is null)
-            return null;
-
-        File.WriteAllText(path, content ?? "");
-        return path;
+        if (ManageConflictAction(path, false, conflictAction, false) is { } actualPath)
+        {
+            File.WriteAllText(actualPath, content ?? "");
+            return actualPath;
+        }
+        
+        return null;
     }
     #endregion
 
@@ -277,16 +268,13 @@ public static class SystemMethods
     /// Create a random name empty file in the selected folder.
     /// </summary>
     /// <param name="parentFolderPath"></param>
+    /// <param name="content"></param>
+    /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
     /// <returns></returns>
-    public static string CreateRandomFile(string parentFolderPath)
+    public static string CreateRandomFile(string parentFolderPath, string content = "", string extension = null)
     {
-        string newFilePath = GenerateRandomFilePath(parentFolderPath);
-
-        while (Exists(newFilePath))
-            GenerateRandomFilePath(parentFolderPath);
-
-        File.Create(newFilePath).Dispose();
-
+        string newFilePath = GenerateRandomFilePath(parentFolderPath, extension, true);
+        File.WriteAllText(newFilePath, content ?? "");
         return newFilePath;
     }
     #endregion
@@ -296,11 +284,24 @@ public static class SystemMethods
     /// Generates a random file path.
     /// </summary>
     /// <param name="rootFolderPath">Parent folder path.</param>
+    /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
+    /// <param name="checkNotExisting">Indicates that the generated path should not exist in the current system.</param>
     /// <returns></returns>
-    public static string GenerateRandomFilePath(string rootFolderPath)
+    public static string GenerateRandomFilePath(string rootFolderPath, string extension = null, bool checkNotExisting = false)
     {
-        string fileName = Path.GetRandomFileName();
-        return String.IsNullOrWhiteSpace(rootFolderPath) ? fileName : Path.Combine(rootFolderPath, fileName);
+        string fileName;
+
+        do
+        {
+            fileName = Path.GetRandomFileName();
+
+            if (extension is not null)
+                fileName = fileName.Replace(".", "") + InsertExtensionDot(extension);
+
+            fileName = String.IsNullOrWhiteSpace(rootFolderPath) ? fileName : Path.Combine(rootFolderPath, fileName);
+        } while (checkNotExisting && CheckFileExists(fileName));
+
+        return fileName;
     }
     #endregion
 
@@ -779,7 +780,7 @@ public static class SystemMethods
         flags += largeIcon ? 0U : 1U;
 
         WindowsHelper.SHGetFileInfo(path,
-            0x10, //FILE_ATTRIBUTE_DIRECTORY
+            0,
             ref shFileInfo,
             (uint)Marshal.SizeOf(shFileInfo),
             flags);
