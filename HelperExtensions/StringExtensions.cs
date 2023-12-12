@@ -528,6 +528,46 @@ public static class StringExtensions
         return sb;
     }
     #endregion
+    
+    #region IsNull
+    /// <summary>
+    /// Indicates whether the current <see cref="StringBuilder"/> is null.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsNull(this StringBuilder st) =>
+        st?.ToString() is null;
+    #endregion
+
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the current <see cref="StringBuilder"/> is null or empty.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty(this StringBuilder st) =>
+        st?.ToString().IsNullOrEmpty() == true;
+    #endregion
+
+    #region IsNullOrWhiteSpace
+    /// <summary>
+    /// Indicates whether the current <see cref="StringBuilder"/> is null, empty or contains only white-space characters.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsNullOrWhiteSpace(this StringBuilder st) =>
+        st?.ToString().IsNullOrWhiteSpace() == true;
+    #endregion
+
+    #region IsWhiteSpace
+    /// <summary>
+    /// Indicates whether the current <see cref="StringBuilder"/> contains only white-space characters.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsWhiteSpace(this StringBuilder st) =>
+        st.ToString().IsWhiteSpace();
+    #endregion
 
     #endregion
 }
