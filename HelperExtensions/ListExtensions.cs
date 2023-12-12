@@ -37,6 +37,17 @@ public static class ListExtensions
     }
     #endregion
 
+    #region LastIndex
+    /// <summary>
+    /// Gets the last index of an array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <returns></returns>
+    public static int LastIndex<T>(this T[] array) =>
+        array.Length - 1;
+    #endregion
+
     #endregion
 
     #region ICollection<T>
@@ -103,16 +114,6 @@ public static class ListExtensions
         items.Any(collection.Contains);
     #endregion
 
-    #region LastIndex
-    /// <summary>
-    /// Returns the last index of the list.
-    /// </summary>
-    /// <param name="collection"></param>
-    /// <returns></returns>
-    public static int LastIndex<T>(this ICollection<T> collection) =>
-        collection.Count - 1;
-    #endregion
-
     #region Remove
     /// <summary>
     /// Removes every element that matches the specified criteria.
@@ -154,24 +155,6 @@ public static class ListExtensions
     #endregion
 
     #region IDictionary<T1, T2>
-
-    #region AddOrEdit
-    /// <summary>
-    /// Adds a new key or edits the value of an already existing entry.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    public static void AddOrEdit<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 value)
-    {
-        if (dictionary.ContainsKey(key))
-            dictionary[key] = value;
-        else
-            dictionary.Add(key, value);
-    }
-    #endregion
 
     #region Clone
     /// <summary>
@@ -476,13 +459,11 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="targetValue"></param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T>
-    {
-        if (list is List<T> listImplementation)
-            return listImplementation.BinarySearch(targetValue);
+    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T> =>
+        list is List<T> listImplementation
+            ? listImplementation.BinarySearch(targetValue)
+            : ListMethods.BinarySearch(list, targetValue);
 
-        return ListMethods.BinarySearch(list, targetValue);
-    }
     #endregion
 
     #region BinarySearch(this IList<T>, T, Func<T, T, int>)
@@ -781,10 +762,22 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="items"></param>
     public static void InsertMany<T>(this IList<T> list, int startIndex, params T[] items) =>
-        items.ReverseForEach(_ => list.Insert(startIndex, _));
+        items.ReverseForEach<T>(_ => list.Insert(startIndex, _));
+    #endregion
+
+    #region LastIndex
+    /// <summary>
+    /// Gets the last index of the current list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static int LastIndex<T>(this IList<T> list) =>
+        list.Count - 1;
     #endregion
 
     #region Move
+
     /// <summary>
     /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
     /// </summary>
@@ -792,10 +785,12 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="item"></param>
     /// <param name="destinationIndex"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/> or the item is already at the destination index.</returns>
     public static bool Move<T>(this IList<T> list, T item, int destinationIndex)
     {
-        if (list.Remove(item))
+        int currentItemIndex = list.IndexOf(item);
+
+        if (currentItemIndex != -1 && currentItemIndex != destinationIndex)
         {
             list.Insert(destinationIndex, item);
             return true;
@@ -1027,9 +1022,52 @@ public static class ListExtensions
         Task.WaitAll((from T item in iEnumerable select Task.Run(() => action(item))).ToArray());
     #endregion
 
+    #region First
+    /// <summary>
+    /// Returns the first element in a sequence that satisfies an specified condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static T First<T>(this IEnumerable iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable.FirstOrDefault(predicate) ?? throw new InvalidOperationException("Sequence contains no matching element");
+    #endregion
+
+    #region FirstOrDefault
+    /// <summary>
+    /// Returns the first element in a sequence that satisfies an specified condition, or a default value if no such element is found.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static T FirstOrDefault<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    {
+        foreach (T item in iEnumerable)
+            if (predicate(item))
+                return item;
+
+        return default;
+    }
+    #endregion
+
+    #region ForEach*
+
     #region ForEach
     /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// Runs the specified <see cref="Action"/> for each item of the <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    public static void ForEach(this IEnumerable iEnumerable, Action<object> action) =>
+        iEnumerable.ForEach<object>(action);
+    #endregion
+
+    #region ForEach<T>
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the <see cref="IEnumerable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
@@ -1040,6 +1078,8 @@ public static class ListExtensions
         foreach (T item in iEnumerable)
             action(item);
     }
+    #endregion
+
     #endregion
 
     #region Select
