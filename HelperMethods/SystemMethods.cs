@@ -420,6 +420,7 @@ public static class SystemMethods
     {
         using FileStream stream = new(path, mode);
         new BinaryFormatter().Serialize(stream, data);
+        stream.Flush();
     }
     #endregion
 
