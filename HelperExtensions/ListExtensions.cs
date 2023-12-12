@@ -403,6 +403,58 @@ public static class ListExtensions
 
     #endregion
 
+    #region IList
+
+    #region ReverseForEach*
+
+    #region ReverseForEach(this IList, Action<T>, [int?], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the list in the reverse order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ReverseForEach<T>(this IList list, Action<T> action, int? startIndex = null, int? length = null)
+    {
+        startIndex ??= list.Count - 1;
+        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
+
+        for (int i = startIndex.Value; i >= lastIndex; i--)
+            action((T)list[i]);
+    }
+    #endregion
+
+    #region ReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
+    /// <summary>
+    /// Performs the specified action on each element of the list in the reverse order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="length"></param>
+    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    /// <paramref name="action" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
+    public static void ReverseForEach<T>(this IList list, Action<T, int> action, int? startIndex = null, int? length = null)
+    {
+        startIndex ??= list.Count - 1;
+        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
+
+        for (int i = startIndex.Value; i >= lastIndex; i--)
+            action((T)list[i], i);
+    }
+    #endregion
+
+    #endregion
+
+    #endregion
+
     #region IList<T>
 
     #region All
@@ -869,54 +921,6 @@ public static class ListExtensions
     /// <param name="index"></param>
     public static void MoveUpAt<T>(this IList<T> list, int index) =>
         list.MoveAt(index, index - 1);
-
-    #endregion
-
-    #region ReverseForEach*
-
-    #region ReverseForEach(this IList<T>, Action<T>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the list in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T>(this IList<T> list, Action<T> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            action(list[i]);
-    }
-    #endregion
-
-    #region ReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the list in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T>(this IList<T> list, Action<T, int> action, int? startIndex = null, int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            action(list[i], i);
-    }
-    #endregion
 
     #endregion
 
