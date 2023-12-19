@@ -405,6 +405,101 @@ public static class ListExtensions
 
     #region IList
 
+    #region Move
+
+    /// <summary>
+    /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="item"></param>
+    /// <param name="destinationIndex"></param>
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/> or the item is already at the destination index.</returns>
+    public static bool Move<T>(this IList list, T item, int destinationIndex)
+    {
+        int currentItemIndex = list.IndexOf(item);
+
+        if (currentItemIndex != -1 && currentItemIndex != destinationIndex)
+        {
+            list.Insert(destinationIndex, item);
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
+
+    #region MoveAt
+    /// <summary>
+    /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList"/>.
+    /// </summary>
+    /// <param name="list"></param>
+    /// <param name="currentIndex"></param>
+    /// <param name="destinationIndex"></param>
+    public static void MoveAt(this IList list, int currentIndex, int destinationIndex)
+    {
+        object item = list[currentIndex];
+
+        list.RemoveAt(currentIndex);
+        list.Insert(destinationIndex, item);
+    }
+    #endregion
+
+    #region MoveDown
+    /// <summary>
+    /// Moves the item one position down within the current <see cref="IList{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="item"></param>
+    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList"/>.</returns>
+    public static bool MoveDown<T>(this IList list, T item)
+    {
+        int index = list.IndexOf(item);
+        list.MoveDownAt(index);
+        return true;
+    }
+    #endregion
+
+    #region MoveDownAt
+    /// <summary>
+    /// Moves the item at the specified source index one position down within the current <see cref="IList{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    public static void MoveDownAt(this IList list, int index) =>
+        list.MoveAt(index, index + 1);
+    #endregion
+
+    #region MoveUp
+    /// <summary>
+    /// Moves the item one position up within the current <see cref="IList"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="item"></param>
+    /// <returns>true if the item is successful moved inside the <see cref="IList"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    public static bool MoveUp<T>(this IList list, T item)
+    {
+        int index = list.IndexOf(item);
+        list.MoveUpAt(index);
+        return true;
+    }
+    #endregion
+
+    #region MoveUpAt
+    /// <summary>
+    /// Moves the item at the specified source index one position up within the current <see cref="IList"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    public static void MoveUpAt(this IList list, int index) =>
+        list.MoveAt(index, index - 1);
+
+    #endregion
+
     #region ReverseForEach*
 
     #region ReverseForEach(this IList, Action<T>, [int?], [int?])
@@ -826,102 +921,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static int LastIndex<T>(this IList<T> list) =>
         list.Count - 1;
-    #endregion
-
-    #region Move
-
-    /// <summary>
-    /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="item"></param>
-    /// <param name="destinationIndex"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/> or the item is already at the destination index.</returns>
-    public static bool Move<T>(this IList<T> list, T item, int destinationIndex)
-    {
-        int currentItemIndex = list.IndexOf(item);
-
-        if (currentItemIndex != -1 && currentItemIndex != destinationIndex)
-        {
-            list.Insert(destinationIndex, item);
-            return true;
-        }
-
-        return false;
-    }
-    #endregion
-
-    #region MoveAt
-    /// <summary>
-    /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="currentIndex"></param>
-    /// <param name="destinationIndex"></param>
-    public static void MoveAt<T>(this IList<T> list, int currentIndex, int destinationIndex)
-    {
-        T item = list[currentIndex];
-
-        list.RemoveAt(currentIndex);
-        list.Insert(destinationIndex, item);
-    }
-    #endregion
-
-    #region MoveDown
-    /// <summary>
-    /// Moves the item one position down within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="item"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
-    public static bool MoveDown<T>(this IList<T> list, T item)
-    {
-        int index = list.IndexOf(item);
-        list.MoveDownAt(index);
-        return true;
-    }
-    #endregion
-
-    #region MoveDownAt
-    /// <summary>
-    /// Moves the item at the specified source index one position down within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="index"></param>
-    public static void MoveDownAt<T>(this IList<T> list, int index) =>
-        list.MoveAt(index, index + 1);
-    #endregion
-
-    #region MoveUp
-    /// <summary>
-    /// Moves the item one position up within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="item"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
-    public static bool MoveUp<T>(this IList<T> list, T item)
-    {
-        int index = list.IndexOf(item);
-        list.MoveUpAt(index);
-        return true;
-    }
-    #endregion
-
-    #region MoveUpAt
-    /// <summary>
-    /// Moves the item at the specified source index one position up within the current <see cref="IList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="index"></param>
-    public static void MoveUpAt<T>(this IList<T> list, int index) =>
-        list.MoveAt(index, index - 1);
-
     #endregion
 
     #region ToArray
