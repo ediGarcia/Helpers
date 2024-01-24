@@ -465,7 +465,6 @@ public static class ListExtensions
     /// <summary>
     /// Moves the item at the specified source index one position down within the current <see cref="IList{T}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="index"></param>
     public static void MoveDownAt(this IList list, int index) =>
@@ -492,7 +491,6 @@ public static class ListExtensions
     /// <summary>
     /// Moves the item at the specified source index one position up within the current <see cref="IList"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="index"></param>
     public static void MoveUpAt(this IList list, int index) =>
@@ -856,7 +854,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ForEach(this IList<T>, Action<T, int>, int, [int?])
+    #region ForEach(this IList<T>, Action<T, int>, [int], [int?])
     /// <summary>
     /// Performs the specified action on each element of the list.
     /// </summary>
@@ -868,7 +866,7 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex, int? length = null)
+    public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex = 0, int? length = null)
     {
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
@@ -910,6 +908,17 @@ public static class ListExtensions
     /// <param name="items"></param>
     public static void InsertMany<T>(this IList<T> list, int startIndex, params T[] items) =>
         items.ReverseForEach<T>(_ => list.Insert(startIndex, _));
+    #endregion
+
+    #region Last
+    /// <summary>
+    /// Retrieves the last item of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static T Last<T>(IList<T> list) =>
+        list[list.LastIndex()];
     #endregion
 
     #region LastIndex
@@ -1058,16 +1067,6 @@ public static class ListExtensions
 
     #region ForEach*
 
-    #region ForEach
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the <see cref="IEnumerable"/>.
-    /// </summary>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    public static void ForEach(this IEnumerable iEnumerable, Action<object> action) =>
-        iEnumerable.ForEach<object>(action);
-    #endregion
-
     #region ForEach<T>
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the <see cref="IEnumerable"/>.
@@ -1195,7 +1194,9 @@ public static class ListExtensions
         items.Any(iEnumerable.Contains);
     #endregion
 
-    #region ForEach
+    #region ForEach*
+
+    #region ForEach(this IEnumerable<T>, Action<T>)
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
@@ -1208,6 +1209,25 @@ public static class ListExtensions
         foreach (T item in iEnumerable)
             action(item);
     }
+    #endregion
+
+    #region ForEach(this IEnumerable<T>, Action<T, int>)
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action)
+    {
+        int index = 0;
+
+        foreach (T item in iEnumerable)
+            action(item, index++);
+    }
+    #endregion
+
     #endregion
 
     #region IsNullOrEmpty
