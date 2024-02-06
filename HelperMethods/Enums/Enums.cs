@@ -110,6 +110,16 @@ public enum FileSuffixType
 }
 
 /// <summary>
+/// The action to be taking regarding the inner directories.
+/// </summary>
+public enum InnerDirectoryAction
+{
+    Clear,
+    Delete,
+    Ignore
+}
+
+/// <summary>
 /// Time field.
 /// </summary>
 public enum TimeField

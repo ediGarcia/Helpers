@@ -39,6 +39,28 @@ public static class SystemMethods
         Directory.Exists(path);
     #endregion
 
+    #region ClearDirectory
+    /// <summary>
+    /// Deletes all the files and directories from a given path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="innerDirectoryAction"></param>
+    public static void ClearDirectory(string path, InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete)
+    {
+        foreach (string file in ListFiles(path, false))
+            File.Delete(file);
+
+        if (innerDirectoryAction == InnerDirectoryAction.Ignore)
+            return;
+
+        foreach (string directory in ListDirectories(path))
+            if (innerDirectoryAction == InnerDirectoryAction.Clear)
+                ClearDirectory(directory, InnerDirectoryAction.Clear);
+            else
+                Directory.Delete(directory, true);
+    }
+    #endregion
+
     #region CreateDirectory
     /// <summary>
     /// Creates the selected directory.
