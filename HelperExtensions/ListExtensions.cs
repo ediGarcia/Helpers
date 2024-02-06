@@ -430,7 +430,6 @@ public static class ListExtensions
     #region IList
 
     #region Move
-
     /// <summary>
     /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
     /// </summary>
@@ -445,6 +444,7 @@ public static class ListExtensions
 
         if (currentItemIndex != -1 && currentItemIndex != destinationIndex)
         {
+            list.Remove(item);
             list.Insert(destinationIndex, item);
             return true;
         }
@@ -1278,7 +1278,7 @@ public static class ListExtensions
         iEnumerable.Select(func).ToArray();
     #endregion
 
-    #region ToList
+    #region ToList 
     /// <summary>
     /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
     /// </summary>
