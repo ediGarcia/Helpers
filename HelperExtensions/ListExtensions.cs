@@ -114,6 +114,30 @@ public static class ListExtensions
         items.Any(collection.Contains);
     #endregion
 
+    #region FindIndex
+    /// <inheritdoc cref="Collection{T}.IndexOf"/>
+    public static int FindIndex<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
+        IndexOf(collection, predicate);
+    #endregion
+
+    #region IndexOf
+    /// <inheritdoc cref="Collection{T}.IndexOf"/>
+    public static int IndexOf<T>(this ICollection<T> collection, Func<T, bool> predicate)
+    {
+        int index = 0;
+
+        foreach (T item in collection)
+        {
+            if (predicate(item))
+                return index;
+
+            index++;
+        }
+
+        return -1;
+    }
+    #endregion
+
     #region Remove
     /// <summary>
     /// Removes every element that matches the specified criteria.
