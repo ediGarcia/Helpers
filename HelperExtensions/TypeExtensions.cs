@@ -63,7 +63,7 @@ public static class TypeExtensions
 
     #region IsInteger
     /// <summary>
-    /// Indicates whether the current <see cref="Type"/> represents a integer numeric value.
+    /// Indicates whether the current <see cref="Type"/> represents an integer numeric value.
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>

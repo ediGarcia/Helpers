@@ -146,7 +146,7 @@ public static class DateTimeMethods
             throw new ArgumentException("The end date should be after the start date.");
 
         List<CommemorativeDay> holidays = null;
-        List<CommemorativeDay> holidaysInRange = new();
+        List<CommemorativeDay> holidaysInRange = [];
         int currentYear = 0;
 
         while (start <= end)
@@ -303,7 +303,7 @@ public static class DateTimeMethods
     public static string GetTimeString(double seconds)
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
-        return $"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{timeSpan:\\:mm\\:ss}";
+        return $@"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{timeSpan:\:mm\:ss}";
     }
     #endregion
 
@@ -411,7 +411,7 @@ public static class DateTimeMethods
 
     #region RoundToMinutes(DateTime)
     /// <summary>
-    /// Returns a new DateTime with the time rounded the to the nearest minute.
+    /// Returns a new DateTime with the time rounded to the nearest minute.
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
@@ -422,7 +422,7 @@ public static class DateTimeMethods
 
     #region RoundToMinutes(TimeSpan)
     /// <summary>
-    /// Returns a new TimeSpan with the time rounded the to the nearest minute.
+    /// Returns a new TimeSpan with the time rounded to the nearest minute.
     /// </summary>
     /// <param name="timeSpan"></param>
     /// <returns></returns>
@@ -436,7 +436,7 @@ public static class DateTimeMethods
 
     #region RoundToSeconds(DateTime)
     /// <summary>
-    /// Returns a new DateTime with the time rounded the to the nearest second.
+    /// Returns a new DateTime with the time rounded to the nearest second.
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
@@ -447,7 +447,7 @@ public static class DateTimeMethods
 
     #region RoundToSeconds(TimeSpan)
     /// <summary>
-    /// Returns a new TimeSpan with the time rounded the to the nearest second.
+    /// Returns a new TimeSpan with the time rounded to the nearest second.
     /// </summary>
     /// <param name="timeSpan"></param>
     /// <returns></returns>
@@ -468,7 +468,7 @@ public static class DateTimeMethods
     /// <exception cref="WebException" />
     public static IEnumerable<CommemorativeDay> RetrieveCommemorativeDays(int year, BrazilianState state, string city)
     {
-        List<CommemorativeDay> days = new();
+        List<CommemorativeDay> days = [];
         XmlDocument holidayXml = new();
 
         //Retrieves data from the API.

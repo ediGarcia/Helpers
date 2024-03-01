@@ -202,7 +202,7 @@ public static class DateTimeExtensions
     /// <param name="time"></param>
     /// <returns></returns>
     public static string ToTimeString(this TimeSpan time) =>
-        $"{(time < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(time.TotalHours)):00}:{time:\\:mm\\:ss}";
+        $@"{(time < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(time.TotalHours)):00}:{time:\:mm\:ss}";
     #endregion
 
     #endregion

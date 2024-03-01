@@ -29,7 +29,7 @@ public static class BooleanExtensions
 
     #region IsNullOrFalse
     /// <summary>
-    /// Determines whether the current <see cref="Nullable{Boolean}"/> is false or does not contains a valid value.
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is false or does not contain a valid value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -39,7 +39,7 @@ public static class BooleanExtensions
 
     #region IsNullOrTrue
     /// <summary>
-    /// Determines whether the current <see cref="Nullable{Boolean}"/> is true or does not contains a valid value.
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is true or does not contain a valid value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>

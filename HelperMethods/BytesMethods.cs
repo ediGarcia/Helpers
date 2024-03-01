@@ -169,7 +169,7 @@ public static class BytesMethods
 
                 FtpWebResponse response = (FtpWebResponse)ftpRequest.GetResponse();
                 string[] campos = new StreamReader(response.GetResponseStream()).ReadToEnd()
-                    .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    .Split([' '], StringSplitOptions.RemoveEmptyEntries);
 
                 return campos.Length >= 5 && Int64.TryParse(campos[4], out long result) ? result : -1;
             }

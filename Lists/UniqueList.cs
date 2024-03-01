@@ -18,7 +18,7 @@ namespace Lists
         #region Properties
 
         /// <summary>
-        /// Gets and sets whether an exception should be throw when an already existing item is added again. If set to false, the new item is ignored.
+        /// Gets and sets whether an exception should be thrown when an already existing item is added again. If set to false, the new item is ignored.
         /// </summary>
         public bool ThrowExceptionOnConflict { get; set; } = true;
 

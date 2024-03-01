@@ -56,6 +56,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     public static string AppendNew(this string st, string value) =>
+        // ReSharper disable once ArrangeRedundantParentheses
         st?.Contains(value) == true ? st : (st + value);
     #endregion
 
@@ -104,7 +105,7 @@ public static class StringExtensions
 
     #region ContainsAll(this string, params string[])
     /// <summary>
-    /// Returns a value indicating whether all of the specified substrings occur within this string.
+    /// Returns a value indicating whether all the specified substrings occur within this string.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="values"></param>
@@ -115,7 +116,7 @@ public static class StringExtensions
 
     #region ContainsAll(this string, params char[])
     /// <summary>
-    /// Returns a value indicating whether all of the specified substrings occur within this string.
+    /// Returns a value indicating whether all the specified substrings occur within this string.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="values"></param>
@@ -243,7 +244,7 @@ public static class StringExtensions
 
     #region IsContainedAll
     /// <summary>
-    /// Indicates whether the current string is contained by all of the specified values.
+    /// Indicates whether the current string is contained by all the specified values.
     /// </summary>
     /// <param name="st"></param>
     /// <param name="comparisonType"></param>
@@ -385,6 +386,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     public static string PrependNew(this string st, string value) =>
+        // ReSharper disable once ArrangeRedundantParentheses
         st?.Contains(value) == true ? st : (value + st);
     #endregion
 
@@ -399,7 +401,7 @@ public static class StringExtensions
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
     public static string[] Split(this string st, char separator, StringSplitOptions options) =>
-        st.Split(new[] { separator }, options);
+        st.Split([separator], options);
     #endregion
 
     #region Split(this string, string, StringSplitOptions)
@@ -411,7 +413,7 @@ public static class StringExtensions
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
     public static string[] Split(this string st, string separator, StringSplitOptions options) =>
-        st.Split(new[] { separator }, options);
+        st.Split([separator], options);
     #endregion
 
     #endregion
@@ -528,7 +530,7 @@ public static class StringExtensions
         return sb;
     }
     #endregion
-    
+
     #region IsNull
     /// <summary>
     /// Indicates whether the current <see cref="StringBuilder"/> is null.

@@ -175,7 +175,9 @@ public static class ColorMethods
 
         hue = hue / 60f - 2f * (float)Math.Floor((iSextant + 1f) % 6f / 2f);
 
+        // ReSharper disable ArrangeRedundantParentheses
         float fMid = iSextant % 2 == 0 ? (hue * (fMax - fMin) + fMin) : (fMin - hue * (fMax - fMin));
+        // ReSharper restore ArrangeRedundantParentheses
 
         int iMax = Convert.ToInt32(fMax * 255);
         int iMid = Convert.ToInt32(fMid * 255);

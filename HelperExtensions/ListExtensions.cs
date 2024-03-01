@@ -483,7 +483,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="item"></param>
     /// <param name="destinationIndex"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/> or the item is already at the destination index.</returns>
+    /// <returns>true if the item is successfully moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/> or the item is already at the destination index.</returns>
     public static bool Move<T>(this IList list, T item, int destinationIndex)
     {
         int currentItemIndex = list.IndexOf(item);
@@ -522,7 +522,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="item"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList"/>.</returns>
+    /// <returns>true if the item is successfully moved inside the <see cref="IList{T}"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList"/>.</returns>
     public static bool MoveDown<T>(this IList list, T item)
     {
         int index = list.IndexOf(item);
@@ -548,7 +548,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <param name="item"></param>
-    /// <returns>true if the item is successful moved inside the <see cref="IList"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
+    /// <returns>true if the item is successfully moved inside the <see cref="IList"/>; otherwise, false. This method returns false if the item is not found in the original <see cref="IList{T}"/>.</returns>
     public static bool MoveUp<T>(this IList list, T item)
     {
         int index = list.IndexOf(item);
@@ -1083,7 +1083,7 @@ public static class ListExtensions
 
     #region Cast
     /// <summary>
-    /// Casts the elements of an <see cref="IEnumerable"/> to an specific type.
+    /// Casts the elements of an <see cref="IEnumerable"/> to a specific type.
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
@@ -1108,7 +1108,7 @@ public static class ListExtensions
 
     #region First
     /// <summary>
-    /// Returns the first element in a sequence that satisfies an specified condition.
+    /// Returns the first element in a sequence that satisfies a specified condition.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
@@ -1121,7 +1121,7 @@ public static class ListExtensions
 
     #region FirstOrDefault
     /// <summary>
-    /// Returns the first element in a sequence that satisfies an specified condition, or a default value if no such element is found.
+    /// Returns the first element in a sequence that satisfies a specified condition, or a default value if no such element is found.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
@@ -1220,7 +1220,7 @@ public static class ListExtensions
 
     #region Cast
     /// <summary>
-    /// Casts the elements of an <see cref="IEnumerable{T}"/> to an specific type.
+    /// Casts the elements of an <see cref="IEnumerable{T}"/> to a specific type.
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
@@ -1266,7 +1266,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
-    /// <returns>True, if the enumeration contains all of the specified items. False, otherwise.</returns>
+    /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
     public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
         items.All(iEnumerable.Contains);
     #endregion

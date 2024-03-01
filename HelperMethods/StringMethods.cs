@@ -196,7 +196,7 @@ public static class StringMethods
     /// <exception cref="ArgumentOutOfRangeException" />
     public static string[] GetRandomStrings(int width, int stringCount, params char[] validChars)
     {
-        List<string> generatedStrings = new();
+        List<string> generatedStrings = [];
 
         for (int i = 0; i < stringCount; i++)
             generatedStrings.Add(GetRandomStringPrivate(width, validChars));
@@ -294,9 +294,8 @@ public static class StringMethods
         //Calculates the maximum string width.
         using (Graphics graphics = new Control().CreateGraphics())
             do
-            {
                 stringTest.Append("a");
-            } while (graphics.MeasureString(stringTest.ToString(), font, Point.Empty, StringFormat.GenericTypographic).Width < desiredWidth);
+            while (graphics.MeasureString(stringTest.ToString(), font, Point.Empty, StringFormat.GenericTypographic).Width < desiredWidth);
 
         return InsertEllipsisPrivate(text, stringTest.Length, false);
     }
@@ -304,7 +303,7 @@ public static class StringMethods
 
     #region FormatXml
     /// <summary>
-    /// Formats a XML string.
+    /// Formats an XML string.
     /// </summary>
     /// <param name="xml" />
     /// <param name="indentChars" />

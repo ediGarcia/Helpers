@@ -11,7 +11,7 @@ public static class ColorExtensions
 
     #region ToBrush
     /// <summary>
-    /// Returns the a <see cref="SolidColorBrush"/> representation of this <see cref="Color"/> .
+    /// Returns a <see cref="SolidColorBrush"/> representation of this <see cref="Color"/> .
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
@@ -25,7 +25,7 @@ public static class ColorExtensions
 
     #region ToMediaColor
     /// <summary>
-    /// Returns the a <see cref="Color"/> representation of this <see cref="SolidColorBrush"/> .
+    /// Returns a <see cref="Color"/> representation of this <see cref="SolidColorBrush"/> .
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
