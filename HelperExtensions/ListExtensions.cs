@@ -83,7 +83,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static ICollection<T> Clone<T>(this ICollection<T> collection)
     {
-        Collection<T> cloned = new();
+        Collection<T> cloned = [];
         collection.ForEach(cloned.Add);
 
         return cloned;
@@ -194,9 +194,8 @@ public static class ListExtensions
     public static int Remove<T>(this ICollection<T> collection, Func<T, bool> predicate)
     {
         int itemsRemovedCount = 0;
-        T[] originalItems = collection.ToArray();
 
-        originalItems.ForEach(_ =>
+        collection.ToArray().ForEach(_ =>
         {
             if (predicate(_))
             {
@@ -235,7 +234,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static Dictionary<T1, T2> Clone<T1, T2>(this IDictionary<T1, T2> dictionary)
     {
-        Dictionary<T1, T2> cloned = new();
+        Dictionary<T1, T2> cloned = new(dictionary.Count);
         dictionary.ForEach(cloned.Add);
 
         return cloned;
@@ -260,14 +259,15 @@ public static class ListExtensions
     public static void ConcurrentForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
         List<Task> tasks = new(keys.Length);
+        int loopLimit = length.HasValue ? startIndex + length.Value : dictionary.Count;
 
-        for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
+        for (int i = startIndex; i < loopLimit; i++)
             tasks.Add(Task.Run(() => action(keys[i], values[i])));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -287,14 +287,15 @@ public static class ListExtensions
     public static void ConcurrentForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
         List<Task> tasks = new(keys.Length);
+        int loopLimit = length.HasValue ? startIndex + length.Value : dictionary.Count;
 
-        for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
+        for (int i = startIndex; i < loopLimit; i++)
             tasks.Add(Task.Run(() => action(keys[i], values[i], i)));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -317,17 +318,17 @@ public static class ListExtensions
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
     public static void ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
         List<Task> tasks = new(keys.Length);
 
-        startIndex ??= keys.Length - 1;
+        startIndex ??= keys.LastIndex();
         length ??= keys.Length;
 
         for (int i = startIndex.Value; i > startIndex - length; i--)
             tasks.Add(Task.Run(() => action(keys[i], values[i])));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -346,8 +347,8 @@ public static class ListExtensions
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
     public static void ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
         List<Task> tasks = new(keys.Length);
 
         startIndex ??= keys.LastIndex();
@@ -356,7 +357,7 @@ public static class ListExtensions
         for (int i = startIndex.Value; i > startIndex - length; i--)
             tasks.Add(Task.Run(() => action(keys[i], values[i], i)));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -380,8 +381,8 @@ public static class ListExtensions
     public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
 
         for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
             action(keys[i], values[i]);
@@ -404,8 +405,8 @@ public static class ListExtensions
     public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
 
         for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
             action(keys[i], values[i], i);
@@ -431,8 +432,8 @@ public static class ListExtensions
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
     public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
 
         startIndex ??= keys.Length - 1;
         length ??= keys.Length;
@@ -457,8 +458,8 @@ public static class ListExtensions
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
     public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = dictionary.Keys.ToArray();
-        T2[] values = dictionary.Values.ToArray();
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
 
         startIndex ??= keys.LastIndex();
         length ??= keys.Length;
@@ -705,7 +706,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static List<T> Clone<T>(this IList<T> list)
     {
-        List<T> cloned = new();
+        List<T> cloned = new(list.Count);
         list.ForEach(cloned.Add);
 
         return cloned;
@@ -734,7 +735,7 @@ public static class ListExtensions
         for (int i = startIndex; i <= finalIndex; i++)
             tasks.Add(Task.Run(() => action(list[i])));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -795,7 +796,7 @@ public static class ListExtensions
         for (int i = startIndex.Value; i >= lastIndex; i--)
             tasks.Add(Task.Run(() => action(list[i])));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -824,7 +825,7 @@ public static class ListExtensions
         for (int i = startIndex.Value; i >= lastIndex; i--)
             tasks.Add(Task.Run(() => action(list[i], i)));
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
     #endregion
 
@@ -1037,6 +1038,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool All<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
     {
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (T item in iEnumerable)
             if (!predicate(item))
                 return false;
@@ -1068,6 +1070,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
     {
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (T item in iEnumerable)
             if (predicate(item))
                 return true;
@@ -1164,7 +1167,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static IEnumerable<T2> Select<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> selector)
     {
-        List<T2> items = new();
+        List<T2> items = [];
         iEnumerable.ForEach<T1>(_ => items.Add(selector(_)));
         return items;
     }
@@ -1179,8 +1182,9 @@ public static class ListExtensions
     /// <returns></returns>
     public static List<T> ToList<T>(this IEnumerable iEnumerable)
     {
-        List<T> result = new();
+        List<T> result = [];
 
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (T item in iEnumerable)
             result.Add(item);
 
@@ -1198,7 +1202,7 @@ public static class ListExtensions
     /// <returns></returns>
     public static IEnumerable Where<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
     {
-        List<T> items = new();
+        List<T> items = [];
 
         iEnumerable.ForEach<T>(_ =>
         {
@@ -1227,7 +1231,9 @@ public static class ListExtensions
         iEnumerable.Select(converterFunction);
     #endregion
 
-    #region ConcurrentForEach
+    #region ConcurrentForEach*
+
+    #region ConcurrentForEach(this IEnumerable<T>, Action<T>)
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the collection.
     /// </summary>
@@ -1237,6 +1243,20 @@ public static class ListExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action) =>
         Task.WaitAll(iEnumerable.Select(item => Task.Run(() => action(item))).ToArray());
+    #endregion
+
+    #region ConcurrentForEach(this IEnumerable<T>, Action<T, int>)
+    /// <summary>
+    /// Runs the specified <see cref="Action"/> for each item of the collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="action"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action) =>
+        Task.WaitAll(iEnumerable.Select((item, index) => Task.Run(() => action(item, index))).ToArray());
+    #endregion
+
     #endregion
 
     #region ContainsAll
@@ -1294,6 +1314,23 @@ public static class ListExtensions
 
         foreach (T item in iEnumerable)
             action(item, index++);
+    }
+    #endregion
+
+    #region Select
+    /// <summary>
+    /// Projects each element of a sequence into a new form.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<T2> Select<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, int, T2> selector)
+    {
+        List<T2> items = [];
+        iEnumerable.ForEach((item, index) => items.Add(selector(item, index)));
+        return items;
     }
     #endregion
 
