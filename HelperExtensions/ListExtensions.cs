@@ -92,7 +92,7 @@ public static class ListExtensions
 
     #region Contains
     /// <summary>
-    /// Determines whether current collection contains all of the specified values.
+    /// Determines whether current collection contains all the specified values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -120,6 +120,17 @@ public static class ListExtensions
         IndexOf(collection, predicate);
     #endregion
 
+    #region IsEmpty
+    /// <summary>
+    /// Indicates whether the current collection is empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsEmpty<T>(this ICollection<T> collection) =>
+        !collection.Any();
+    #endregion
+
     #region IndexOf
     /// <inheritdoc cref="Collection{T}.IndexOf"/>
     public static int IndexOf<T>(this ICollection<T> collection, Func<T, bool> predicate)
@@ -136,6 +147,40 @@ public static class ListExtensions
 
         return -1;
     }
+    #endregion
+
+    #region IsInsideBounds
+    /// <summary>
+    /// Indicates whether the specified <see cref="index"/> is inside the bound of the current collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static bool IsInsideBounds<T>(this ICollection<T> collection, int index) =>
+        !collection.IsNullOrEmpty() && index >= 0 && index < collection.Count;
+    #endregion
+
+    #region IsNull
+    /// <summary>
+    /// Indicates whether the current collection is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsNull<T>(this ICollection<T> collection) =>
+        collection is null;
+    #endregion
+
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the current collection is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this ICollection<T> collection) =>
+        collection?.Any() != true;
     #endregion
 
     #region Remove
