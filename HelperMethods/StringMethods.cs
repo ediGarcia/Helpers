@@ -201,7 +201,7 @@ public static class StringMethods
         for (int i = 0; i < stringCount; i++)
             generatedStrings.Add(GetRandomStringPrivate(width, validChars));
 
-        return generatedStrings.ToArray();
+        return [.. generatedStrings];
     }
     #endregion
 
@@ -590,12 +590,12 @@ public static class StringMethods
     /// <param name="width"></param>
     /// <param name="validChars"></param>
     /// <returns></returns>
-    private static string GetRandomStringPrivate(int width, char[] validChars)
+    private static string GetRandomStringPrivate(int width, IReadOnlyList<char> validChars)
     {
         StringBuilder text = new();
 
         for (int i = 0; i < width; i++)
-            text.Append(validChars[NumberMethods.GetRandomInt(validChars.Length)]);
+            text.Append(validChars[NumberMethods.GetRandomInt(validChars.Count)]);
 
         return text.ToString();
     }

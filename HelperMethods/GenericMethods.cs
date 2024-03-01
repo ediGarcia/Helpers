@@ -160,7 +160,7 @@ public static class GenericMethods
                 selectedObjects.Add(values[i]);
         }
 
-        return selectedObjects.ToArray();
+        return [.. selectedObjects];
     }
     #endregion
 
@@ -211,7 +211,7 @@ public static class GenericMethods
                 selectedObjects.Add(values[i]);
         }
 
-        return selectedObjects.ToArray();
+        return [.. selectedObjects];
     }
     #endregion
 

@@ -213,7 +213,7 @@ public static class StringExtensions
     /// <param name="pattern"></param>
     /// <returns></returns>
     public static string[] GetMatches(this string st, string pattern) =>
-        (from Match match in Regex.Matches(st, pattern) select match.Value).ToArray();
+        [.. from Match match in Regex.Matches(st, pattern) select match.Value];
     #endregion
 
     #region GetValueOrDefault

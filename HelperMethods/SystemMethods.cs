@@ -191,7 +191,7 @@ public static class SystemMethods
     public static Process[] GetProcesses(string searchPattern)
     {
         Regex regex = new(searchPattern.Replace(".", "\\."), RegexOptions.IgnoreCase);
-        return Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName)).ToArray();
+        return [.. Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName))];
     }
     #endregion
 

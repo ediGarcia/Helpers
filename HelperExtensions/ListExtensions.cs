@@ -1103,7 +1103,7 @@ public static class ListExtensions
     /// <param name="action"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void ConcurrentForEach<T>(this IEnumerable iEnumerable, Action<T> action) =>
-        Task.WaitAll((from T item in iEnumerable select Task.Run(() => action(item))).ToArray());
+        Task.WaitAll([.. from T item in iEnumerable select Task.Run(() => action(item))]);
     #endregion
 
     #region First
@@ -1242,7 +1242,7 @@ public static class ListExtensions
     /// <param name="action"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action) =>
-        Task.WaitAll(iEnumerable.Select(item => Task.Run(() => action(item))).ToArray());
+        Task.WaitAll([.. iEnumerable.Select(item => Task.Run(() => action(item)))]);
     #endregion
 
     #region ConcurrentForEach(this IEnumerable<T>, Action<T, int>)
@@ -1254,7 +1254,7 @@ public static class ListExtensions
     /// <param name="action"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action) =>
-        Task.WaitAll(iEnumerable.Select((item, index) => Task.Run(() => action(item, index))).ToArray());
+        Task.WaitAll([.. iEnumerable.Select((item, index) => Task.Run(() => action(item, index)))]);
     #endregion
 
     #endregion
@@ -1357,7 +1357,7 @@ public static class ListExtensions
     /// <param name="func"></param>
     /// <returns></returns>
     public static T2[] ToArray<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
-        iEnumerable.Select(func).ToArray();
+        [.. iEnumerable.Select(func)];
     #endregion
 
     #region ToList 
