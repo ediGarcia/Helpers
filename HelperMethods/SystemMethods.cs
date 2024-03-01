@@ -7,14 +7,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
 
 // ReSharper disable UnusedMember.Global
 
@@ -26,653 +24,6 @@ public static class SystemMethods
     public static string UserDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     #region Public Methods
-
-    #region Directory Methods*
-
-    #region CheckDirectoryExists
-    /// <summary>
-    /// Determines whether the specified directory exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static bool CheckDirectoryExists(string path) =>
-        Directory.Exists(path);
-    #endregion
-
-    #region ClearDirectory
-    /// <summary>
-    /// Deletes all the files and directories from a given path.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="innerDirectoryAction"></param>
-    public static void ClearDirectory(string path, InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete)
-    {
-        foreach (string file in ListFiles(path, false))
-            File.Delete(file);
-
-        if (innerDirectoryAction == InnerDirectoryAction.Ignore)
-            return;
-
-        foreach (string directory in ListDirectories(path))
-            if (innerDirectoryAction == InnerDirectoryAction.Clear)
-                ClearDirectory(directory, InnerDirectoryAction.Clear);
-            else
-                Directory.Delete(directory, true);
-    }
-    #endregion
-
-    #region CreateDirectory
-    /// <summary>
-    /// Creates the selected directory.
-    /// </summary>
-    /// <param name="path">New directory path.</param>
-    /// <param name="conflictAction">Indicates the conflict action taken when the destination path already exists.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException"/>
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateDirectory(string path, ConflictAction conflictAction = ConflictAction.Break)
-    {
-        if ((path = ManageConflictAction(path, true, conflictAction, true)) is null)
-            return null;
-
-        Directory.CreateDirectory(path);
-        return path;
-    }
-    #endregion
-
-    #region CreateRandomDirectory
-    /// <summary>
-    /// Creates new folder with a random name.
-    /// </summary>
-    /// <param name="parentDirectory"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException"/>
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateRandomDirectory(string parentDirectory)
-    {
-        string newDirectoryPath = GenerateRandomDirectoryPath(parentDirectory);
-
-        while (Exists(newDirectoryPath))
-            GenerateRandomDirectoryPath(parentDirectory);
-
-        Directory.CreateDirectory(newDirectoryPath);
-
-        return newDirectoryPath;
-    }
-    #endregion
-
-    #region CreateTemporaryDirectory
-    /// <summary>
-    /// Creates new temporary folder.
-    /// </summary>
-    /// <param name="directoryName">New directory name, if null a random name will be generated.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException"/>
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="System.Security.SecurityException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateTemporaryDirectory(string directoryName = null)
-    {
-        string novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
-
-        //Checks if the folder exists.
-        while (Directory.Exists(novaPasta))
-            novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
-
-        Directory.CreateDirectory(novaPasta);
-        return novaPasta;
-    }
-    #endregion
-
-    #region GenerateRandomDirectoryPath
-    /// <summary>
-    /// Generates a random directory path.
-    /// </summary>
-    /// <param name="parentFolder">Optional parent folder. If null, the system user folder will be used.</param>
-    /// <returns></returns>
-    public static string GenerateRandomDirectoryPath(string parentFolder = null)
-    {
-        parentFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        string nomePasta = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
-        return Path.Combine(parentFolder, nomePasta);
-    }
-    #endregion
-
-    #region GetDefaultDirectoryIcon
-    /// <summary>
-    /// Retrieves the system's default directory icon.
-    /// </summary>
-    /// <param name="largeIcon"></param>
-    /// <param name="showLinkOverlay"></param>
-    /// <returns></returns>
-    public static ImageSource GetDefaultDirectoryIcon(bool largeIcon, bool showLinkOverlay = false)
-    {
-        // ReSharper disable CommentTypo
-        WindowsHelper.ShStockIconInfo info = new();
-        info.cbSize = (uint)Marshal.SizeOf(info);
-
-        uint flags = 0x100 | (largeIcon ? 0U : 1U);
-
-        if (showLinkOverlay)
-            flags += 0x8000; //SHGFI_LINKOVERLAY;
-
-        WindowsHelper.SHGetStockIconInfo(0x3/*SHSIID_FOLDER*/, flags, ref info);
-
-        Icon icon = (Icon)Icon.FromHandle(info.hIcon).Clone(); // Get a copy that doesn't use the original handle.
-        WindowsHelper.DestroyIcon(info.hIcon); // Clean up native icon to prevent resource leak.
-
-        return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-        // ReSharper restore CommentTypo
-    }
-    #endregion
-
-    #region GetDirectorySize
-    /// <summary>
-    /// Retrieves the size of the specified directory based on the sizes of its files and subdirectories.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static long GetDirectorySize(string path)
-    {
-        long size = 0;
-        Parallel.ForEach(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), _ => size += GetFileSize(_));
-        return size;
-    }
-    #endregion
-
-    #region GetParentDirectory
-    /// <summary>
-    /// Retrieves the parent directory name for the specified path.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static string GetParentDirectory(string path) =>
-        Path.GetDirectoryName(path.TrimEnd('/', '\\'));
-    #endregion
-
-    #region IsParentDirectory
-    /// <summary>
-    /// Indicates whether a given path is a child of a specified directory.
-    /// </summary>
-    /// <param name="childPath">The path to be tested.</param>
-    /// <param name="directoryPath">The possible parent directory.</param>
-    /// <returns></returns>
-    public static bool IsParentDirectory(string childPath, string directoryPath) =>
-        Path.GetFullPath(childPath).StartsWith(Path.GetFullPath(directoryPath) + "\\");
-    #endregion
-
-    #region ListDirectories
-    /// <summary>
-    /// Lists selected directory sub-directories.
-    /// </summary>
-    /// <param name="dirPath"></param>
-    /// <param name="searchSubFolders"></param>
-    /// <param name="searchPattern"></param>
-    /// <returns></returns>
-    public static string[] ListDirectories(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
-        Directory.GetDirectories(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-    #endregion
-
-    #region ListFiles
-    /// <summary>
-    /// Returns the selected path's inner files list.
-    /// </summary>
-    /// <param name="dirPath"></param>
-    /// <param name="searchSubfolders"></param>
-    /// <param name="searchPattern"></param>
-    /// <returns></returns>
-    public static string[] ListFiles(string dirPath, bool searchSubfolders = true, string searchPattern = "*.*") =>
-        Directory.GetFiles(dirPath, searchPattern, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-    #endregion
-
-    #region ListFilesAndDirs
-    /// <summary>
-    /// Returns the selected path's inner files and directories list.
-    /// </summary>
-    /// <param name="dirPath"></param>
-    /// <param name="searchSubFolders"></param>
-    /// <param name="searchPattern"></param>
-    /// <returns></returns>
-    public static string[] ListFilesAndDirs(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
-        Directory.GetFileSystemEntries(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-    #endregion
-
-    #endregion
-
-    #region File Methods*
-
-    #region CheckFileExists
-    /// <summary>
-    /// Determines whether the specified file exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static bool CheckFileExists(string path) =>
-        File.Exists(path);
-    #endregion
-
-    #region CreateFile
-    /// <summary>
-    /// Create a file with the selected content and returns the new file's path.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="content"></param>
-    /// <param name="conflictAction">Indicates the conflict action taken when the selected path already exists.</param>
-    /// <exception cref="IOException" />
-    public static string CreateFile(string path, string content = "", ConflictAction conflictAction = ConflictAction.Break)
-    {
-        if (ManageConflictAction(path, false, conflictAction, false) is { } actualPath)
-        {
-            File.WriteAllText(actualPath, content ?? "");
-            return actualPath;
-        }
-        
-        return null;
-    }
-    #endregion
-
-    #region CreateRandomFile
-    /// <summary>
-    /// Create a random name empty file in the selected folder.
-    /// </summary>
-    /// <param name="parentFolderPath"></param>
-    /// <param name="content"></param>
-    /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
-    /// <returns></returns>
-    public static string CreateRandomFile(string parentFolderPath, string content = "", string extension = null)
-    {
-        string newFilePath = GenerateRandomFilePath(parentFolderPath, extension, true);
-        File.WriteAllText(newFilePath, content ?? "");
-        return newFilePath;
-    }
-    #endregion
-
-    #region GenerateRandomFilePath
-    /// <summary>
-    /// Generates a random file path.
-    /// </summary>
-    /// <param name="rootFolderPath">Parent folder path.</param>
-    /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
-    /// <param name="checkNotExisting">Indicates that the generated path should not exist in the current system.</param>
-    /// <returns></returns>
-    public static string GenerateRandomFilePath(string rootFolderPath, string extension = null, bool checkNotExisting = false)
-    {
-        string fileName;
-
-        do
-        {
-            fileName = Path.GetRandomFileName();
-
-            if (extension is not null)
-                fileName = fileName.Replace(".", "") + InsertExtensionDot(extension);
-
-            fileName = String.IsNullOrWhiteSpace(rootFolderPath) ? fileName : Path.Combine(rootFolderPath, fileName);
-        } while (checkNotExisting && CheckFileExists(fileName));
-
-        return fileName;
-    }
-    #endregion
-
-    #region GetFileSize
-    /// <summary>
-    /// Retrieves the size of the specified file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static long GetFileSize(string path) =>
-        new FileInfo(path).Length;
-    #endregion
-
-    #region IsFile
-    /// <summary>
-    /// Determines whether the selected path belongs to a file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static bool IsFile(string path) =>
-        CheckFileExists(path) && !IsDirectory(path);
-    #endregion
-
-    #region OpenFile
-    /// <summary>
-    /// Opens the specified file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="runAsAdmin"></param>
-    /// <returns></returns>
-    public static Process OpenFile(string path, bool runAsAdmin = false) =>
-        Run("explorer", path, runAsAdmin: runAsAdmin);
-    #endregion
-
-    #region ReadFileLines
-    /// <summary>
-    /// Returns the lines of a file's content.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static string[] ReadFileLines(string path)
-    {
-        List<string> lines = new();
-
-        //Opens the file in read-only mode without any kind of block.
-        using StreamReader reader = new(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-        while (!reader.EndOfStream)
-            lines.Add(reader.ReadLine());
-
-        return lines.ToArray();
-    }
-    #endregion
-
-    #region ReadXml
-    /// <summary>
-    /// Reads the XML data from the specified file and converts it to the specified type.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static T ReadXml<T>(string path)
-    {
-        using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return (T)new XmlSerializer(typeof(T)).Deserialize(stream);
-    }
-    #endregion
-
-    #region RetrieveDataFromFile
-    /// <summary>
-    /// Retrieves data from an existing file.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <param name="preventIOException">Indicates if any <see cref="IOException"/> should be suppressed.</param>
-    /// <returns></returns>
-    // ReSharper disable once InconsistentNaming
-    public static T RetrieveDataFromFile<T>(string path, bool preventIOException = false)
-    {
-        try
-        {
-            using FileStream stream = new(path, FileMode.Open);
-            return (T)new BinaryFormatter().Deserialize(stream);
-        }
-        catch (Exception ex)
-        {
-            if (preventIOException && ex is IOException)
-                return default;
-
-            throw;
-        }
-    }
-    #endregion
-
-    #region RunFile
-    /// <summary>
-    /// Opens a file in the current operational system.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="arguments"></param>
-    /// <param name="workingFolder"></param>
-    /// <param name="runAsAdmin"></param>
-    /// <returns></returns>
-    public static Process RunFile(string path, string arguments = null, string workingFolder = null, bool runAsAdmin = false) =>
-        Run("explorer", $"\"{path}\" {arguments}", workingFolder, runAsAdmin, true);
-    #endregion
-
-    #region SaveDataToFile
-    /// <summary>
-    /// Saves the data into the selected file.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <param name="data"></param>
-    /// <param name="mode"></param>
-    public static void SaveDataToFile<T>(string path, T data, FileMode mode = FileMode.OpenOrCreate)
-    {
-        using FileStream stream = new(path, mode);
-        new BinaryFormatter().Serialize(stream, data);
-        stream.Flush();
-    }
-    #endregion
-
-    #region WriteXml
-    /// <summary>
-    /// Writes the specified data in XML format into the specified file.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <param name="data"></param>
-    public static void WriteXml<T>(string path, T data)
-    {
-        using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-        new XmlSerializer(typeof(T)).Serialize(stream, data);
-    }
-    #endregion
-
-    #endregion
-
-    #region Path Methods*
-
-    #region AppendCustomPathSuffix
-    /// <summary>
-    /// Appends a custom suffix to the selected path if it already exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="customSuffix"></param>
-    /// <param name="force">Indicates whether the suffix should be appended even if the path does not exist.</param>
-    /// <returns></returns>
-    public static string AppendCustomPathSuffix(string path, string customSuffix, bool force = false)
-    {
-        if (force && !Exists(path))
-            return AppendPathSuffix(path, customSuffix);
-
-        string suffix = "";
-        string newPath;
-
-        while (Exists(newPath = AppendPathSuffix(path, suffix)))
-            suffix += customSuffix;
-
-        return newPath;
-    }
-    #endregion
-
-    #region AppendPathSuffix
-    /// <summary>
-    /// Appends a suffix to the selected path if it already exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="suffixType"></param>
-    /// <param name="force">Indicates whether the suffix should be appended even if the path does not exist.</param>
-    /// <returns></returns>
-    public static string AppendPathSuffix(string path, FileSuffixType suffixType, bool force = false)
-    {
-        if (force && !Exists(path))
-            return AppendPathSuffix(path, suffixType == FileSuffixType.Copy ? " - Copy" : " (1)");
-
-        int fileCount = 0;
-        string suffix = "";
-        string newPath;
-
-        while (Exists(newPath = AppendPathSuffix(path, suffix)))
-            switch (suffixType)
-            {
-                case FileSuffixType.Copy:
-                    suffix += " - Copy";
-                    break;
-
-                case FileSuffixType.Numeric:
-                    suffix = $" ({++fileCount})";
-                    break;
-            }
-
-        return newPath;
-    }
-    #endregion
-
-    #region CheckExtension
-    /// <summary>
-    /// Indicates whether the selected file has one of the selected extensions.
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="extensions"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static bool CheckExtension(string fileName, params string[] extensions) =>
-        extensions.Any(extension =>
-            String.Equals(Path.GetExtension(fileName), InsertExtensionDot(extension), StringComparison.OrdinalIgnoreCase));
-    #endregion
-
-    #region GetAllMatchingPaths
-    /// <summary>
-    /// Returns the list of paths discovered from the selected pattern.
-    /// </summary>
-    /// <param name="pattern"></param>
-    /// <returns></returns>
-    public static IEnumerable<string> GetAllMatchingPaths(string pattern)
-    {
-        //If the pattern contains no wildcards.
-        if (!pattern.Contains("*") && !pattern.Contains("?"))
-            return Exists(pattern) ? new[] { pattern } : new string[0];
-
-        string separator = Path.DirectorySeparatorChar.ToString();
-        string[] parts = pattern.Split(Path.DirectorySeparatorChar);
-
-        //There must be an existing root path.
-        if (parts[0].Contains('*') || parts[0].Contains('?'))
-            throw new ArgumentException("The root path must not have a wildcard", nameof(parts));
-
-        for (int i = 1; i < parts.Length; i++)
-            //If this part of the path is a wildcard that needs expanding.
-            if (parts[i].Contains('*') || parts[i].Contains('?'))
-            {
-                //Create an absolute path up to the current wildcard and check if it exists.
-                string combined = Path.Combine(parts[0], String.Join(separator, parts.Take(i)));
-                if (!Directory.Exists(combined))
-                    return new string[0];
-
-                if (i == parts.Length - 1) //If this is the end of the path (a file name).
-                    return Directory.GetFileSystemEntries(combined, parts[i], SearchOption.TopDirectoryOnly);
-
-                IEnumerable<string> directories = Directory.EnumerateDirectories(combined, parts[i], SearchOption.TopDirectoryOnly);
-                return directories.SelectMany(dir => GetAllMatchingPaths(Path.Combine(dir, String.Join(separator, parts.Skip(i + 1)))));
-            }
-
-        return new string[0];
-    }
-    #endregion
-
-    #region GetFullPath
-    /// <summary>
-    /// Returns the absolute path for the specified path string.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static string GetFullPath(string path) =>
-        Path.GetFullPath(path);
-    #endregion
-
-    #region InsertExtensionDot
-    /// <summary>
-    /// Inserts a dot (.) in the begging of the extension if necessary.
-    /// </summary>
-    /// <param name="extension"></param>
-    /// <returns></returns>
-    public static string InsertExtensionDot(string extension)
-    {
-        if (!extension.StartsWith("."))
-            extension = "." + extension;
-
-        return extension;
-    }
-    #endregion
-
-    #endregion
-
-    #region Process Methods*
-
-    #region GetProcesses
-    /// <summary>
-    /// Gets process which names matches the specified search pattern.
-    /// </summary>
-    /// <param name="searchPattern"></param>
-    /// <returns></returns>
-    public static Process[] GetProcesses(string searchPattern)
-    {
-        Regex regex = new(searchPattern.Replace(".", "\\."), RegexOptions.IgnoreCase);
-        return Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName)).ToArray();
-    }
-    #endregion
-
-    #region KillProcesses*
-
-    #region KillProcess(params Process[])
-    /// <summary>
-    /// Kill the specified processes.
-    /// </summary>
-    /// <param name="processes"></param>
-    public static void KillProcesses(params Process[] processes)
-    {
-        foreach (Process process in processes)
-            process.Kill();
-    }
-    #endregion
-
-    #region KillProcesses(string)
-    /// <summary> 
-    /// Kill process found through he search pattern.
-    /// </summary>
-    /// <param name="searchPattern"></param>
-    /// <returns>The number of processes killed.</returns>
-    public static int KillProcesses(string searchPattern)
-    {
-        Process[] processes = GetProcesses(searchPattern);
-        KillProcesses(processes);
-
-        return processes.Length;
-    }
-    #endregion
-
-    #endregion
-
-    #region Run
-    /// <summary>
-    /// Runs a command through operational system.
-    /// </summary>
-    /// <param name="workingFolder"></param>
-    /// <param name="command"></param>
-    /// <param name="arguments"></param>
-    /// <param name="runAsAdmin"></param>
-    /// <param name="hideConsoleWindow"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException" />
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="ObjectDisposedException" />
-    /// <exception cref="FileNotFoundException" />
-    /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process Run(string command, string arguments = null, string workingFolder = null, bool runAsAdmin = false, bool hideConsoleWindow = false) =>
-        Process.Start(new ProcessStartInfo(command, arguments)
-        {
-            WorkingDirectory = workingFolder ?? Path.GetDirectoryName(command),
-            UseShellExecute = true,
-            Verb = runAsAdmin ? "runas" : "",
-            CreateNoWindow = hideConsoleWindow
-        });
-    #endregion
-
-    #endregion
-
-    #region System Methods*
 
     #region Copy
     /// <summary>
@@ -747,7 +98,7 @@ public static class SystemMethods
     public static void Delete(params string[] paths)
     {
         foreach (string path in paths)
-            if (IsDirectory(path))
+            if (DirectoryMethods.IsDirectory(path))
                 Directory.Delete(path, true);
             else
                 File.Delete(path);
@@ -761,7 +112,7 @@ public static class SystemMethods
     /// <param name="path"></param>
     /// <returns></returns>
     public static bool Exists(string path) =>
-        CheckFileExists(path) || CheckDirectoryExists(path);
+        FileMethods.Exists(path) || DirectoryMethods.Exists(path);
     #endregion
 
     #region ForceDelete
@@ -772,7 +123,7 @@ public static class SystemMethods
     public static void ForceDelete(params string[] entries)
     {
         foreach (string entry in entries)
-            if (IsDirectory(entry))
+            if (DirectoryMethods.IsDirectory(entry))
             {
                 foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(entry))
                     ForceDelete(fileSystemEntry);
@@ -824,21 +175,24 @@ public static class SystemMethods
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
     public static long GetSize(string path) =>
-        IsDirectory(path)
-            ? GetDirectorySize(path)
-            : IsFile(path)
-                ? GetFileSize(path)
+        DirectoryMethods.IsDirectory(path)
+            ? DirectoryMethods.GetDirectorySize(path)
+            : FileMethods.IsFile(path)
+                ? FileMethods.GetFileSize(path)
                 : throw new FileNotFoundException($"Could not find a file or a directory named '{path}'.");
     #endregion
 
-    #region IsDirectory
+    #region GetProcesses
     /// <summary>
-    /// Determines whether the selected path belongs to a directory.
+    /// Gets process which names matches the specified search pattern.
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="searchPattern"></param>
     /// <returns></returns>
-    public static bool IsDirectory(string path) =>
-        CheckDirectoryExists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
+    public static Process[] GetProcesses(string searchPattern)
+    {
+        Regex regex = new(searchPattern.Replace(".", "\\."), RegexOptions.IgnoreCase);
+        return Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName)).ToArray();
+    }
     #endregion
 
     #region IsValidLocalPath
@@ -855,6 +209,37 @@ public static class SystemMethods
         && !Path.GetInvalidPathChars().Any(path.Contains)
             && (!onlyAbsolute || Path.IsPathRooted(path))
         && (!onlyExisting || Exists(path));
+
+    #endregion
+
+    #region KillProcesses*
+
+    #region KillProcess(params Process[])
+    /// <summary>
+    /// Kill the specified processes.
+    /// </summary>
+    /// <param name="processes"></param>
+    public static void KillProcesses(params Process[] processes)
+    {
+        foreach (Process process in processes)
+            process.Kill();
+    }
+    #endregion
+
+    #region KillProcesses(string)
+    /// <summary> 
+    /// Kill process found through the search pattern.
+    /// </summary>
+    /// <param name="searchPattern"></param>
+    /// <returns>The number of processes killed.</returns>
+    public static int KillProcesses(string searchPattern)
+    {
+        Process[] processes = GetProcesses(searchPattern);
+        KillProcesses(processes);
+
+        return processes.Length;
+    }
+    #endregion
 
     #endregion
 
@@ -944,6 +329,31 @@ public static class SystemMethods
     }
     #endregion
 
+    #region Run
+    /// <summary>
+    /// Runs a command through operational system.
+    /// </summary>
+    /// <param name="workingFolder"></param>
+    /// <param name="command"></param>
+    /// <param name="arguments"></param>
+    /// <param name="runAsAdmin"></param>
+    /// <param name="hideConsoleWindow"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException" />
+    /// <exception cref="ArgumentNullException"/>
+    /// <exception cref="ObjectDisposedException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="System.ComponentModel.Win32Exception" />
+    public static Process Run(string command, string arguments = null, string workingFolder = null, bool runAsAdmin = false, bool hideConsoleWindow = false) =>
+        Process.Start(new ProcessStartInfo(command, arguments)
+        {
+            WorkingDirectory = workingFolder ?? Path.GetDirectoryName(command),
+            UseShellExecute = true,
+            Verb = runAsAdmin ? "runas" : "",
+            CreateNoWindow = hideConsoleWindow
+        });
+    #endregion
+
     #region SystemCopy
     /// <summary>
     /// Copies files and folders and its contents using the system's UI.
@@ -996,20 +406,7 @@ public static class SystemMethods
 
     #endregion
 
-    #endregion
-
     #region Private Methods
-
-    #region AppendPathSuffix
-    /// <summary>
-    /// Appends the selected suffix to the file/directory name.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="suffix"></param>
-    /// <returns></returns>
-    private static string AppendPathSuffix(string path, string suffix) =>
-        Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + suffix + Path.GetExtension(path));
-    #endregion
 
     #region CallSystemFileOperation
     /// <summary>
@@ -1046,27 +443,25 @@ public static class SystemMethods
     /// <returns></returns>
     private static string ChangeFileDirectoryLocation(string source, string destination, ConflictAction conflictAction, bool keepOriginal)
     {
-        if (IsDirectory(source))
+        if (DirectoryMethods.IsDirectory(source))
         {
             Func<string, string, ConflictAction, string> sendToFolder =
                 keepOriginal ? CopyToFolder : MoveToFolder;
 
-            if ((destination = ManageConflictAction(destination, true, conflictAction, true)) is null)
+            if ((destination = PathMethods.SolvePathConflict(destination, conflictAction, true)) is null)
                 return null;
 
             Directory.CreateDirectory(destination); //Creates the folder, if it doesn't exist.
 
-            foreach (string file in Directory.GetFileSystemEntries(source, "*", SearchOption.TopDirectoryOnly))
-            {
+            foreach (string file in Directory.GetFileSystemEntries(source, "*", SearchOption.TopDirectoryOnly)) 
                 sendToFolder(file, destination, conflictAction);
-            }
 
             if (!keepOriginal)
                 Delete(source);
         }
         else
         {
-            if ((destination = ManageConflictAction(destination, false, conflictAction, !keepOriginal)) is null)
+            if ((destination = PathMethods.SolvePathConflict(destination, conflictAction, !keepOriginal)) is null)
                 return null;
 
             Directory.CreateDirectory(Path.GetDirectoryName(destination)); //Creates the destination folder, if it doesn't exist.
@@ -1078,45 +473,6 @@ public static class SystemMethods
         }
 
         return destination;
-    }
-    #endregion
-
-    #region ManageConflictAction
-    /// <summary>
-    /// Manages the conflict action.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="isFolder">Indicates whether the selected path is meant to point to a folder.</param>
-    /// <param name="conflictAction"></param>
-    /// <param name="deleteOnOverwrite">Indicates whether the existing file should be deleted when the Overwrite action is chosen.</param>
-    /// <returns></returns>
-    public static string ManageConflictAction(string path, bool isFolder, ConflictAction conflictAction, bool deleteOnOverwrite)
-    {
-        if (isFolder && Directory.Exists(path) || !isFolder && File.Exists(path))
-            switch (conflictAction)
-            {
-                case ConflictAction.AppendNumber:
-                    path = AppendPathSuffix(path, FileSuffixType.Numeric);
-                    break;
-
-                case ConflictAction.AppendText:
-                    path = AppendPathSuffix(path, FileSuffixType.Copy);
-                    break;
-
-                case ConflictAction.Break:
-                    throw new IOException($"The {(isFolder ? "folder" : "file")} {path} already exists.");
-
-                case ConflictAction.Ignore:
-                    path = null;
-                    break;
-
-                case ConflictAction.Overwrite:
-                    if (deleteOnOverwrite)
-                        Delete(path);
-                    break;
-            }
-
-        return path;
     }
     #endregion
 
