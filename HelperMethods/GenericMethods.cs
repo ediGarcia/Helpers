@@ -117,16 +117,28 @@ public static class GenericMethods
 
     #region Max*
 
-    #region Max (params T[])
+    #region Max(T, T)
     /// <summary>
-    /// Retrieves the larger T value.
+    /// Returns the largest of two value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <param name="value1"></param>
+    /// <param name="value2"></param>
+    /// <returns></returns>
+    public static T Max<T>(T value1, T value2) =>
+        Comparer<T>.Default.Compare(value1, value2) > 0 ? value1 : value2;
+    #endregion
+
+    #region Max(T, params T[])
+    /// <summary>
+    /// Returns the largest value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T Max<T>(params T[] values) =>
-        values.Length == 0 ? throw new ArgumentException("No values to compare.") : values.Max();
+    public static T Max<T>(T value, params T[] values) =>
+        values.Length == 0 ? value : Max(value, values.Max());
     #endregion
 
     #region Max (string, params T[])
@@ -168,19 +180,31 @@ public static class GenericMethods
 
     #region Min*
 
-    #region Min (params T[])
+    #region Min(T, T)
     /// <summary>
-    /// Retrieves the smaller T value.
+    /// Retrieves the smaller of two value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="values"></param>
+    /// <param name="value1"></param>
+    /// <param name="value2"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T Min<T>(params T[] values) =>
-        values.Length == 0 ? throw new ArgumentException("No values to compare.") : values.Min();
+    public static T Min<T>(T value1, T value2) =>
+        Comparer<T>.Default.Compare(value1, value2) < 0 ? value1 : value2;
     #endregion
 
-    #region Min (string, params T[])
+    #region Min(T, params T[])
+    /// <summary>
+    /// Returns the smaller value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static T Min<T>(T value, params T[] values) =>
+        values.Length == 0 ? value : Min(value, values.Min());
+    #endregion
+
+    #region Min(string, params T[])
     /// <summary>
     /// Returns all the objects with the smaller property value.
     /// </summary>

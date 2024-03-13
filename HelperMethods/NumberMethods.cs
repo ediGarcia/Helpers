@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -15,6 +17,19 @@ public static class NumberMethods
     #endregion
 
     #region Public Methods
+
+    #region Between
+    /// <summary>
+    /// Retrieves the value if its between the specified minimum and maximum. Otherwise, returns either minimum or maximum.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static T Between<T>(T value, T min, T max) =>
+        Max(Min(value, max), min);
+    #endregion
 
     #region GetRandomDouble
     /// <summary>
@@ -77,6 +92,62 @@ public static class NumberMethods
 
         return Rand.Next(minimum, maximum);
     }
+    #endregion
+
+    #endregion
+
+    #region Max*
+
+    #region Max(T, T)
+    /// <summary>
+    /// Returns the largest of two numbers.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value1"></param>
+    /// <param name="value2"></param>
+    /// <returns></returns>
+    public static T Max<T>(T value1, T value2) =>
+        GenericMethods.Max(value1, value2);
+    #endregion
+
+    #region Max(T, params T[])
+    /// <summary>
+    /// Returns the largest number.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static T Max<T>(T value, params T[] values) =>
+        GenericMethods.Max(value, values.Max());
+    #endregion
+
+    #endregion
+
+    #region Min*
+
+    #region Min(T, T)
+    /// <summary>
+    /// Returns the smalled of two numbers.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value1"></param>
+    /// <param name="value2"></param>
+    /// <returns></returns>
+    public static T Min<T>(T value1, T value2) =>
+        GenericMethods.Min(value1, value2);
+    #endregion
+
+    #region Min(T, params T[])
+    /// <summary>
+    /// Returns the smalled number.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static T Min<T>(T value, params T[] values) =>
+        GenericMethods.Min(value, values.Min());
     #endregion
 
     #endregion
