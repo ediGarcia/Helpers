@@ -90,65 +90,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region Contains
-    /// <summary>
-    /// Determines whether current collection contains all the specified values.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static bool Contains<T>(this ICollection<T> collection, params T[] items) =>
-        items.All(collection.Contains);
-    #endregion
-
-    #region ContainsAny
-    /// <summary>
-    /// Determines whether current collection contains any of the specified values.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static bool ContainsAny<T>(this ICollection<T> collection, params T[] items) =>
-        items.Any(collection.Contains);
-    #endregion
-
-    #region FindIndex
-    /// <inheritdoc cref="Collection{T}.IndexOf"/>
-    public static int FindIndex<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
-        IndexOf(collection, predicate);
-    #endregion
-
-    #region IsEmpty
-    /// <summary>
-    /// Indicates whether the current collection is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <returns></returns>
-    public static bool IsEmpty<T>(this ICollection<T> collection) =>
-        !collection.Any();
-    #endregion
-
-    #region IndexOf
-    /// <inheritdoc cref="Collection{T}.IndexOf"/>
-    public static int IndexOf<T>(this ICollection<T> collection, Func<T, bool> predicate)
-    {
-        int index = 0;
-
-        foreach (T item in collection)
-        {
-            if (predicate(item))
-                return index;
-
-            index++;
-        }
-
-        return -1;
-    }
-    #endregion
-
     #region IsInsideBounds
     /// <summary>
     /// Indicates whether the specified <see cref="index"/> is inside the bound of the current collection.
@@ -159,28 +100,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool IsInsideBounds<T>(this ICollection<T> collection, int index) =>
         !collection.IsNullOrEmpty() && index >= 0 && index < collection.Count;
-    #endregion
-
-    #region IsNull
-    /// <summary>
-    /// Indicates whether the current collection is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <returns></returns>
-    public static bool IsNull<T>(this ICollection<T> collection) =>
-        collection is null;
-    #endregion
-
-    #region IsNullOrEmpty
-    /// <summary>
-    /// Indicates whether the current collection is null or empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this ICollection<T> collection) =>
-        collection?.Any() != true;
     #endregion
 
     #region Remove
@@ -1336,6 +1255,52 @@ public static class ListExtensions
 
     #endregion
 
+    #region IndexOf
+    /// <summary>
+    /// Searches for the specified object and returns the zero-based index of the first occurence within the entire <see cref="IEnumerable{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static int IndexOf<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+    {
+        int index = 0;
+
+        foreach (T item in collection)
+        {
+            if (predicate(item))
+                return index;
+
+            index++;
+        }
+
+        return -1;
+    }
+    #endregion
+
+    #region IsEmpty
+    /// <summary>
+    /// Indicates whether the current <see cref="IEnumerable{T}"/> is empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsEmpty<T>(this IEnumerable<T> collection) =>
+        !collection.Any();
+    #endregion
+
+    #region IsNull
+    /// <summary>
+    /// Indicates whether the current <see cref="IEnumerable{T}"/> is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsNull<T>(this IEnumerable<T> collection) =>
+        collection is null;
+    #endregion
+
     #region IsNullOrEmpty
     /// <summary>
     /// Indicates whether the <see cref="IEnumerable{T}"/> is null or empty.
@@ -1344,7 +1309,7 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
-        (iEnumerable?.Any()).IsNullOrFalse();
+        iEnumerable?.Any() != true;
     #endregion
 
     #region ToArray
