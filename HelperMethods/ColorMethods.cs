@@ -82,7 +82,7 @@ public static class ColorMethods
     // ReSharper disable once UnusedMember.Global
     public static Color GenerateRandomMediaColor() =>
         Color.FromArgb(
-            1,
+            255,
             (byte)NumberMethods.GetRandomInt(0, 255, true),
             (byte)NumberMethods.GetRandomInt(0, 255, true),
             (byte)NumberMethods.GetRandomInt(0, 255, true)
