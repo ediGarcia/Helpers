@@ -394,6 +394,18 @@ public static class ListExtensions
 
     #region IList
 
+    #region GetItem
+    /// <summary>
+    /// Retrieves an item converted to the specified type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T GetItem<T>(this IList list, int index) =>
+        (T)list[index];
+    #endregion
+
     #region Move
     /// <summary>
     /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
