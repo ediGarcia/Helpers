@@ -394,6 +394,16 @@ public static class ListExtensions
 
     #region IList
 
+    #region Clone
+    /// <summary>
+    /// Creates a copy of the current list.
+    /// </summary>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static IList Clone(this IList list) =>
+        list.ToList<object>();
+    #endregion
+
     #region GetItem
     /// <summary>
     /// Retrieves an item converted to the specified type.
