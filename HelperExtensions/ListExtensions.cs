@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -139,6 +138,17 @@ public static class ListExtensions
         collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
     #endregion
 
+    #region RemoveMany
+    /// <summary>
+    /// Removes the first occurence of each value from the <see cref="ICollection{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="values"></param>
+    public static void RemoveMany<T>(this ICollection<T> collection, params T[] values) =>
+        values.ForEach(_ => collection.Remove(_));
+    #endregion
+
     #endregion
 
     #region IDictionary<T1, T2>
@@ -158,128 +168,6 @@ public static class ListExtensions
 
         return cloned;
     }
-    #endregion
-
-    #region ConcurrentForEach*
-
-    #region ConcurrentForEach(this IDictionary<T1, T2>, Action<T1, T2>, [int], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the dictionary.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
-        int startIndex = 0, int? length = null)
-    {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
-        List<Task> tasks = new(keys.Length);
-        int loopLimit = length.HasValue ? startIndex + length.Value : dictionary.Count;
-
-        for (int i = startIndex; i < loopLimit; i++)
-            tasks.Add(Task.Run(() => action(keys[i], values[i])));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #region ConcurrentForEach(this IDictionary<T1, T2>, Action<T1, T2, int>, [int], [int?])
-    /// <summary>
-    /// Performs the specified action on each element of the dictionary.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action,
-        int startIndex = 0, int? length = null)
-    {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
-        List<Task> tasks = new(keys.Length);
-        int loopLimit = length.HasValue ? startIndex + length.Value : dictionary.Count;
-
-        for (int i = startIndex; i < loopLimit; i++)
-            tasks.Add(Task.Run(() => action(keys[i], values[i], i)));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #endregion
-
-    #region ConcurrentReverseForEach*
-
-    #region ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2>, [int?], [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the dictionary in the inverse order.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action, int? startIndex = null, int? length = null)
-    {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
-        List<Task> tasks = new(keys.Length);
-
-        startIndex ??= keys.LastIndex();
-        length ??= keys.Length;
-
-        for (int i = startIndex.Value; i > startIndex - length; i--)
-            tasks.Add(Task.Run(() => action(keys[i], values[i])));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #region ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2, int>, [int?], [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the dictionary in the inverse order.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
-    {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
-        List<Task> tasks = new(keys.Length);
-
-        startIndex ??= keys.LastIndex();
-        length ??= keys.Length;
-
-        for (int i = startIndex.Value; i > startIndex - length; i--)
-            tasks.Add(Task.Run(() => action(keys[i], values[i], i)));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
     #endregion
 
     #region ForEach*
@@ -332,6 +220,25 @@ public static class ListExtensions
     }
     #endregion
 
+    #endregion
+
+    #region GetOrCreateItem
+    /// <summary>
+    /// Gets the value associated with the specified key. If the key doesn't exist, it's created with the <see cref="defaultValue"/>.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static T2 GetOrCreateItem<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 defaultValue = default)
+    {
+        if (!dictionary.TryGetValue(key, out T2 value))
+            dictionary.Add(key, value = defaultValue);
+
+        return value;
+    }
     #endregion
 
     #region ReverseForEach*
@@ -654,124 +561,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ConcurrentForEach*
-
-    #region ConcurrentForEach(this IList<T>, Action<T>, int, [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentForEach<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null)
-    {
-        List<Task> tasks = new(length ?? list.Count);
-        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(list[i])));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #region ConcurrentForEach(this IList<T>, Action<T, int>, int, [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentForEach<T>(
-        this IList<T> list,
-        Action<T, int> action,
-        int startIndex,
-        int? length = null)
-    {
-        List<Task> tasks = new(length ?? list.Count);
-        int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
-
-        for (int i = startIndex; i <= finalIndex; i++)
-            tasks.Add(Task.Run(() => action(list[i], i)));
-
-        tasks.ForEach(_ => _.Wait());
-    }
-    #endregion
-
-    #endregion
-
-    #region ConcurrentReverseForEach*
-
-    #region ConcurrentReverseForEach(this IList<T>, Action<T>, [int?], [int?]
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseForEach<T>(
-        this IList<T> list,
-        Action<T> action,
-        int? startIndex = null,
-        int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-        List<Task> tasks = new(list.Count);
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            tasks.Add(Task.Run(() => action(list[i])));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #region ConcurrentReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
-    /// <summary>
-    /// Asynchronously performs the specified action on each element of the list in the reverse order.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="length"></param>
-    /// <param name="action">The <see cref="T:System.Action`1" /> delegate to perform on each element of the list.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="action" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ConcurrentReverseForEach<T>(
-        this IList<T> list,
-        Action<T, int> action,
-        int? startIndex = null,
-        int? length = null)
-    {
-        startIndex ??= list.LastIndex();
-        int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
-        List<Task> tasks = new(list.Count);
-
-        for (int i = startIndex.Value; i >= lastIndex; i--)
-            tasks.Add(Task.Run(() => action(list[i], i)));
-
-        Task.WaitAll([.. tasks]);
-    }
-    #endregion
-
-    #endregion
-
     #region FillLeft*
 
     #region FillLeft(this IList<T>, int)
@@ -998,7 +787,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool Any(this IEnumerable iEnumerable) => 
         iEnumerable is not null && Enumerable.Any(iEnumerable.Cast<object>());
-
     #endregion
 
     #region Any(this IEnumerable, Func<T, bool>)
@@ -1011,6 +799,9 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
     {
+        if (iEnumerable is null)
+            return false;
+
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (T item in iEnumerable)
             if (predicate(item))
@@ -1033,18 +824,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static IEnumerable Cast<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> converterFunction) =>
         iEnumerable.Select(converterFunction);
-    #endregion
-
-    #region ConcurrentForEach
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ConcurrentForEach<T>(this IEnumerable iEnumerable, Action<T> action) =>
-        Task.WaitAll([.. from T item in iEnumerable select Task.Run(() => action(item))]);
     #endregion
 
     #region First
@@ -1172,34 +951,6 @@ public static class ListExtensions
         iEnumerable.Select(converterFunction);
     #endregion
 
-    #region ConcurrentForEach*
-
-    #region ConcurrentForEach(this IEnumerable<T>, Action<T>)
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action) =>
-        Task.WaitAll([.. iEnumerable.Select(item => Task.Run(() => action(item)))]);
-    #endregion
-
-    #region ConcurrentForEach(this IEnumerable<T>, Action<T, int>)
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ConcurrentForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action) =>
-        Task.WaitAll([.. iEnumerable.Select((item, index) => Task.Run(() => action(item, index)))]);
-    #endregion
-
-    #endregion
-
     #region ContainsAll
     /// <summary>
     /// Indicates whether the <see cref="IEnumerable{T}"/> contains all the specified items.
@@ -1258,21 +1009,31 @@ public static class ListExtensions
     }
     #endregion
 
-    #region Select
+    #endregion
+
+    #region HasAny*
+
+    #region HasAny(this IEnumerable<T>)
     /// <summary>
-    /// Projects each element of a sequence into a new form.
+    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
-    /// <param name="selector"></param>
     /// <returns></returns>
-    public static IEnumerable<T2> Select<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, int, T2> selector)
-    {
-        List<T2> items = [];
-        iEnumerable.ForEach((item, index) => items.Add(selector(item, index)));
-        return items;
-    }
+    public static bool HasAny<T>(this IEnumerable<T> iEnumerable) =>
+        iEnumerable?.Any() == true;
+    #endregion
+
+    #region HasAny(this IEnumerable<T>, Func<T, bool>) =>
+    /// <summary>
+    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item that satisfies the specified condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static bool HasAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable?.Any(predicate) == true;
     #endregion
 
     #endregion
