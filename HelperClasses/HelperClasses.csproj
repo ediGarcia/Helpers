@@ -11,4 +11,8 @@
     <Folder Include="Interfaces\" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(TargetPath) $(ProjectDir)..\..\DLL" />
+  </Target>
+
 </Project>
