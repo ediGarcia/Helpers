@@ -242,7 +242,7 @@ public static class StringExtensions
         value?.Contains(st, comparisonType) == true;
     #endregion
 
-    #region IsContainedAll
+    #region IsContainedByAll
     /// <summary>
     /// Indicates whether the current string is contained by all the specified values.
     /// </summary>
@@ -257,7 +257,7 @@ public static class StringExtensions
         values.All(_ => _.Contains(st, comparisonType));
     #endregion
 
-    #region IsContainedAny
+    #region IsContainedByAny
     /// <summary>
     /// Indicates whether the current string is contained by any of the specified values.
     /// </summary>
