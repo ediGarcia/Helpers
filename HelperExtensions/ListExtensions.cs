@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
@@ -857,9 +859,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ForEach*
-
-    #region ForEach<T>
+    #region ForEach
     /// <summary>
     /// Runs the specified <see cref="Action"/> for each item of the <see cref="IEnumerable"/>.
     /// </summary>
@@ -872,8 +872,6 @@ public static class ListExtensions
         foreach (T item in iEnumerable)
             action(item);
     }
-    #endregion
-
     #endregion
 
     #region Select
@@ -1093,6 +1091,13 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
         iEnumerable?.Any() != true;
+    #endregion
+
+    #region ParallelForEach
+    // ReSharper disable once InvalidXmlDocComment
+    /// <inheritdoc cref="Parallel.ForEach"/>
+    public static void ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T> body) =>
+        Parallel.ForEach(iEnumerable, body);
     #endregion
 
     #region ToArray
