@@ -442,7 +442,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ReverseForEach(this IList<T>, Action<T, int>, [int?], [int?])
+    #region ReverseForEach(this IList, Action<T, int>, [int?], [int?])
     /// <summary>
     /// Performs the specified action on each element of the list in the reverse order.
     /// </summary>
@@ -514,24 +514,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region BinarySearch*
-
-    #region BinarySearch(this IList<T>, T)
-    /// <summary>
-    /// Performs a binary search and retrieves the index of the target item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="targetValue"></param>
-    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(this IList<T> list, T targetValue) where T : IComparable<T> =>
-        list is List<T> listImplementation
-            ? listImplementation.BinarySearch(targetValue)
-            : ListMethods.BinarySearch(list, targetValue);
-
-    #endregion
-
-    #region BinarySearch(this IList<T>, T, Func<T, T, int>)
+    #region BinarySearch
     /// <summary>
     /// Performs a binary search and retrieves the index of the target item.
     /// </summary>
@@ -543,8 +526,6 @@ public static class ListExtensions
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
     public static int BinarySearch<T>(this IList<T> list, T targetValue, Func<T, T, int> comparisonFunction) =>
         ListMethods.BinarySearch(list, targetValue, comparisonFunction);
-    #endregion
-
     #endregion
 
     #region Clone

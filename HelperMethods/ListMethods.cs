@@ -53,11 +53,11 @@ public static class ListMethods
                     return middleIndex;
 
                 case 1:
-                    startIndex = middleIndex + 1;
+                    finalIndex = middleIndex - 1;
                     break;
 
                 case -1:
-                    finalIndex = middleIndex - 1;
+                    startIndex = middleIndex + 1;
                     break;
 
                 default:
