@@ -24,7 +24,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static SolidColorBrush GenerateRandomPastelBrush() =>
-        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToBrush();
+        GetColorFromHsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToBrush();
     #endregion
 
     #region GenerateRandomPastelColor
@@ -34,7 +34,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static System.Drawing.Color GenerateRandomPastelColor() =>
-        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f);
+        GetColorFromHsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f);
     #endregion
 
     #region GenerateRandomPastelMediaColor
@@ -44,7 +44,7 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static Color GenerateRandomPastelMediaColor() =>
-        GetColorFromAhsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToMediaColor();
+        GetColorFromHsb((float)NumberMethods.GetRandomDouble(0, 360), 1, .9f).ToMediaColor();
     #endregion
 
     #endregion
