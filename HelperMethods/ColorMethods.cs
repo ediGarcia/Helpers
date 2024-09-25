@@ -102,7 +102,6 @@ public static class ColorMethods
     /// <param name="saturation"></param>
     /// <param name="brightness"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
     public static SolidColorBrush GetBrushFromAhsb(int alpha, float hue, float saturation, float brightness) =>
         GetColorFromAhsb(alpha, hue, saturation, brightness).ToBrush();
@@ -117,12 +116,36 @@ public static class ColorMethods
     /// <param name="brightness"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
-    // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
     public static SolidColorBrush GetBrushFromAhsb(float hue, float saturation, float brightness) =>
         GetBrushFromAhsb(255, hue, saturation, brightness);
     #endregion
 
+    #endregion
+
+    #region GetBrushFromArgb
+    /// <summary>
+    /// Creates a new <see cref="SolidColorBrush"/> by using the specified sRGB alpha channel and color channel values.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="r"></param>
+    /// <param name="g"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static SolidColorBrush GetBrushFromArgb(byte a, byte r, byte g, byte b) =>
+        new(Color.FromArgb(a, r, g, b));
+    #endregion
+
+    #region GetBrushFromRgb
+    /// <summary>
+    /// Creates a new <see cref="SolidColorBrush"/> by using the specified sRGB color channel values.
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="g"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static SolidColorBrush GetBrushFromRgb(byte r, byte g, byte b) =>
+        new(Color.FromRgb(r, g, b));
     #endregion
 
     #region GetColorFromAhsb*
