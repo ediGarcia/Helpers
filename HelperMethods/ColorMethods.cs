@@ -91,9 +91,7 @@ public static class ColorMethods
 
     #endregion
 
-    #region GetBrushFromAhsb*
-
-    #region GetBrushFromAhsb (int, float, float, float)
+    #region GetBrushFromAhsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -103,11 +101,11 @@ public static class ColorMethods
     /// <param name="brightness"></param>
     /// <returns></returns>
     // ReSharper disable once IdentifierTypo
-    public static SolidColorBrush GetBrushFromAhsb(int alpha, float hue, float saturation, float brightness) =>
+    public static SolidColorBrush GetBrushFromAhsb(byte alpha, float hue, float saturation, float brightness) =>
         GetColorFromAhsb(alpha, hue, saturation, brightness).ToBrush();
     #endregion
 
-    #region GetBrushFromAhsb (float, float, float)
+    #region GetBrushFromHsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -117,10 +115,8 @@ public static class ColorMethods
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once IdentifierTypo
-    public static SolidColorBrush GetBrushFromAhsb(float hue, float saturation, float brightness) =>
+    public static SolidColorBrush GetBrushFromHsb(float hue, float saturation, float brightness) =>
         GetBrushFromAhsb(255, hue, saturation, brightness);
-    #endregion
-
     #endregion
 
     #region GetBrushFromArgb
@@ -148,9 +144,7 @@ public static class ColorMethods
         new(Color.FromRgb(r, g, b));
     #endregion
 
-    #region GetColorFromAhsb*
-
-    #region GetColorFromAhsb (int, float, float, float)
+    #region GetColorFromAhsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -161,10 +155,8 @@ public static class ColorMethods
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once IdentifierTypo
-    public static System.Drawing.Color GetColorFromAhsb(int alpha, float hue, float saturation, float brightness)
+    public static System.Drawing.Color GetColorFromAhsb(byte alpha, float hue, float saturation, float brightness)
     {
-        if (alpha is < 0 or > 255)
-            throw new ArgumentOutOfRangeException(nameof(alpha), alpha, "The alpha value must be between 0 e 255.");
         if (hue is < 0f or > 360f)
             throw new ArgumentOutOfRangeException(nameof(hue), hue, "The hue value must be between 0 e 360.");
         if (saturation is < 0f or > 1f)
@@ -218,7 +210,7 @@ public static class ColorMethods
     }
     #endregion
 
-    #region GetColorFromAhsb (float, float, float)
+    #region GetColorFromHsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -228,10 +220,8 @@ public static class ColorMethods
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once IdentifierTypo
-    public static System.Drawing.Color GetColorFromAhsb(float hue, float saturation, float brightness) =>
+    public static System.Drawing.Color GetColorFromHsb(float hue, float saturation, float brightness) =>
         GetColorFromAhsb(255, hue, saturation, brightness);
-    #endregion
-
     #endregion
 
     #region GetDarkerBrush
@@ -256,9 +246,7 @@ public static class ColorMethods
         MultiplyBrushByConstant(brush, 1 + percentage / 100);
     #endregion
 
-    #region GetMediaColorFromAhsb*
-
-    #region GetMediaColorFromAhsb (int, float, float, float)
+    #region GetMediaColorFromAhsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -269,11 +257,11 @@ public static class ColorMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
-    public static Color GetMediaColorFromAhsb(int alpha, float hue, float saturation, float brightness) =>
+    public static Color GetMediaColorFromAhsb(byte alpha, float hue, float saturation, float brightness) =>
         GetColorFromAhsb(alpha, hue, saturation, brightness).ToMediaColor();
     #endregion
 
-    #region GetMediaColorFromAhsb (float, float, float)
+    #region GetMediaColorFromHsb
     /// <summary>
     /// Generates a color from HSB values.
     /// </summary>
@@ -284,11 +272,9 @@ public static class ColorMethods
     /// <exception cref="ArgumentOutOfRangeException" />
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once IdentifierTypo
-    public static Color GetMediaColorFromAhsb(float hue, float saturation, float brightness) =>
+    public static Color GetMediaColorFromHsb(float hue, float saturation, float brightness) =>
         GetMediaColorFromAhsb(255, hue, saturation, brightness);
     #endregion 
-
-    #endregion
 
     #region NeedsWhitefForeground*
 
