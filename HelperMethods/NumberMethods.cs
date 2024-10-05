@@ -96,6 +96,20 @@ public static class NumberMethods
 
     #endregion
 
+    #region IsBetween
+    /// <summary>
+    /// Indicates whether the specified value is between a minimum and a maximum values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="minimum"></param>
+    /// <param name="maximum"></param>
+    /// <param name="inclusive"></param>
+    /// <returns></returns>
+    public static bool IsBetween<T>(T value, T minimum, T maximum, bool inclusive = false) =>
+        GenericMethods.IsBetween(value, minimum, maximum, inclusive);
+    #endregion
+
     #region Max*
 
     #region Max(T, T)

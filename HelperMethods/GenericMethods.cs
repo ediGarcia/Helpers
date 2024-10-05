@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -55,6 +56,19 @@ public static class GenericMethods
     /// <returns></returns>
     public static bool AreEqual<T>(T obj1, T obj2, params string[] properties) =>
         properties.Select(typeof(T).GetProperty).All(_ => _.GetValue(obj1).Equals(_.GetValue(obj2)));
+    #endregion
+
+    #region Compare
+    /// <summary>
+    /// Performs a comparison of two objects of the same type and returns a value indicating whether x is less than, equal to, or greater than the y
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns>A signed integer that indicates the relative values of value and other. If the return os less than zero, then x is less than y. If the return is zero, x is equal to y. And if the return is greater than zero, then x is greater than y.</returns>
+    /// <exception cref="ArgumentException"><see cref="T"/> does not implement <see cref="IComparable{T}"/> or <see cref="IComparable"/>.</exception>
+    public static int Compare<T>(T x, T y) =>
+        Comparer<T>.Default.Compare(x, y);
     #endregion
 
     #region GetFirstMatching
@@ -115,6 +129,44 @@ public static class GenericMethods
         values.Any(_ => _ is null);
     #endregion
 
+    #region IsBetween
+    /// <summary>
+    /// Indicates whether the specified value is between two thresholds.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="minimum"></param>
+    /// <param name="maximum"></param>
+    /// <param name="inclusive"></param>
+    /// <returns></returns>
+    public static bool IsBetween<T>(T value, T minimum, T maximum, bool inclusive) =>
+        IsGreater(value, minimum) && IsLess(value, maximum) || inclusive && (value.Equals(minimum) || value.Equals(maximum));
+    #endregion
+
+    #region IsGreater
+    /// <summary>
+    /// Indicates whether x is greater than y.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static bool IsGreater<T>(T x, T y) =>
+        Compare(x, y) > 0;
+    #endregion
+
+    #region IsLess
+    /// <summary>
+    /// Indicates whether x is less than y.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static bool IsLess<T>(T x, T y) =>
+        Compare(x, y) < 0;
+    #endregion
+
     #region Max*
 
     #region Max(T, T)
@@ -126,7 +178,7 @@ public static class GenericMethods
     /// <param name="value2"></param>
     /// <returns></returns>
     public static T Max<T>(T value1, T value2) =>
-        Comparer<T>.Default.Compare(value1, value2) > 0 ? value1 : value2;
+        IsGreater(value1, value2) ? value1 : value2;
     #endregion
 
     #region Max(T, params T[])
@@ -189,7 +241,7 @@ public static class GenericMethods
     /// <param name="value2"></param>
     /// <returns></returns>
     public static T Min<T>(T value1, T value2) =>
-        Comparer<T>.Default.Compare(value1, value2) < 0 ? value1 : value2;
+        IsLess(value1, value2) ? value1 : value2;
     #endregion
 
     #region Min(T, params T[])
