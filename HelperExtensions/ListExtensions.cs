@@ -514,7 +514,9 @@ public static class ListExtensions
     }
     #endregion
 
-    #region BinarySearch
+    #region BinarySearch*
+
+    #region BinarySearch(this IList<T>, T, Func<T, T, int>)
     /// <summary>
     /// Performs a binary search and retrieves the index of the target item.
     /// </summary>
@@ -526,6 +528,21 @@ public static class ListExtensions
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
     public static int BinarySearch<T>(this IList<T> list, T targetValue, Func<T, T, int> comparisonFunction) =>
         ListMethods.BinarySearch(list, targetValue, comparisonFunction);
+    #endregion
+
+    #region BinarySearch(this IList<T>, T, string) =>
+    /// <summary>
+    /// Performs a binary search and retrieves the index of the target item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="propertyName"></param>
+    /// <param name="targetValue"></param>
+    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
+    public static int BinarySearch<T>(this IList<T> list, T targetValue, string propertyName) =>
+        ListMethods.BinarySearch(list, propertyName, targetValue);
+    #endregion
+
     #endregion
 
     #region Clone

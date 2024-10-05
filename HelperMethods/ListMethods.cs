@@ -23,8 +23,8 @@ public static class ListMethods
     /// <param name="values"></param>
     /// <param name="targetValue"></param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(IList<T> values, T targetValue) where T : IComparable<T> =>
-        BinarySearch(values, targetValue, (t1, t2) => t1.CompareTo(t2));
+    public static int BinarySearch<T>(IList<T> values, T targetValue)
+        where T : IComparable<T> => BinarySearch(values, targetValue, (t1, t2) => t1.CompareTo(t2));
     #endregion
 
     #region BinarySearch<T>(IList<T>, T, Func<T, T, int>)
@@ -34,11 +34,15 @@ public static class ListMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="values"></param>
     /// <param name="targetValue"></param>
-    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal; 
+    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal;
     /// 1 if the first value is greater than the second; -1 if the first value is less than the second.</param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static int BinarySearch<T>(IList<T> values, T targetValue, Func<T, T, int> comparisonFunction)
+    public static int BinarySearch<T>(
+        IList<T> values,
+        T targetValue,
+        Func<T, T, int> comparisonFunction
+    )
     {
         int startIndex = 0;
         int finalIndex = values.Count - 1;
@@ -61,7 +65,9 @@ public static class ListMethods
                     break;
 
                 default:
-                    throw new InvalidOperationException("The comparison function must return 0, 1 or -1.");
+                    throw new InvalidOperationException(
+                        "The comparison function must return 0, 1 or -1."
+                    );
             }
         }
 
@@ -76,35 +82,44 @@ public static class ListMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="values"></param>
     /// <param name="propertyName"></param>
-    /// <param name="targetValue"></param>
+    /// <param name="targetObject"></param>
     /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static int BinarySearch<T>(IList<T> values, string propertyName, object targetValue)
+    public static int BinarySearch<T>(IList<T> values, string propertyName, T targetObject)
     {
         int startIndex = 0;
         int finalIndex = values.Count - 1;
         PropertyInfo property = typeof(T).GetProperty(propertyName);
 
+        if (property is null)
+            throw new ArgumentException(
+                $"There is no \"{propertyName}\" property in type \"{nameof(T)}\""
+            );
+
+        object targetValue = property.GetValue(targetObject);
+
         while (startIndex <= finalIndex)
         {
             int middleIndex = (int)Math.Round((startIndex + finalIndex) / 2d);
-            IComparable currentValue = (IComparable)property.GetValue(values[middleIndex]);
+            object currentValue = property.GetValue(values[middleIndex]);
 
-            switch (currentValue.CompareTo(targetValue))
+            switch (GenericMethods.Compare(currentValue, targetValue))
             {
                 case 0:
                     return middleIndex;
 
                 case 1:
-                    startIndex = middleIndex + 1;
-                    break;
-
-                case -1:
                     finalIndex = middleIndex - 1;
                     break;
 
+                case -1:
+                    startIndex = middleIndex + 1;
+                    break;
+
                 default:
-                    throw new InvalidOperationException("The comparison function must return 0, 1 or -1.");
+                    throw new InvalidOperationException(
+                        "The comparison function must return 0, 1 or -1."
+                    );
             }
         }
 
