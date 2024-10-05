@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace HelperExtensions;
@@ -99,6 +100,20 @@ public static class ControlExtensions
                 break;
         }
     }
+    #endregion
+
+    #endregion
+
+    #region Selector
+
+    #region IsSelectedIndexVisible
+    /// <summary>
+    /// Indicates whether the selected index is visible.
+    /// </summary>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static bool IsSelectedIndexVisible(this Selector selector) =>
+        selector.IsIndexVisible(selector.SelectedIndex);
     #endregion
 
     #endregion
