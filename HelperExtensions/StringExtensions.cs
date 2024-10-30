@@ -1,6 +1,7 @@
 ﻿using HelperMethods;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -61,6 +62,8 @@ public static class StringExtensions
     #endregion
 
     #region Contains
+
+    #region Contains(this string, string, StringComparison)
     /// <summary>
     /// Returns a value indicating whether the specified string occurs within this string, using the specified comparison rules.
     /// </summary>
@@ -73,6 +76,23 @@ public static class StringExtensions
         string value,
         StringComparison comparisonType = StringComparison.Ordinal) =>
         st?.IndexOf(value, comparisonType) >= 0;
+    #endregion
+
+    #region Contains(this string, string, bool)
+    /// <summary>
+    /// Returns a value indicating whether the specified string occurs within this string, using the invariant culture.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="ignoreCase"></param>
+    /// <returns></returns>
+    public static bool Contains(
+        this string st,
+        string value,
+        bool ignoreCase) =>
+        st.Contains(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+    #endregion
+
     #endregion
 
     #region ContainsAny*
@@ -136,6 +156,21 @@ public static class StringExtensions
     /// <exception cref="NullReferenceException">The string is null.</exception>
     public static bool ContainsSpace(this string st) =>
         st?.Any(Char.IsWhiteSpace) == true;
+    #endregion
+
+    #region EndsWith
+    /// <summary>
+    /// Determines whether the end of this string instance matches the specified string when compared using the invariant culture.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="ignoreCase"></param>
+    /// <returns></returns>
+    public static bool EndsWith(
+        this string st,
+        string value,
+        bool ignoreCase) =>
+        st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
     #endregion
 
     #region EndsWithAny
@@ -416,6 +451,21 @@ public static class StringExtensions
         st.Split([separator], options);
     #endregion
 
+    #endregion
+
+    #region StartsWith
+    /// <summary>
+    /// Determines whether the beginning of this string instance matches the specified string when compared using the invariant culture.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="ignoreCase"></param>
+    /// <returns></returns>
+    public static bool StartsWith(
+        this string st,
+        string value,
+        bool ignoreCase) =>
+        st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
     #endregion
 
     #region StartsWithAny
