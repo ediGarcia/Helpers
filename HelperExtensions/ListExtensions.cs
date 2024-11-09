@@ -1099,29 +1099,31 @@ public static class ListExtensions
     #endregion
 
     #region ToArray
+
     /// <summary>
     /// Creates a T array out of the specific type from the <see cref="IEnumerable{T}"/>
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
     /// <param name="iEnumerable"></param>
-    /// <param name="func"></param>
+    /// <param name="conversionFunction"></param>
     /// <returns></returns>
-    public static T2[] ToArray<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
-        [.. iEnumerable.Select(func)];
+    public static T2[] ToArray<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> conversionFunction) =>
+        [.. iEnumerable.Select(conversionFunction)];
     #endregion
 
-    #region ToList 
+    #region ToList
+
     /// <summary>
     /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
     /// <param name="iEnumerable"></param>
-    /// <param name="func"></param>
+    /// <param name="conversionFunction"></param>
     /// <returns></returns>
-    public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> func) =>
-        iEnumerable.Select(func).ToList();
+    public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> conversionFunction) =>
+        [.. iEnumerable.Select(conversionFunction)];
     #endregion
 
     #region Sum
