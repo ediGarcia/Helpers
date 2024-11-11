@@ -1091,11 +1091,104 @@ public static class ListExtensions
         iEnumerable?.Any() != true;
     #endregion
 
-    #region ParallelForEach
-    // ReSharper disable once InvalidXmlDocComment
-    /// <inheritdoc cref="Parallel.ForEach"/>
-    public static void ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T> body) =>
+    #region ParallelAll
+    /// <summary>
+    /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns>true if every the element in the source pass the test in the specified predicate; otherwise, false.</returns>
+    public static bool ParallelAll<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
+    {
+        bool found = true;
+
+        Parallel.ForEach(iEnumerable, (_, state) =>
+        {
+            if (!predicate(_))
+            {
+                found = false;
+                state.Stop();
+            }
+        });
+
+        return found;
+    }
+    #endregion
+
+    #region ParallelAny
+    /// <summary>
+    /// Determines whether any element of the sequence satisfies a condition. The process may run in parallel for each item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns>true if any elements in the source pass the test in the specified predicate; otherwise, false.</returns>
+    public static bool ParallelAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
+    {
+        bool found = false;
+
+        Parallel.ForEach(iEnumerable, (_, state) =>
+        {
+            if (predicate(_))
+            {
+                found = true;
+                state.Stop();
+            }
+        });
+
+        return found;
+    }
+    #endregion
+
+    #region ParallelCount
+    /// <summary>
+    /// Returns the count of elements in a sequence. The process may run in parallel for each item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns>The number of elements in the input sequence.</returns>
+    public static int ParallelCount<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
+    {
+        int count = 0;
+
+        Parallel.ForEach(iEnumerable, (_, state) =>
+        {
+            if (predicate(_))
+                count++;
+        });
+
+        return count;
+    }
+    #endregion
+
+    #region ParallelForEach*
+
+    #region ParallelForEach(this IEnumerable<T>, Action<T>)
+    /// <summary>
+    /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="body"></param>
+    /// /// <returns>A structure that contains information about which portion of the loop completed.</returns>
+    public static ParallelLoopResult ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T> body) =>
         Parallel.ForEach(iEnumerable, body);
+    #endregion
+
+    #region ParallelForEach(this IEnumerable<T>, Action<T, ParallelLoopState>)
+    /// <summary>
+    /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel, and the state of the loop can be monitored and manipulated.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="body"></param>
+    /// <returns>A structure that contains information about which portion of the loop completed.</returns>
+    public static ParallelLoopResult ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T, ParallelLoopState> body) =>
+        Parallel.ForEach(iEnumerable, body);
+    #endregion
+
     #endregion
 
     #region ToArray
