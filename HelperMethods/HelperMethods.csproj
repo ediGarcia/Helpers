@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryMethods.cs" />
+    <Compile Include="EnumMethods.cs" />
     <Compile Include="FileMethods.cs" />
     <Compile Include="FunctionMethods.cs" />
     <Compile Include="ListMethods.cs" />
