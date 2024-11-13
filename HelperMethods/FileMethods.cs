@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security;
 using System.Xml.Serialization;
 
 namespace HelperMethods;
@@ -19,7 +21,12 @@ public static class FileMethods
     /// <param name="path"></param>
     /// <param name="content"></param>
     /// <param name="conflictAction">Indicates the conflict action taken when the selected path already exists.</param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
     /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static string CreateFile(string path, string content = "", ConflictAction conflictAction = ConflictAction.Break)
     {
         if (PathMethods.SolvePathConflict(path, conflictAction, false) is { } actualPath)
@@ -40,6 +47,12 @@ public static class FileMethods
     /// <param name="content"></param>
     /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static string CreateRandomFile(string parentFolderPath, string content = "", string extension = null)
     {
         string newFilePath = GenerateRandomFilePath(parentFolderPath, extension, true);
@@ -90,6 +103,11 @@ public static class FileMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
     public static long GetFileSize(string path) =>
         new FileInfo(path).Length;
     #endregion
@@ -111,6 +129,8 @@ public static class FileMethods
     /// <param name="path"></param>
     /// <param name="runAsAdmin"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
     public static Process OpenFile(string path, bool runAsAdmin = false) =>
         Process.Start(new ProcessStartInfo
         {
@@ -126,6 +146,13 @@ public static class FileMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static string[] ReadFileLines(string path)
     {
         List<string> lines = [];
@@ -146,6 +173,13 @@ public static class FileMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static T ReadXml<T>(string path)
     {
         using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -159,19 +193,25 @@ public static class FileMethods
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
-    /// <param name="preventIOException">Indicates if any <see cref="IOException"/> should be suppressed.</param>
+    /// <param name="suppressException">Indicates whether the method should suppress any exception and return null.</param>
     /// <returns></returns>
-    // ReSharper disable once InconsistentNaming
-    public static T RetrieveDataFromFile<T>(string path, bool preventIOException = false)
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SerializationException" />
+    /// <exception cref="SecurityException" />
+    public static T RetrieveDataFromFile<T>(string path, bool suppressException = false)
     {
         try
         {
             using FileStream stream = new(path, FileMode.Open);
             return (T)new BinaryFormatter().Deserialize(stream);
         }
-        catch (Exception ex)
+        catch
         {
-            if (preventIOException && ex is IOException)
+            if (suppressException)
                 return default;
 
             throw;
@@ -188,6 +228,8 @@ public static class FileMethods
     /// <param name="workingFolder"></param>
     /// <param name="runAsAdmin"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
     public static Process RunFile(string path, string arguments = null, string workingFolder = null, bool runAsAdmin = false) =>
         SystemMethods.Run("explorer", $"\"{path}\" {arguments}", workingFolder, runAsAdmin, true);
     #endregion
@@ -200,6 +242,13 @@ public static class FileMethods
     /// <param name="path"></param>
     /// <param name="data"></param>
     /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SerializationException" />
+    /// <exception cref="SecurityException" />
     public static void SaveDataToFile<T>(string path, T data, FileMode mode = FileMode.OpenOrCreate)
     {
         using FileStream stream = new(path, mode);
@@ -215,6 +264,13 @@ public static class FileMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
     /// <param name="data"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static void WriteXml<T>(string path, T data)
     {
         using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);

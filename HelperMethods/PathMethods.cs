@@ -184,31 +184,31 @@ public static class PathMethods
     /// <returns></returns>
     internal static string SolvePathConflict(string path, ConflictAction conflictAction, bool deleteOnOverwrite)
     {
-        if (SystemMethods.Exists(path))
-            switch (conflictAction)
+        if (!SystemMethods.Exists(path))
+            return path;
+
+        switch (conflictAction)
+        {
+            case ConflictAction.AppendNumber:
+                return AppendPathSuffix(path, FileSuffixType.Numeric);
+
+            case ConflictAction.AppendText:
+                return AppendPathSuffix(path, FileSuffixType.Copy);
+
+            case ConflictAction.Ignore:
+                return null;
+
+            case ConflictAction.Overwrite:
             {
-                case ConflictAction.AppendNumber:
-                    path = AppendPathSuffix(path, FileSuffixType.Numeric);
-                    break;
+                if (deleteOnOverwrite)
+                    SystemMethods.Delete(path);
 
-                case ConflictAction.AppendText:
-                    path = AppendPathSuffix(path, FileSuffixType.Copy);
-                    break;
-
-                case ConflictAction.Ignore:
-                    path = null;
-                    break;
-
-                case ConflictAction.Overwrite:
-                    if (deleteOnOverwrite)
-                        SystemMethods.Delete(path);
-                    break;
-
-                default:
-                    throw new IOException($"{path} already exists.");
+                return path;
             }
 
-        return path;
+            default:
+                throw new IOException($"{path} already exists.");
+        }
     }
     #endregion
 
