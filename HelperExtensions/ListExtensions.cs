@@ -717,7 +717,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    public static T Last<T>(IList<T> list) =>
+    public static T Last<T>(this IList<T> list) =>
         list[list.LastIndex()];
     #endregion
 
@@ -797,18 +797,8 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
-    {
-        if (iEnumerable is null)
-            return false;
-
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (T item in iEnumerable)
-            if (predicate(item))
-                return true;
-
-        return false;
-    }
+    public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate) => 
+        iEnumerable is not null && iEnumerable.Cast<T>().Any(item => predicate(item));
     #endregion
 
     #endregion
@@ -1217,23 +1207,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> conversionFunction) =>
         [.. iEnumerable.Select(conversionFunction)];
-    #endregion
-
-    #region Sum
-    /// <summary>
-    /// Computes the sequence of <see cref="TimeSpan"/> values that are obtained by invoking a transform function on each element of the input sequence.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="source"></param>
-    /// <param name="selector"></param>
-    /// <returns></returns>
-    public static TimeSpan Sum<T>(this IEnumerable<T> source, Func<T, TimeSpan> selector)
-    {
-        TimeSpan result = TimeSpan.Zero;
-        source.ForEach(_ => result += selector(_));
-
-        return result;
-    }
     #endregion
 
     #endregion
