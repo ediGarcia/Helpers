@@ -480,7 +480,7 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static bool All<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length)
+    public static bool All<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length = null)
     {
         int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
 
@@ -502,7 +502,7 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static bool Any<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length)
+    public static bool Any<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length = null)
     {
         int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
 
