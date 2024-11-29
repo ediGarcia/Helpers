@@ -427,7 +427,7 @@ public static class StringExtensions
 
     #region Split*
 
-    #region Split(this string, char, StringSplitOptions)
+    #region Split(this string, char, [StringSplitOptions])
     /// <summary>
     /// Splits a string into substrings based on the characters in an array. You can specify whether the substrings include empty array elements.
     /// </summary>
@@ -435,11 +435,11 @@ public static class StringExtensions
     /// <param name="separator">A character array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, char separator, StringSplitOptions options) =>
+    public static string[] Split(this string st, char separator, StringSplitOptions options = StringSplitOptions.None) =>
         st.Split([separator], options);
     #endregion
 
-    #region Split(this string, string, StringSplitOptions)
+    #region Split(this string, string, [StringSplitOptions])
     /// <summary>
     /// Splits a string into substrings based on the strings in an array. You can specify whether the substrings include empty array elements.
     /// </summary>
@@ -447,8 +447,31 @@ public static class StringExtensions
     /// <param name="separator">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, string separator, StringSplitOptions options) =>
+    public static string[] Split(this string st, string separator, StringSplitOptions options = StringSplitOptions.None) =>
         st.Split([separator], options);
+    #endregion
+
+    #region Split(this string, string[], [StringSplitOptions])
+    /// <summary>
+    /// Splits a string into substrings based on the strings in an array. You can specify whether the substrings include empty array elements.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="separators">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
+    /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
+    /// <returns></returns>
+    public static string[] Split(this string st, string[] separators, StringSplitOptions options) =>
+        st.Split(separators, options);
+    #endregion
+
+    #region Split(this string, params string[])
+    /// <summary>
+    /// Splits a string into substrings based on the strings in an array. You can specify whether the substrings include empty array elements.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="separators">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
+    /// <returns></returns>
+    public static string[] Split(this string st, params string[] separators) =>
+        st.Split(separators, StringSplitOptions.None);
     #endregion
 
     #endregion
