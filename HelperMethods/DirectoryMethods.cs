@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -22,6 +23,14 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="path"></param>
     /// <param name="innerDirectoryAction"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="IOException"/>
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
     public static void ClearDirectory(string path, InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete)
     {
         foreach (string file in ListFiles(path, false))
@@ -100,14 +109,14 @@ public static class DirectoryMethods
     /// <exception cref="IOException"/>
     /// <exception cref="NotSupportedException" />
     /// <exception cref="PathTooLongException" />
-    /// <exception cref="System.Security.SecurityException" />
+    /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
     public static string CreateTemporaryDirectory(string directoryName = null)
     {
         string novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
 
         //Checks if the folder exists.
-        while (Directory.Exists(novaPasta))
+        while (Exists(novaPasta))
             novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
 
         Directory.CreateDirectory(novaPasta);
@@ -116,11 +125,7 @@ public static class DirectoryMethods
     #endregion
 
     #region Exists
-    /// <summary>
-    /// Determines whether the specified directory exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <inheritdoc cref="Directory.Exists"/>
     public static bool Exists(string path) =>
         Directory.Exists(path);
     #endregion
@@ -131,6 +136,9 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="parentFolder">Optional parent folder. If null, the system user folder will be used.</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="PlatformNotSupportedException"></exception>
     public static string GenerateRandomDirectoryPath(string parentFolder = null)
     {
         parentFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -173,6 +181,15 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="SecurityException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static long GetDirectorySize(string path)
     {
         long size = 0;
@@ -187,6 +204,8 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
     public static string GetParentDirectory(string path) =>
         Path.GetDirectoryName(path.TrimEnd('/', '\\'));
     #endregion
@@ -197,6 +216,13 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static bool IsDirectory(string path) =>
         Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
     #endregion
@@ -207,7 +233,12 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="childPath">The path to be tested.</param>
     /// <param name="directoryPath">The possible parent directory.</param>
-    /// <returns></returns>
+    /// <returns></returns> 
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="SecurityException"></exception>
     public static bool IsParentDirectory(string childPath, string directoryPath) =>
         Path.GetFullPath(childPath).StartsWith(Path.GetFullPath(directoryPath) + "\\");
     #endregion
@@ -219,7 +250,13 @@ public static class DirectoryMethods
     /// <param name="dirPath"></param>
     /// <param name="searchSubFolders"></param>
     /// <param name="searchPattern"></param>
-    /// <returns></returns>
+    /// <returns></returns> 
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static string[] ListDirectories(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
         Directory.GetDirectories(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
@@ -232,6 +269,12 @@ public static class DirectoryMethods
     /// <param name="searchSubfolders"></param>
     /// <param name="searchPattern"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static string[] ListFiles(string dirPath, bool searchSubfolders = true, string searchPattern = "*.*") =>
         Directory.GetFiles(dirPath, searchPattern, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
@@ -244,6 +287,13 @@ public static class DirectoryMethods
     /// <param name="searchSubFolders"></param>
     /// <param name="searchPattern"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="SecurityException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static string[] ListFilesAndDirs(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
         Directory.GetFileSystemEntries(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
