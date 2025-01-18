@@ -91,6 +91,17 @@ public static class ListExtensions
     }
     #endregion
 
+    #region HasAny
+    /// <summary>
+    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool HasAny<T>(this ICollection<T> iEnumerable) =>
+        iEnumerable?.Count > 0;
+    #endregion
+
     #region IsInsideBounds
     /// <summary>
     /// Indicates whether the specified <see cref="index"/> is inside the bound of the current collection.
