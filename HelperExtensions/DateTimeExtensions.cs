@@ -91,14 +91,14 @@ public static class DateTimeExtensions
         time.Add(TimeSpan.FromHours(value));
     #endregion
 
-    #region FromMilliseconds
+    #region AddMilliseconds
     /// <summary>
     /// Returns a new <see cref="TimeSpan"/> that adds the specified number of milliseconds to the value of this instance.
     /// </summary>
     /// <param name="time"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static TimeSpan FromMilliseconds(this TimeSpan time, double value) =>
+    public static TimeSpan AddMilliseconds(this TimeSpan time, double value) =>
         time.Add(TimeSpan.FromMilliseconds(value));
     #endregion
 
