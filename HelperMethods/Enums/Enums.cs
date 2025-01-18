@@ -69,15 +69,13 @@ public enum CommemorativeDayType
 }
 
 /// <summary>
-/// File system conflict action.
+/// Gets the directory action when trying to copy/move over an already existing file.
 /// </summary>
-public enum ConflictAction
+public enum FileNameConflictAction
 {
-    AppendNumber,
-    AppendText,
-    Break,
-    Ignore,
-    Overwrite
+    ThrowError,
+    Overwrite,
+    Skip
 }
 
 /// <summary>
@@ -98,15 +96,6 @@ public enum FileSizeUnit
     Ronna,
     Quetta
     // ReSharper restore IdentifierTypo
-}
-
-/// <summary>
-/// File suffix types.
-/// </summary>
-public enum FileSuffixType
-{
-    Copy,
-    Numeric
 }
 
 /// <summary>

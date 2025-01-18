@@ -1,5 +1,4 @@
-﻿using HelperMethods.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,58 +8,6 @@ namespace HelperMethods;
 public static class PathMethods
 {
     #region Public Methods
-
-    #region AppendCustomPathSuffix
-    /// <summary>
-    /// Appends a custom suffix to the selected path if it already exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="customSuffix"></param>
-    /// <param name="force">Indicates whether the suffix should be appended even if the path does not exist.</param>
-    /// <returns></returns>
-    public static string AppendCustomPathSuffix(string path, string customSuffix, bool force = false)
-    {
-        if (force && !SystemMethods.Exists(path))
-            return AppendPathSuffix(path, customSuffix);
-
-        string suffix = "";
-        string newPath;
-
-        while (SystemMethods.Exists(newPath = AppendPathSuffix(path, suffix)))
-            suffix += customSuffix;
-
-        return newPath;
-    }
-    #endregion
-
-    #region AppendPathSuffix
-    /// <summary>
-    /// Appends a suffix to the selected path if it already exists.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="suffixType"></param>
-    /// <returns></returns>
-    public static string AppendPathSuffix(string path, FileSuffixType suffixType)
-    {
-        int fileCount = 0;
-        string suffix = "";
-        string newPath;
-
-        while (SystemMethods.Exists(newPath = AppendPathSuffix(path, suffix)))
-            switch (suffixType)
-            {
-                case FileSuffixType.Copy:
-                    suffix += " - Copy";
-                    break;
-
-                case FileSuffixType.Numeric:
-                    suffix = $" ({++fileCount})";
-                    break;
-            }
-
-        return newPath;
-    }
-    #endregion
 
     #region CheckExtension
     /// <summary>
@@ -168,63 +115,6 @@ public static class PathMethods
 
         return extension;
     }
-    #endregion
-
-    #endregion
-
-    #region Internal Methods
-
-    #region SolvePathConflict
-    /// <summary>
-    /// Manages the conflict action.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="conflictAction"></param>
-    /// <param name="deleteOnOverwrite">Indicates whether the existing file should be deleted when the Overwrite action is chosen.</param>
-    /// <returns></returns>
-    internal static string SolvePathConflict(string path, ConflictAction conflictAction, bool deleteOnOverwrite)
-    {
-        if (!SystemMethods.Exists(path))
-            return path;
-
-        switch (conflictAction)
-        {
-            case ConflictAction.AppendNumber:
-                return AppendPathSuffix(path, FileSuffixType.Numeric);
-
-            case ConflictAction.AppendText:
-                return AppendPathSuffix(path, FileSuffixType.Copy);
-
-            case ConflictAction.Ignore:
-                return null;
-
-            case ConflictAction.Overwrite:
-            {
-                if (deleteOnOverwrite)
-                    SystemMethods.Delete(path);
-
-                return path;
-            }
-
-            default:
-                throw new IOException($"{path} already exists.");
-        }
-    }
-    #endregion
-
-    #endregion
-
-    #region Private Methods
-
-    #region AppendPathSuffix
-    /// <summary>
-    /// Appends the selected suffix to the file/directory name.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="suffix"></param>
-    /// <returns></returns>
-    private static string AppendPathSuffix(string path, string suffix) =>
-        Path.Combine(GetParentDirectory(path), GetFileName(path, true) + suffix + Path.GetExtension(path));
     #endregion
 
     #endregion

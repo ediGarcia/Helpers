@@ -1,12 +1,12 @@
 ﻿using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,70 +27,29 @@ public static class SystemMethods
 
     #region Copy
     /// <summary>
-    /// Copies a file or folder and its contents to the destination path.
+    /// Copies the specified file or folder and its contents to the destination path.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="destination"></param>
     /// <param name="conflictAction"></param>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException" />
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    /// <returns>Returns the destination path.</returns>
-    public static string Copy(string source, string destination, ConflictAction conflictAction) =>
-        ChangeFileDirectoryLocation(source, destination, conflictAction, true);
-    #endregion
-
-    #region CopyToFolder*
-
-    #region CopyToFolder(string, string, ConflictAction)
-    /// <summary>
-    /// Copies the selected file/folder and its contents into the destination folder.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="destinationFolder"></param>
-    /// <param name="conflictAction"></param>
-    /// <returns></returns>
-    public static string CopyToFolder(string source, string destinationFolder, ConflictAction conflictAction) =>
-        Copy(source, Path.Combine(destinationFolder, Path.GetFileName(source)), conflictAction);
-    #endregion
-
-    #region CopyToFolder(string, ConflictAction, params string[])
-    /// <summary>
-    /// Copies the selected files/folders and their contents into the destination folder.
-    /// </summary>
-    /// <param name="destination"></param>
-    /// <param name="conflictAction"></param>
-    /// <param name="sourceEntries"></param>
-    public static void CopyToFolder(string destination, ConflictAction conflictAction, params string[] sourceEntries) =>
-        CopyToFolder(destination, sourceEntries, conflictAction);
-    #endregion
-
-    #region CopyToFolder(string, IEnumerable<string>, ConflictAction)
-
-    /// <summary>
-    /// Copies the selected files/folders and their contents into the destination folder.
-    /// </summary>
-    /// <param name="destinationFolder"></param>
-    /// <param name="sourceEntries"></param>
-    /// <param name="conflictAction"></param>
-    public static void CopyToFolder(
-        string destinationFolder,
-        IEnumerable<string> sourceEntries,
-        ConflictAction conflictAction)
+    /// <exception cref="IOException"></exception>
+    public static void Copy(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
     {
-        foreach (string sourceEntry in sourceEntries)
-            CopyToFolder(sourceEntry, destinationFolder, conflictAction);
+        if (FileMethods.Exists(source))
+            FileMethods.Copy(source, destination, conflictAction);
+
+        else if (DirectoryMethods.Exists(source))
+            DirectoryMethods.Copy(source, destination, conflictAction);
+
+        else
+            throw new IOException($"\"{source}\" not found.");
     }
-
     #endregion
 
-    #endregion
-
-    #region Delete
+    #region Delete(params string[])
     /// <summary>
     /// Deletes files, folder and its contents.
     /// </summary>
@@ -99,9 +58,37 @@ public static class SystemMethods
     {
         foreach (string path in paths)
             if (DirectoryMethods.IsDirectory(path))
-                Directory.Delete(path, true);
+                DirectoryMethods.Delete(path);
             else
-                File.Delete(path);
+                FileMethods.Delete(path);
+    }
+    #endregion
+
+    #region Delete(string, [bool])
+    /// <summary>
+    /// Deletes the specified file or folder.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="recycle">Indicates whether the specified file or folder should be sent to the Recycle Bin, instead of permanently deleted.</param>
+    /// <returns>true if the file or folder exists and is successfully deleted; false if the file or folder does not exist.</returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException"></exception>
+    /// <exception cref="UnauthorizedAccessException" />
+    public static bool Delete(string path, bool recycle = false)
+    {
+        if (FileMethods.Exists(path))
+            FileMethods.Delete(path, recycle);
+        else if (DirectoryMethods.Exists(path))
+            DirectoryMethods.Delete(path, recycle);
+        else
+            return false;
+
+        return true;
     }
     #endregion
 
@@ -245,64 +232,26 @@ public static class SystemMethods
 
     #region Move
     /// <summary>
-    /// Moves a file or folder and its contents to the destination path.
+    /// Moves the specified file or folder and its contents to the destination path.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="destination"></param>
     /// <param name="conflictAction"></param>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException" />
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    /// <returns>Returns the destination path.</returns>
-    public static string Move(string source, string destination, ConflictAction conflictAction) =>
-        ChangeFileDirectoryLocation(source, destination, conflictAction, false);
-    #endregion
-
-    #region MoveToFolder*
-
-    #region MoveToFolder(string, string, ConflictAction)
-    /// <summary>
-    /// Copies the selected file/folder and its contents into the destination folder.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="destinationFolder"></param>
-    /// <param name="conflictAction"></param>
-    /// <returns></returns>
-    public static string MoveToFolder(string source, string destinationFolder, ConflictAction conflictAction) =>
-        Move(source, Path.Combine(destinationFolder, Path.GetFileName(source)), conflictAction);
-
-    #endregion
-
-    #region MoveToFolder(string, ConflictAction, params string[])
-    /// <summary>
-    /// Moves the selected files/folders and their contents into the destination folder.
-    /// </summary>
-    /// <param name="destination"></param>
-    /// <param name="conflictAction"></param>
-    /// <param name="sourceEntries"></param>
-    public static void MoveToFolder(string destination, ConflictAction conflictAction, params string[] sourceEntries) =>
-        MoveToFolder(destination, sourceEntries, conflictAction);
-    #endregion
-
-    #region MoveToFolder(string, IEnumerable<string>, ConflictAction)
-    /// <summary>
-    /// Copies the selected files/folders and their contents into the destination folder.
-    /// </summary>
-    /// <param name="destinationFolder"></param>
-    /// <param name="sourceEntries"></param>
-    /// <param name="conflictAction"></param>
-    public static void MoveToFolder(string destinationFolder, IEnumerable<string> sourceEntries, ConflictAction conflictAction)
+    /// <exception cref="IOException"></exception>
+    public static void Move(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
     {
-        foreach (string sourceEntry in sourceEntries)
-            MoveToFolder(sourceEntry, destinationFolder, conflictAction);
-    }
-    #endregion
+        if (FileMethods.Exists(source))
+            FileMethods.Move(source, destination, conflictAction);
 
+        else if (DirectoryMethods.Exists(source))
+            DirectoryMethods.Move(source, destination, conflictAction);
+
+        else
+            throw new IOException($"\"{source}\" not found.");
+    }
     #endregion
 
     #region Recycle
@@ -312,7 +261,8 @@ public static class SystemMethods
     /// <param name="path"></param>
     /// <param name="suppressErrors">Indicates whether errors should be suppressed.</param>
     /// <param name="suppressBigFileWarning">Indicates whether big files should be permanently deleted without the user confirmation.</param>
-    /// <exception cref="IOException">Invalid or not existing path.</exception>
+    /// <exception cref="IOException"></exception>
+    [Obsolete("Use \"SystemMethods.Delete\" with \"recycle\" true instead.")]
     public static async Task Recycle(string path, bool suppressErrors = true, bool suppressBigFileWarning = true)
     {
         if (!Exists(path))
@@ -331,9 +281,8 @@ public static class SystemMethods
 
     #region Run
     /// <summary>
-    /// Runs a command through operational system.
+    /// Runs a command through the operational system.
     /// </summary>
-    /// <param name="workingFolder"></param>
     /// <param name="command"></param>
     /// <param name="arguments"></param>
     /// <param name="runAsAdmin"></param>
@@ -344,13 +293,16 @@ public static class SystemMethods
     /// <exception cref="ObjectDisposedException" />
     /// <exception cref="FileNotFoundException" />
     /// <exception cref="System.ComponentModel.Win32Exception" />
-    public static Process Run(string command, string arguments = null, string workingFolder = null, bool runAsAdmin = false, bool hideConsoleWindow = false) =>
+    public static Process Run(
+        string command,
+        string arguments = "",
+        bool runAsAdmin = false,
+        bool hideConsoleWindow = false) =>
         Process.Start(new ProcessStartInfo(command, arguments)
         {
-            WorkingDirectory = workingFolder ?? Path.GetDirectoryName(command),
+            CreateNoWindow = hideConsoleWindow,
             UseShellExecute = true,
-            Verb = runAsAdmin ? "runas" : "",
-            CreateNoWindow = hideConsoleWindow
+            Verb = runAsAdmin ? "runas" : ""
         });
     #endregion
 
@@ -429,50 +381,6 @@ public static class SystemMethods
             fs.PTo = pathTo;
 
         return WindowsHelper.SHFileOperation(ref fs);
-    }
-    #endregion
-
-    #region ChangeFileFolderLocation
-    /// <summary>
-    /// Changes a file or folder location in the file system.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="destination"></param>
-    /// <param name="conflictAction"></param>
-    /// <param name="keepOriginal">Indicates whether the original file should be kept.</param>
-    /// <returns></returns>
-    private static string ChangeFileDirectoryLocation(string source, string destination, ConflictAction conflictAction, bool keepOriginal)
-    {
-        if (DirectoryMethods.IsDirectory(source))
-        {
-            Func<string, string, ConflictAction, string> sendToFolder =
-                keepOriginal ? CopyToFolder : MoveToFolder;
-
-            if ((destination = PathMethods.SolvePathConflict(destination, conflictAction, true)) is null)
-                return null;
-
-            Directory.CreateDirectory(destination); //Creates the folder, if it doesn't exist.
-
-            foreach (string file in Directory.GetFileSystemEntries(source, "*", SearchOption.TopDirectoryOnly)) 
-                sendToFolder(file, destination, conflictAction);
-
-            if (!keepOriginal)
-                Delete(source);
-        }
-        else
-        {
-            if ((destination = PathMethods.SolvePathConflict(destination, conflictAction, !keepOriginal)) is null)
-                return null;
-
-            Directory.CreateDirectory(Path.GetDirectoryName(destination)); //Creates the destination folder, if it doesn't exist.
-
-            if (keepOriginal)
-                File.Copy(source, destination, true);
-            else
-                File.Move(source, destination);
-        }
-
-        return destination;
     }
     #endregion
 

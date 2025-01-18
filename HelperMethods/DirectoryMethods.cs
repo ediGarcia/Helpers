@@ -1,5 +1,6 @@
 ﻿using HelperMethods.Enums;
 using HelperMethods.Helpers;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Drawing;
 using System.IO;
@@ -10,12 +11,27 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SearchOption = System.IO.SearchOption;
 
 namespace HelperMethods;
 
 public static class DirectoryMethods
 {
     #region Public Methods
+
+    #region Copy
+    /// <summary>
+    /// Copies a folder to a new location.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    public static void Copy(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        Transfer(source, destination, conflictAction, true);
+    #endregion
 
     #region ClearDirectory
     /// <summary>
@@ -33,7 +49,7 @@ public static class DirectoryMethods
     /// <exception cref="UnauthorizedAccessException" />
     public static void ClearDirectory(string path, InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete)
     {
-        foreach (string file in ListFiles(path, false))
+        foreach (string file in ListFiles(path))
             File.Delete(file);
 
         if (innerDirectoryAction == InnerDirectoryAction.Ignore)
@@ -47,27 +63,24 @@ public static class DirectoryMethods
     }
     #endregion
 
-    #region CreateDirectory
+    #region Create
     /// <summary>
-    /// Creates the selected directory.
+    /// Creates a new empty directory.
     /// </summary>
-    /// <param name="path">New directory path.</param>
-    /// <param name="conflictAction">Indicates the conflict action taken when the destination path already exists.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="DirectoryNotFoundException" />
-    /// <exception cref="IOException"/>
-    /// <exception cref="NotSupportedException" />
-    /// <exception cref="PathTooLongException" />
-    /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateDirectory(string path, ConflictAction conflictAction = ConflictAction.Break)
+    /// <param name="path"></param>
+    /// <param name="overwrite"></param>
+    /// <exception cref="IOException"></exception>
+    public static void Create(string path, bool overwrite = false)
     {
-        if ((path = PathMethods.SolvePathConflict(path, conflictAction, true)) is null)
-            return null;
+        if (Exists(path))
+        {
+            if (overwrite)
+                Delete(path);
+            else
+                throw new IOException($"\"{path}\" already exists.");
+        }
 
         Directory.CreateDirectory(path);
-        return path;
     }
     #endregion
 
@@ -121,6 +134,31 @@ public static class DirectoryMethods
 
         Directory.CreateDirectory(novaPasta);
         return novaPasta;
+    }
+    #endregion
+
+    #region Delete
+    /// <summary>
+    /// Deletes a directory, if it exists.
+    /// </summary>
+    /// <returns>true if the directory exists, and it has been successfully deleted; false if directory does not exist.</returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException"></exception>
+    /// <exception cref="UnauthorizedAccessException" />
+    public static bool Delete(string path, bool recycle = false)
+    {
+        if (Exists(path))
+        {
+            FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
+            return true;
+        }
+
+        return false;
     }
     #endregion
 
@@ -257,7 +295,7 @@ public static class DirectoryMethods
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListDirectories(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
+    public static string[] ListDirectories(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
         Directory.GetDirectories(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
 
@@ -275,7 +313,7 @@ public static class DirectoryMethods
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListFiles(string dirPath, bool searchSubfolders = true, string searchPattern = "*.*") =>
+    public static string[] ListFiles(string dirPath, string searchPattern = "*.*", bool searchSubfolders = false) =>
         Directory.GetFiles(dirPath, searchPattern, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
 
@@ -294,8 +332,86 @@ public static class DirectoryMethods
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="SecurityException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListFilesAndDirs(string dirPath, bool searchSubFolders = true, string searchPattern = "*.*") =>
+    public static string[] ListFilesAndDirs(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
         Directory.GetFileSystemEntries(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+    #endregion
+
+    #region Move
+    /// <summary>
+    /// Moves a folder o a new location.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    public static void Move(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        Transfer(source, destination, conflictAction, false);
+    #endregion
+
+    #endregion
+
+    #region Private Methods
+
+    #region Transfer
+    /// <summary>
+    /// Moves or copies a folder to a new location.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    /// <param name="keepOriginal"></param>
+    private static void Transfer(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction,
+        bool keepOriginal)
+    {
+        if (!keepOriginal && !Exists(destination))
+        {
+            Directory.Move(source, destination);
+            return;
+        }
+
+        Action<string, string, FileNameConflictAction> transferFile =
+            keepOriginal ? FileMethods.CopyToDirectory : FileMethods.MoveToDirectory;
+
+        try
+        {
+            CreateFolder(source, destination);
+
+            foreach (string sourceDir in ListDirectories(source, searchSubFolders: true))
+                CreateFolder(
+                    sourceDir,
+                    sourceDir.Replace(source, destination)
+                );
+
+            if (!keepOriginal)
+                Delete(source);
+        }
+        catch
+        {
+            Delete(destination);
+            throw;
+        }
+
+        #region Local Methods
+
+        #region CreateFolder
+        // Creates a new folder, if needed, and copies or moves the contents of the original folder into the new one.
+        void CreateFolder(string sourceDir, string destinationDir)
+        {
+            if (!Exists(destinationDir))
+                Create(destinationDir);
+
+            foreach (string sourceFile in ListFiles(sourceDir))
+                transferFile(sourceFile, destinationDir, conflictAction);
+        }
+        #endregion
+
+        #endregion
+    }
     #endregion
 
     #endregion

@@ -1,4 +1,5 @@
 ﻿using HelperMethods.Enums;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,28 +15,51 @@ public static class FileMethods
 {
     #region Public Methods
 
+    #region Copy
+    /// <summary>
+    /// Copies the existing file to a new file.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    /// <exception cref="IOException"></exception>
+    public static void Copy(string source, string destination, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+    {
+        if (ValidateConflictAction(destination, conflictAction))
+            File.Copy(source, destination, true);
+    }
+    #endregion
+
+    #region CopyToDirectory
+    /// <summary>
+    /// Copies an existing file into the specified directory.
+    /// </summary>
+    /// <param name="sourceFile"></param>
+    /// <param name="destinationDirectory"></param>
+    /// <param name="conflictAction"></param>
+    public static void CopyToDirectory(string sourceFile, string destinationDirectory, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        Copy(sourceFile, Path.Combine(destinationDirectory, Path.GetFileName(destinationDirectory)), conflictAction);
+    #endregion
+
     #region CreateFile
     /// <summary>
-    /// Create a file with the selected content and returns the new file's path.
+    /// Create a file with the selected content.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="content"></param>
-    /// <param name="conflictAction">Indicates the conflict action taken when the selected path already exists.</param>
+    /// <param name="overwrite"></param>
     /// <exception cref="ArgumentException" />
     /// <exception cref="ArgumentNullException" />
     /// <exception cref="IOException" />
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateFile(string path, string content = "", ConflictAction conflictAction = ConflictAction.Break)
+    public static void CreateFile(string path, string content = "", bool overwrite = false)
     {
-        if (PathMethods.SolvePathConflict(path, conflictAction, false) is { } actualPath)
-        {
-            File.WriteAllText(actualPath, content ?? "");
-            return actualPath;
-        }
+        if (!overwrite && Exists(path))
+            throw new IOException($"\"{path}\" already exists.");
 
-        return null;
+        File.WriteAllText(path, content ?? "");
     }
     #endregion
 
@@ -87,6 +111,30 @@ public static class FileMethods
     }
     #endregion
 
+    #region Delete
+    /// <summary>
+    /// Deletes a file, if it exists.
+    /// </summary>
+    /// <returns>true if the file exists, and it has been successfully deleted; false if file does not exist.</returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    public static bool Delete(string path, bool recycle = false)
+    {
+        if (Exists(path))
+        {
+            FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
+
     #region Exists
     /// <summary>
     /// Determines whether the specified file exists.
@@ -122,22 +170,32 @@ public static class FileMethods
         Exists(path) && !DirectoryMethods.IsDirectory(path);
     #endregion
 
-    #region OpenFile
+    #region Move
     /// <summary>
-    /// Opens the specified file.
+    /// Moves the specified file to a new location.
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="runAsAdmin"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException" />
-    /// <exception cref="FileNotFoundException" />
-    public static Process OpenFile(string path, bool runAsAdmin = false) =>
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = path,
-            Verb = runAsAdmin ? "runas" : "",
-            UseShellExecute = true
-        });
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    public static void Move(string source, string destination, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+    {
+        if (ValidateConflictAction(destination, conflictAction))
+            File.Move(source, destination);
+    }
+    #endregion
+
+    #region MoveToDirectory
+    /// <summary>
+    /// Moves an existing file into the specified folder.
+    /// </summary>
+    /// <param name="sourceFile"></param>
+    /// <param name="destinationDirectory"></param>
+    /// <param name="conflictAction"></param>
+    public static void MoveToDirectory(
+        string sourceFile,
+        string destinationDirectory,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        Move(sourceFile, Path.Combine(destinationDirectory, Path.GetFileName(sourceFile)), conflictAction);
     #endregion
 
     #region ReadFileLines
@@ -219,19 +277,22 @@ public static class FileMethods
     }
     #endregion
 
-    #region RunFile
+    #region RunOrOpen
     /// <summary>
-    /// Opens a file in the current operational system.
+    /// Runs or opens the specified file in its default application.
     /// </summary>
     /// <param name="path"></param>
-    /// <param name="arguments"></param>
-    /// <param name="workingFolder"></param>
     /// <param name="runAsAdmin"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException" />
     /// <exception cref="FileNotFoundException" />
-    public static Process RunFile(string path, string arguments = null, string workingFolder = null, bool runAsAdmin = false) =>
-        SystemMethods.Run("explorer", $"\"{path}\" {arguments}", workingFolder, runAsAdmin, true);
+    public static Process RunOrOpen(string path, bool runAsAdmin = false) =>
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = path,
+            Verb = runAsAdmin ? "runas" : "",
+            UseShellExecute = true
+        });
     #endregion
 
     #region SaveDataToFile
@@ -275,6 +336,37 @@ public static class FileMethods
     {
         using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
         new XmlSerializer(typeof(T)).Serialize(stream, data);
+    }
+    #endregion
+
+    #endregion
+
+    #region Private Methods
+
+    #region ValidateConflictAction
+    /// <summary>
+    /// Validates the file name conflict action according to the destination file state.
+    /// </summary>
+    /// <param name="destinationPath"></param>
+    /// <param name="conflictAction"></param>
+    /// <returns></returns>
+    /// <exception cref="IOException"></exception>
+    private static bool ValidateConflictAction(string destinationPath, FileNameConflictAction conflictAction)
+    {
+        if (Exists(destinationPath))
+            switch (conflictAction)
+            {
+                case FileNameConflictAction.ThrowError:
+                    throw new IOException($"\"{destinationPath}\" already exists.");
+
+                case FileNameConflictAction.Overwrite:
+                    break;
+
+                case FileNameConflictAction.Skip:
+                    return false;
+            }
+
+        return true;
     }
     #endregion
 

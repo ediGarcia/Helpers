@@ -37,6 +37,7 @@
     <Reference Include="ColorUtils">
       <HintPath>..\..\DLL\ColorUtils.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
