@@ -1,10 +1,10 @@
-﻿using HelperMethods;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using HelperMethods;
 
 // ReSharper disable UnusedMember.Global
 
@@ -21,8 +21,7 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string Append(this string st, string value) =>
-        st + value;
+    public static string Append(this string st, string value) => st + value;
     #endregion
 
     #region AppendMany
@@ -58,7 +57,9 @@ public static class StringExtensions
     /// <returns></returns>
     public static string AppendNew(this string st, string value) =>
         // ReSharper disable once ArrangeRedundantParentheses
-        st?.Contains(value) == true ? st : (st + value);
+        st?.Contains(value) == true
+            ? st
+            : (st + value);
     #endregion
 
     #region Contains
@@ -74,8 +75,8 @@ public static class StringExtensions
     public static bool Contains(
         this string st,
         string value,
-        StringComparison comparisonType = StringComparison.Ordinal) =>
-        st?.IndexOf(value, comparisonType) >= 0;
+        StringComparison comparisonType = StringComparison.Ordinal
+    ) => value is not null && st?.IndexOf(value, comparisonType) >= 0;
     #endregion
 
     #region Contains(this string, string, bool)
@@ -86,11 +87,24 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="ignoreCase"></param>
     /// <returns></returns>
+    public static bool Contains(this string st, string value, bool ignoreCase) =>
+        value is not null
+        && st?.IndexOf(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) >= 0;
+    #endregion
+
+    #region Contains(this string, char, StringComparison)
+    /// <summary>
+    /// Returns a value indicating whether the specified string occurs within this string, using the specified comparison rules.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="comparisonType"></param>
+    /// <returns></returns>
     public static bool Contains(
         this string st,
-        string value,
-        bool ignoreCase) =>
-        st.Contains(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+        char value,
+        StringComparison comparisonType = StringComparison.Ordinal
+    ) => st?.IndexOf($"{value}", comparisonType) >= 0;
     #endregion
 
     #endregion
@@ -115,8 +129,7 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool ContainsAny(this string st, params char[] values) =>
-        values.Any(st.Contains);
+    public static bool ContainsAny(this string st, params char[] values) => values.Any(st.Contains);
     #endregion
 
     #endregion
@@ -141,10 +154,14 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool ContainsAll(this string st, params char[] values) =>
-        values.All(st.Contains);
+    public static bool ContainsAll(this string st, params char[] values) => values.All(st.Contains);
     #endregion
 
+    #endregion
+
+    #region ContainsChar
+    /// <inheritdoc cref="String.Contains"/>
+    public static bool ContainsChar(this string st, char value) => st?.Contains(value) == true;
     #endregion
 
     #region ContainsSpace
@@ -154,8 +171,12 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <returns></returns>
     /// <exception cref="NullReferenceException">The string is null.</exception>
-    public static bool ContainsSpace(this string st) =>
-        st?.Any(Char.IsWhiteSpace) == true;
+    public static bool ContainsSpace(this string st) => st?.Any(Char.IsWhiteSpace) == true;
+    #endregion
+
+    #region ContainsString
+    /// <inheritdoc cref="String.Contains"/>
+    public static bool ContainsString(this string st, string value) => st?.Contains(value) == true;
     #endregion
 
     #region EndsWith
@@ -166,11 +187,8 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="ignoreCase"></param>
     /// <returns></returns>
-    public static bool EndsWith(
-        this string st,
-        string value,
-        bool ignoreCase) =>
-        st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
+    public static bool EndsWith(this string st, string value, bool ignoreCase) =>
+        value is not null && st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
     #endregion
 
     #region EndsWithAny
@@ -192,8 +210,11 @@ public static class StringExtensions
     /// <param name="comparison"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool EqualsAny(this string st, StringComparison comparison = StringComparison.Ordinal, params string[] values) =>
-        values.Any(_ => st?.Equals(_, comparison) == true);
+    public static bool EqualsAny(
+        this string st,
+        StringComparison comparison = StringComparison.Ordinal,
+        params string[] values
+    ) => values.Any(_ => st?.Equals(_, comparison) == true);
     #endregion
 
     #region FillLeft
@@ -207,7 +228,10 @@ public static class StringExtensions
     public static string FillLeft(this string st, int count, string value)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
+            throw new ArgumentOutOfRangeException(
+                nameof(count),
+                "The count must be equal or greater than 0 (zero)."
+            );
 
         StringBuilder newString = new();
 
@@ -229,7 +253,10 @@ public static class StringExtensions
     public static string FillRight(this string st, int count, string value)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
+            throw new ArgumentOutOfRangeException(
+                nameof(count),
+                "The count must be equal or greater than 0 (zero)."
+            );
 
         StringBuilder newString = new(st);
 
@@ -273,8 +300,8 @@ public static class StringExtensions
     public static bool IsContainedBy(
         this string st,
         string value,
-        StringComparison comparisonType = StringComparison.Ordinal) =>
-        value?.Contains(st, comparisonType) == true;
+        StringComparison comparisonType = StringComparison.Ordinal
+    ) => value?.Contains(st, comparisonType) == true;
     #endregion
 
     #region IsContainedByAll
@@ -288,8 +315,8 @@ public static class StringExtensions
     public static bool IsContainedByAll(
         this string st,
         StringComparison comparisonType = StringComparison.Ordinal,
-        params string[] values) =>
-        values.All(_ => _.Contains(st, comparisonType));
+        params string[] values
+    ) => values.All(_ => _.Contains(st, comparisonType));
     #endregion
 
     #region IsContainedByAny
@@ -303,8 +330,8 @@ public static class StringExtensions
     public static bool IsContainedByAny(
         this string st,
         StringComparison comparisonType = StringComparison.Ordinal,
-        params string[] values) =>
-        values.Any(_ => _.Contains(st, comparisonType));
+        params string[] values
+    ) => values.Any(_ => _.Contains(st, comparisonType));
     #endregion
 
     #region IsEmpty
@@ -313,8 +340,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsEmpty(this string st) =>
-        st == "";
+    public static bool IsEmpty(this string st) => st == "";
     #endregion
 
     #region IsEqualTo
@@ -325,8 +351,11 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="comparisonType"></param>
     /// <returns></returns>
-    public static bool IsEqualTo(this string str, string value, StringComparison comparisonType = StringComparison.Ordinal) =>
-        StringMethods.AreAllNull(str, value) || String.Compare(str, value, comparisonType) == 0;
+    public static bool IsEqualTo(
+        this string str,
+        string value,
+        StringComparison comparisonType = StringComparison.Ordinal
+    ) => StringMethods.AreAllNull(str, value) || String.Compare(str, value, comparisonType) == 0;
     #endregion
 
     #region IsNull
@@ -335,8 +364,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNull(this string st) =>
-        st is null;
+    public static bool IsNull(this string st) => st is null;
     #endregion
 
     #region IsNullOrEmpty
@@ -345,8 +373,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNullOrEmpty(this string st) =>
-        String.IsNullOrEmpty(st);
+    public static bool IsNullOrEmpty(this string st) => String.IsNullOrEmpty(st);
     #endregion
 
     #region IsNullOrWhiteSpace
@@ -355,8 +382,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNullOrWhiteSpace(this string st) =>
-        String.IsNullOrWhiteSpace(st);
+    public static bool IsNullOrWhiteSpace(this string st) => String.IsNullOrWhiteSpace(st);
     #endregion
 
     #region IsWhiteSpace
@@ -365,8 +391,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsWhiteSpace(this string st) =>
-        st != null && String.IsNullOrWhiteSpace(st);
+    public static bool IsWhiteSpace(this string st) => st != null && String.IsNullOrWhiteSpace(st);
     #endregion
 
     #region Matches
@@ -376,8 +401,7 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="pattern"></param>
     /// <returns></returns>
-    public static bool Matches(this string st, string pattern) =>
-        Regex.IsMatch(st, pattern);
+    public static bool Matches(this string st, string pattern) => Regex.IsMatch(st, pattern);
     #endregion
 
     #region Prepend
@@ -387,8 +411,7 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string Prepend(this string st, string value) =>
-        value + st;
+    public static string Prepend(this string st, string value) => value + st;
     #endregion
 
     #region PrependMany
@@ -422,7 +445,9 @@ public static class StringExtensions
     /// <returns></returns>
     public static string PrependNew(this string st, string value) =>
         // ReSharper disable once ArrangeRedundantParentheses
-        st?.Contains(value) == true ? st : (value + st);
+        st?.Contains(value) == true
+            ? st
+            : (value + st);
     #endregion
 
     #region Split*
@@ -435,8 +460,11 @@ public static class StringExtensions
     /// <param name="separator">A character array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, char separator, StringSplitOptions options = StringSplitOptions.None) =>
-        st.Split([separator], options);
+    public static string[] Split(
+        this string st,
+        char separator,
+        StringSplitOptions options = StringSplitOptions.None
+    ) => st.Split([separator], options);
     #endregion
 
     #region Split(this string, string, [StringSplitOptions])
@@ -447,8 +475,11 @@ public static class StringExtensions
     /// <param name="separator">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, string separator, StringSplitOptions options = StringSplitOptions.None) =>
-        st.Split([separator], options);
+    public static string[] Split(
+        this string st,
+        string separator,
+        StringSplitOptions options = StringSplitOptions.None
+    ) => st.Split([separator], options);
     #endregion
 
     #region Split(this string, string[], [StringSplitOptions])
@@ -484,11 +515,8 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="ignoreCase"></param>
     /// <returns></returns>
-    public static bool StartsWith(
-        this string st,
-        string value,
-        bool ignoreCase) =>
-        st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
+    public static bool StartsWith(this string st, string value, bool ignoreCase) =>
+        value is not null && st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
     #endregion
 
     #region StartsWithAny
@@ -575,8 +603,12 @@ public static class StringExtensions
     /// <param name="prefix"></param>
     /// <param name="suffix"></param>
     /// <returns></returns>
-    public static StringBuilder AppendIfNotNull(this StringBuilder sb, object value, object prefix = null,
-        object suffix = null)
+    public static StringBuilder AppendIfNotNull(
+        this StringBuilder sb,
+        object value,
+        object prefix = null,
+        object suffix = null
+    )
     {
         if (value is not null)
             sb.Append(prefix).Append(value).Append(suffix);
@@ -594,8 +626,12 @@ public static class StringExtensions
     /// <param name="prefix"></param>
     /// <param name="suffix"></param>
     /// <returns></returns>
-    public static StringBuilder AppendIfNotNullOrWhiteSpace(this StringBuilder sb, object value, object prefix = null,
-        object suffix = null)
+    public static StringBuilder AppendIfNotNullOrWhiteSpace(
+        this StringBuilder sb,
+        object value,
+        object prefix = null,
+        object suffix = null
+    )
     {
         if (value?.ToString().IsNullOrWhiteSpace() == false)
             sb.Append(prefix).Append(value).Append(suffix);
@@ -610,8 +646,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNull(this StringBuilder st) =>
-        st?.ToString() is null;
+    public static bool IsNull(this StringBuilder st) => st?.ToString() is null;
     #endregion
 
     #region IsNullOrEmpty
@@ -640,8 +675,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsWhiteSpace(this StringBuilder st) =>
-        st.ToString().IsWhiteSpace();
+    public static bool IsWhiteSpace(this StringBuilder st) => st.ToString().IsWhiteSpace();
     #endregion
 
     #endregion
