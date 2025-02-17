@@ -87,7 +87,6 @@ public static class DateTimeMethods
     #endregion
 
     #region GetFirstDayOfMonth(int, [int])
-
     /// <summary>
     /// Gets the selected month's last day.
     /// </summary>
@@ -119,7 +118,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
-
     // ReSharper disable once UnusedMember.Global
     public static DateTime GetFirstDayOfWeek(DateTime baseDay) =>
         baseDay.AddDays(-(int)baseDay.DayOfWeek);
@@ -382,6 +380,18 @@ public static class DateTimeMethods
 
     #endregion
 
+    #region Parse
+    /// <inheritdoc cref="DateTime.Parse"/>
+    public static DateTime Parse(string value, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
+        DateTime.Parse(value, provider ?? CultureInfo.CurrentCulture, styles);
+    #endregion
+
+    #region ParseExact
+    /// <inheritdoc cref="DateTime.ParseExact"/>
+    public static DateTime ParseExact(string value, string format, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
+        DateTime.ParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles);
+    #endregion
+
     #region RemoveSeconds*
 
     #region RemoveSeconds(DateTime)
@@ -531,6 +541,18 @@ public static class DateTimeMethods
             return false;
         }
     }
+    #endregion
+
+    #region TryParse
+    /// <inheritdoc cref="DateTime.TryParse"/>
+    public static bool TryParse(string value, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
+        DateTime.TryParse(value, provider ?? CultureInfo.CurrentCulture, styles, out result);
+    #endregion
+
+    #region TryParseExact
+    /// <inheritdoc cref="DateTime.TryParseExact"/>
+    public static bool TryParseExact(string value, string format, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
+        DateTime.TryParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles, out result);
     #endregion
 
     #endregion
