@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security;
 using System.Xml.Serialization;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

@@ -322,12 +322,9 @@ public static class GenericMethods
     /// <param name="v1"></param>
     /// <param name="v2"></param>
     // ReSharper disable once UnusedMember.Global
-    public static void Swap<T>(ref T v1, ref T v2)
-    {
-        T swap = v1;
-        v1 = v2;
-        v2 = swap;
-    }
+    public static void Swap<T>(ref T v1, ref T v2) => 
+        (v1, v2) = (v2, v1);
+
     #endregion
 
     #endregion

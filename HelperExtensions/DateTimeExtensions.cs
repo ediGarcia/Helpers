@@ -1,5 +1,6 @@
 ﻿using HelperMethods;
 using System;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 using HelperExtensions;
+// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 

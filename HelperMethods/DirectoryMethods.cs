@@ -12,6 +12,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using SearchOption = System.IO.SearchOption;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
