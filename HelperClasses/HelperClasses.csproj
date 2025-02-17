@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(TargetPath) $(ProjectDir)..\..\DLL" />
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\_dll&quot;" />
   </Target>
 
 </Project>
