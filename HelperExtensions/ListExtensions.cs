@@ -1,10 +1,10 @@
-﻿using HelperMethods;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using HelperMethods;
 
 // ReSharper disable UnusedMember.Global
 
@@ -525,35 +525,32 @@ public static class ListExtensions
     }
     #endregion
 
-    #region BinarySearch*
-
-    #region BinarySearch(this IList<T>, T, Func<T, T, int>)
+    #region BinarySearch
     /// <summary>
-    /// Performs a binary search and retrieves the index of the target item.
+    /// Performs a binary search to find the item which contains the specified <see cref="value"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <param name="list"></param>
-    /// <param name="targetValue"></param>
-    /// <param name="comparisonFunction">A comparison function that should return: 0, if both values are equal;
-    /// 1 if the first value is greater than the second; -1 if the first value is less than the second.</param>
-    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(this IList<T> list, T targetValue, Func<T, T, int> comparisonFunction) =>
-        ListMethods.BinarySearch(list, targetValue, comparisonFunction);
+    /// <param name="value"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static T BinarySearch<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey> =>
+        ListMethods.BinarySearch(list, value, selector);
     #endregion
 
-    #region BinarySearch(this IList<T>, T, string) =>
+    #region BinarySearchIndex
     /// <summary>
-    /// Performs a binary search and retrieves the index of the target item.
+    /// Performs a binary search to find the index of the item which contains the specified <see cref="value"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <param name="list"></param>
-    /// <param name="propertyName"></param>
-    /// <param name="targetValue"></param>
-    /// <returns>The index of the target item, if it exists within the specified collection. -1, otherwise.</returns>
-    public static int BinarySearch<T>(this IList<T> list, T targetValue, string propertyName) =>
-        ListMethods.BinarySearch(list, propertyName, targetValue);
-    #endregion
-
+    /// <param name="value"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static int BinarySearchIndex<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey> =>
+        ListMethods.BinarySearchIndex(list, value, selector);
     #endregion
 
     #region Clone
@@ -1092,6 +1089,34 @@ public static class ListExtensions
         iEnumerable?.Any() != true;
     #endregion
 
+    #region Join*
+
+    #region Join<T>(this IEnumerable<T>, char)
+    /// <summary>
+    /// Concatenates the members of a collection, using the specified separator between each member.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="separator"></param>
+    /// <returns>A string that consists of the member of the value delimited by the separator char. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
+    public static string Join<T>(this IEnumerable<T> iEnumerable, char separator) =>
+        String.Join($"{separator}", iEnumerable);
+    #endregion
+
+    #region Join<T>(this IEnumerable<T>, string)
+    /// <summary>
+    /// Concatenates the members of a collection, using the specified separator between each member.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="separator"></param>
+    /// <returns>A string that consists of the member of the value delimited by the separator string. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
+    public static string Join<T>(this IEnumerable<T> iEnumerable, string separator) =>
+        String.Join(separator, iEnumerable);
+    #endregion
+
+    #endregion
+
     #region ParallelAll
     /// <summary>
     /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
@@ -1207,7 +1232,6 @@ public static class ListExtensions
     #endregion
 
     #region ToList
-
     /// <summary>
     /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
     /// </summary>
