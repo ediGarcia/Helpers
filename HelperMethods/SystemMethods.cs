@@ -1,4 +1,5 @@
-﻿using HelperMethods.Enums;
+﻿using CredentialManagement;
+using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using System;
 using System.Diagnostics;
@@ -254,28 +255,50 @@ public static class SystemMethods
     }
     #endregion
 
-    #region Recycle
+    #region RemoveCredential
     /// <summary>
-    /// Send file or directory to the Recycle Bin.
+    /// Removes an existing credential entry from the system.
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="suppressErrors">Indicates whether errors should be suppressed.</param>
-    /// <param name="suppressBigFileWarning">Indicates whether big files should be permanently deleted without the user confirmation.</param>
-    /// <exception cref="IOException"></exception>
-    [Obsolete("Use \"SystemMethods.Delete\" with \"recycle\" true instead.")]
-    public static async Task Recycle(string path, bool suppressErrors = true, bool suppressBigFileWarning = true)
+    /// <param name="identifier"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    public static void RemoveCredential(string identifier)
     {
-        if (!Exists(path))
-            throw new IOException($"Could not find file \"{path}\".");
+        Credential credential = new() { Target = identifier };
 
-        WindowsHelper.FileOperationFlags flags = WindowsHelper.FileOperationFlags.FofAllowUndo | WindowsHelper.FileOperationFlags.FofNoConfirmation;
+        if (!credential.Delete())
+            throw new SystemException($"The credential \"{identifier}\" could not be removed. Check if the desired credential actually exists and if you have the required privileges to remove it.");
+    }
+    #endregion
 
-        if (suppressErrors)
-            flags |= WindowsHelper.FileOperationFlags.FofNoErrorUi;
+    #region RetrieveCredential
+    /// <summary>
+    /// Retrieves an existing credential entry from the system.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    public static Credential RetrieveCredential(string identifier)
+    {
+        Credential credential = new() { Target = identifier };
 
-        flags |= suppressBigFileWarning ? WindowsHelper.FileOperationFlags.FofSilent : WindowsHelper.FileOperationFlags.FofWantNukeWarning;
+        if (!credential.Load())
+            throw new SystemException($"The credential \"{identifier}\" could not be fetched. Check if the desired credential actually exists and if you have the required privileges to access it.");
 
-        await Task.Run(() => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, flags));
+        return credential;
+    }
+    #endregion
+
+    #region RetrieveCredentialData
+    /// <summary>
+    /// Retrieves the username and password of an existing credential.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <returns></returns>
+    public static (string userName, string password) RetrieveCredentialData(string identifier)
+    {
+        Credential credential = RetrieveCredential(identifier);
+        return credential.Load() ? (credential.Username, credential.Password) : (null, null);
     }
     #endregion
 
@@ -304,6 +327,45 @@ public static class SystemMethods
             UseShellExecute = true,
             Verb = runAsAdmin ? "runas" : ""
         });
+    #endregion
+
+    #region StoreEnterpriseCredential
+    /// <summary>
+    /// Stores a new enterprise credential entry do the system.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    public static void StoreEnterpriseCredential(string identifier, string userName, string password) =>
+        StoreCredential(identifier, userName, password, PersistanceType.Enterprise);
+    #endregion
+
+    #region StoreLocalCredential
+    /// <summary>
+    /// Stores a new local credential entry do the system.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    public static void StoreLocalCredential(string identifier, string userName, string password) =>
+        StoreCredential(identifier, userName, password, PersistanceType.LocalComputer);
+    #endregion
+
+    #region StoreSessionCredential
+    /// <summary>
+    /// Stores a new session credential entry do the system.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    public static void StoreSessionCredential(string identifier, string userName, string password) =>
+        StoreCredential(identifier, userName, password, PersistanceType.Session);
     #endregion
 
     #region SystemCopy
@@ -381,6 +443,31 @@ public static class SystemMethods
             fs.PTo = pathTo;
 
         return WindowsHelper.SHFileOperation(ref fs);
+    }
+    #endregion
+
+    #region StoreCredential
+    /// <summary>
+    /// Stores a new credential entry do the system.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <param name="persistanceType"></param>
+    /// <returns></returns>
+    /// <exception cref="SystemException"></exception>
+    private static void StoreCredential(string identifier, string userName, string password, PersistanceType persistanceType)
+    {
+        Credential credential = new()
+        {
+            Target = identifier,
+            Username = userName,
+            Password = password,
+            PersistanceType = persistanceType
+        };
+
+        if (!credential.Save())
+            throw new SystemException($"The credential \"{identifier}\" could not be saved. Check if there is already a credential entry with the same id and if you have the required privileges.");
     }
     #endregion
 
