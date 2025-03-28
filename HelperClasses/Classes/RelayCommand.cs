@@ -1,5 +1,7 @@
 ﻿using System.Windows.Input;
 
+#pragma warning disable CS8625
+
 namespace HelperClasses.Classes;
 
 public class RelayCommand(Action execute, Func<bool> canExecute = null) : ICommand
@@ -28,7 +30,7 @@ public class RelayCommand(Action execute, Func<bool> canExecute = null) : IComma
     /// <param name="parameter"></param>
     /// <returns></returns>
     public bool CanExecute(object? parameter) =>
-        canExecute?.Invoke() == true;
+        canExecute?.Invoke() != false;
     #endregion
 
     #region Execute
