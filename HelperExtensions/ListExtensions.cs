@@ -336,6 +336,17 @@ public static class ListExtensions
         (T)list[index];
     #endregion
 
+    #region GetRandomItem
+    /// <summary>
+    /// Retrieves a random item from the current collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static T GetRandomItem<T>(this IList list) =>
+        (T)list[NumberMethods.GetRandomInt(list.Count)];
+    #endregion
+
     #region Move
     /// <summary>
     /// Moves the item at the specified source index to the specified destination index within the current <see cref="IList{T}"/>.
@@ -683,6 +694,17 @@ public static class ListExtensions
     }
     #endregion
 
+    #endregion
+
+    #region GetRandomItem
+    /// <summary>
+    /// Retrieves a random item from the current collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public static T GetRandomItem<T>(this IList<T> list) =>
+        list[NumberMethods.GetRandomInt(list.Count)];
     #endregion
 
     #region GetSublist
