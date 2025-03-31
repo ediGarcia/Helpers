@@ -1,6 +1,4 @@
-﻿using HelperMethods.Enums;
-using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +6,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security;
 using System.Xml.Serialization;
+using HelperMethods.Enums;
+using Microsoft.VisualBasic.FileIO;
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
