@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security;
 using System.Xml.Serialization;
 using HelperMethods.Enums;
 using Microsoft.VisualBasic.FileIO;
+
 // ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
@@ -265,8 +265,9 @@ public static class FileMethods
     {
         try
         {
-            using FileStream stream = new(path, FileMode.Open);
-            return (T)new BinaryFormatter().Deserialize(stream);
+            XmlSerializer serializer = new(typeof(T));
+            using StreamReader reader = new(path);
+            return (T)serializer.Deserialize(reader);
         }
         catch
         {
@@ -311,11 +312,19 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SerializationException" />
     /// <exception cref="SecurityException" />
-    public static void SaveDataToFile<T>(string path, T data, FileMode mode = FileMode.OpenOrCreate)
+    public static void SaveDataToFile<T>(string path, T data, Classes.FileMode mode = Classes.FileMode.OpenOrCreate)
     {
-        using FileStream stream = new(path, mode);
-        new BinaryFormatter().Serialize(stream, data);
-        stream.Flush();
+        if (Exists(path))
+        {
+            if (mode is Classes.FileMode.CreateNew)
+                throw new IOException($"The file \"{path}\" already exists.");
+        }
+        else if (mode is Classes.FileMode.Open)
+            throw new FileNotFoundException($"The file \"{path}\" does not exist.");
+
+        XmlSerializer serializer = new(typeof(T));
+        using StreamWriter writer = new(path, mode == Classes.FileMode.Append);
+        serializer.Serialize(writer, data);
     }
     #endregion
 
