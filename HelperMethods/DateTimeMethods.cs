@@ -1,12 +1,12 @@
-﻿using HelperMethods.Classes;
-using HelperMethods.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
+using HelperMethods.Classes;
+using HelperMethods.Enums;
 
 // ReSharper disable UnusedMember.Global
 
@@ -119,8 +119,17 @@ public static class DateTimeMethods
     /// <param name="baseDay"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstDayOfWeek(DateTime baseDay) =>
-        baseDay.AddDays(-(int)baseDay.DayOfWeek);
+    public static DateTime GetFirstDayOfWeek(DateTime baseDay)
+    {
+        try
+        {
+            return baseDay.AddDays(-(int)baseDay.DayOfWeek);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return DateTime.MinValue;
+        }
+    }
     #endregion
 
     #endregion
@@ -199,6 +208,9 @@ public static class DateTimeMethods
     /// <returns></returns>
     public static DateTime GetLastDayOfMonth(int month, int? year = null)
     {
+        if (month == 12 && year == 9999)
+            return DateTime.MaxValue;
+
         DateTime firstDay = new(year ?? DateTime.Today.Year, month, 1);
         return firstDay.AddMonths(1).AddDays(-1);
     }
@@ -225,8 +237,17 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
-    public static DateTime GetLastDayOfWeek(DateTime baseDay) =>
-        baseDay.AddDays(6 - (int)baseDay.DayOfWeek);
+    public static DateTime GetLastDayOfWeek(DateTime baseDay)
+    {
+        try
+        {
+            return baseDay.AddDays(6 - (int)baseDay.DayOfWeek);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return DateTime.MaxValue;
+        }
+    }
     #endregion
 
     #endregion
@@ -381,13 +402,27 @@ public static class DateTimeMethods
     #endregion
 
     #region Parse
-    /// <inheritdoc cref="DateTime.Parse"/>
+    /// <summary>
+    /// Converts the string representation of a date and time to its <see cref="DateTime"/> equivalent by using culture-specific format information and formatting style.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="provider"></param>
+    /// <param name="styles"></param>
+    /// <returns></returns>
     public static DateTime Parse(string value, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
         DateTime.Parse(value, provider ?? CultureInfo.CurrentCulture, styles);
     #endregion
 
     #region ParseExact
-    /// <inheritdoc cref="DateTime.ParseExact"/>
+    /// <summary>
+    /// Converts the string representation of a date and time to its <see cref="DateTime"/> equivalent by using culture-specific format information and formatting style.
+    /// The format of the string representation must match the specified format exactly or an exception is thrown.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="format"></param>
+    /// <param name="provider"></param>
+    /// <param name="styles"></param>
+    /// <returns></returns>
     public static DateTime ParseExact(string value, string format, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
         DateTime.ParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles);
     #endregion
@@ -544,13 +579,31 @@ public static class DateTimeMethods
     #endregion
 
     #region TryParse
-    /// <inheritdoc cref="DateTime.TryParse"/>
+    /// <summary>
+    /// Converts the string representation of a date and time to its <see cref="DateTime"/> equivalent by using culture-specific format information and formatting style,
+    /// and returns a value indicating whether the conversion succeeded.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="result"></param>
+    /// <param name="provider"></param>
+    /// <param name="styles"></param>
+    /// <returns></returns>
     public static bool TryParse(string value, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
         DateTime.TryParse(value, provider ?? CultureInfo.CurrentCulture, styles, out result);
     #endregion
 
     #region TryParseExact
-    /// <inheritdoc cref="DateTime.TryParseExact"/>
+    /// <summary>
+    /// Converts the string representation of a date and time to its <see cref="DateTime"/> equivalent by using culture-specific format information and formatting style.
+    /// The format of the string representation must match the specified format exactly or an exception is thrown.
+    /// The method returns a value indicating whether the conversion succeeded.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="format"></param>
+    /// <param name="result"></param>
+    /// <param name="provider"></param>
+    /// <param name="styles"></param>
+    /// <returns></returns>
     public static bool TryParseExact(string value, string format, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
         DateTime.TryParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles, out result);
     #endregion
