@@ -71,6 +71,33 @@ public static class GenericMethods
         Comparer<T>.Default.Compare(x, y);
     #endregion
 
+    #region EvaluateChance
+    /// <summary>
+    /// Returns true based on a given probability.
+    /// </summary>
+    /// <param name="probability"></param>
+    /// <returns></returns>
+    public static bool EvaluateChance(int probability) =>
+        NumberMethods.GetRandomInt(100) < probability;
+    #endregion
+
+    #region GetBetween
+    /// <summary>
+    /// Checks if value is between the specified boundaries. If it is, returns the value, otherwise, returns a value inside the boundaries.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static T GetBetween<T>(T value, T min, T max) => 
+        IsGreater(value, max)
+            ? max
+            : IsLess(value, min)
+                ? min
+                : value;
+    #endregion
+
     #region GetFirstMatching
     /// <summary>
     /// Returns the first value that matches the condition
