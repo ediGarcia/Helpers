@@ -11,6 +11,19 @@ public static class DateTimeExtensions
 
     #region DateTime
 
+    #region IsBetween
+    /// <summary>
+    /// Indicates whether the current <see cref="DateTime"/> is between two specified <see cref="DateTime"/> value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="minimum"></param>
+    /// <param name="maximum"></param>
+    /// <param name="inclusive"></param>
+    /// <returns></returns>
+    public static bool IsBetween(this DateTime value, DateTime minimum, DateTime maximum, bool inclusive = true) =>
+        GenericMethods.IsBetween(value, minimum, maximum, inclusive);
+    #endregion
+
     #region IsWeekday
     /// <summary>
     /// Returns true if the current date is a weekday.
