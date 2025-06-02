@@ -91,17 +91,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region HasAny
-    /// <summary>
-    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static bool HasAny<T>(this ICollection<T> iEnumerable) =>
-        iEnumerable?.Count > 0;
-    #endregion
-
     #region IsInsideBounds
     /// <summary>
     /// Indicates whether the specified <see cref="index"/> is inside the bound of the current collection.
@@ -571,13 +560,8 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    public static List<T> Clone<T>(this IList<T> list)
-    {
-        List<T> cloned = new(list.Count);
-        list.ForEach(cloned.Add);
-
-        return cloned;
-    }
+    public static List<T> Clone<T>(this IList<T> list) => 
+        [..list];
     #endregion
 
     #region FillLeft*
@@ -991,6 +975,19 @@ public static class ListExtensions
         items.Any(iEnumerable.Contains);
     #endregion
 
+    #region FirstOrDefault
+    /// <summary>
+    /// Returns the first element that satisfies a specified condition, or the default value if no such element is found.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static T FirstOrDefault<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate, T defaultValue) =>
+        iEnumerable.FirstOrDefault(predicate) ?? default;
+    #endregion
+
     #region ForEach*
 
     #region ForEach(this IEnumerable<T>, Action<T>)
@@ -1023,33 +1020,6 @@ public static class ListExtensions
         foreach (T item in iEnumerable)
             action(item, index++);
     }
-    #endregion
-
-    #endregion
-
-    #region HasAny*
-
-    #region HasAny(this IEnumerable<T>)
-    /// <summary>
-    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static bool HasAny<T>(this IEnumerable<T> iEnumerable) =>
-        iEnumerable?.Any() == true;
-    #endregion
-
-    #region HasAny(this IEnumerable<T>, Func<T, bool>) =>
-    /// <summary>
-    /// Determines whether the current <see cref="IEnumerable{T}"/> is defined and contains any item that satisfies the specified condition.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static bool HasAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
-        iEnumerable?.Any(predicate) == true;
     #endregion
 
     #endregion
@@ -1109,6 +1079,18 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
         iEnumerable?.Any() != true;
+    #endregion
+
+    #region None
+    /// <summary>
+    /// Determines whether no elements of a sequence satisfy a condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static bool None<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable.All(item => !predicate(item));
     #endregion
 
     #region Join*
