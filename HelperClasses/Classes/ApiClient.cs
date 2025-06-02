@@ -1,4 +1,4 @@
-﻿using HelperClasses.Enums;
+﻿using System.Net.Http;
 using System.Text;
 
 namespace HelperClasses.Classes;
@@ -77,11 +77,11 @@ public class ApiClient
     /// <summary>
     /// Creates a new request from the current <see cref="ApiClient"/> data targeting the specified endpoint and for the specified HTTP method.
     /// </summary>
-    /// <param name="httpVerb"></param>
+    /// <param name="httpMethod"></param>
     /// <param name="endpoint"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public ApiClientAction CreateNewRequest(HttpVerb httpVerb, string endpoint)
+    public ApiClientAction CreateNewRequest(HttpMethod httpMethod, string endpoint)
     {
         if (Uri.TryCreate(endpoint, UriKind.Absolute, out _))
         {
@@ -91,7 +91,7 @@ public class ApiClient
         else
             endpoint = BaseUrl + endpoint;
 
-        return new(httpVerb, endpoint, _defaultHeaders);
+        return new(httpMethod, endpoint, _defaultHeaders);
     }
     #endregion
 

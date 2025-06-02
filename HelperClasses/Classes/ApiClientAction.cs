@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using HelperClasses.Enums;
 
 #pragma warning disable CS8603
 #pragma warning disable CS8618
@@ -13,17 +12,17 @@ public class ApiClientAction
     private readonly Dictionary<string, string> _headers = [];
     private readonly List<KeyValuePair<string, string>> _queryFields = [];
     private readonly string _url;
-    private readonly HttpVerb _httpVerb;
+    private readonly HttpMethod _httpMethod;
 
     private HttpContent _content;
 
     internal ApiClientAction(
-        HttpVerb httpVerb,
+        HttpMethod httpVerb,
         string url,
         Dictionary<string, string> defaultHeaders
     )
     {
-        _httpVerb = httpVerb;
+        _httpMethod = httpVerb;
         _url = url;
 
         foreach ((string key, string value) in defaultHeaders)
@@ -86,20 +85,8 @@ public class ApiClientAction
         foreach ((string key, string value) in _headers)
             httpClient.DefaultRequestHeaders.Add(key, value);
 
-        HttpResponseMessage response = _httpVerb switch
-        {
-            HttpVerb.Get => await httpClient.GetAsync(actualUrl),
-            HttpVerb.Post => await httpClient.PostAsync(actualUrl, _content),
-            HttpVerb.Put => await httpClient.PutAsync(actualUrl, _content),
-            HttpVerb.Delete => await httpClient.DeleteAsync(actualUrl),
-            HttpVerb.Patch => await httpClient.PatchAsync(actualUrl, _content),
-            _ => throw new InvalidOperationException(
-                $"The verb \"{_httpVerb}\" is not supported by this tool."
-            ),
-        };
-
+        HttpResponseMessage response = await httpClient.SendAsync(new(_httpMethod, actualUrl){ Content = _content });
         response.EnsureSuccessStatusCode();
-
         return await response.Content.ReadAsStringAsync();
     }
     #endregion
@@ -134,11 +121,6 @@ public class ApiClientAction
     /// <exception cref="InvalidOperationException"></exception>
     public ApiClientAction SetContent(HttpContent content)
     {
-        if (_httpVerb is HttpVerb.Get or HttpVerb.Delete)
-            throw new NotSupportedException(
-                "GET and DELETE Http methods does not support content."
-            );
-
         if (_content is not null)
             throw new InvalidOperationException("The content is already set.");
 
