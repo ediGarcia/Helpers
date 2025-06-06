@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HelperMethods;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using HelperMethods;
 
 // ReSharper disable UnusedMember.Global
 
@@ -21,7 +21,8 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string Append(this string st, string value) => st + value;
+    public static string Append(this string st, string value) =>
+        String.Concat(st, value);
     #endregion
 
     #region AppendMany
@@ -33,7 +34,7 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static string AppendMany(this string st, string separator, params string[] values) =>
-        st + String.Join(separator, values);
+        String.Concat(st, String.Join(separator, values));
     #endregion
 
     #region AppendManyNew
@@ -45,7 +46,9 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static string AppendManyNew(this string st, string separator, params string[] values) =>
-        st + String.Join(separator, values.Where(_ => st?.Contains(_) != true));
+        st is null
+            ? String.Join(separator, values)
+            : String.Concat(st, String.Join(separator, values.Where(_ => !st.Contains(_))));
     #endregion
 
     #region AppendNew
@@ -56,10 +59,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     public static string AppendNew(this string st, string value) =>
-        // ReSharper disable once ArrangeRedundantParentheses
-        st?.Contains(value) == true
-            ? st
-            : (st + value);
+        st?.Contains(value) == true ? st : String.Concat(st, value);
     #endregion
 
     #region Contains
@@ -104,7 +104,7 @@ public static class StringExtensions
         this string st,
         char value,
         StringComparison comparisonType = StringComparison.Ordinal
-    ) => st?.IndexOf($"{value}", comparisonType) >= 0;
+    ) => st?.IndexOf(value.ToString(), comparisonType) >= 0;
     #endregion
 
     #endregion
@@ -129,7 +129,8 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool ContainsAny(this string st, params char[] values) => values.Any(st.Contains);
+    public static bool ContainsAny(this string st, params char[] values) =>
+        values.Any(st.Contains);
     #endregion
 
     #endregion
@@ -154,14 +155,16 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool ContainsAll(this string st, params char[] values) => values.All(st.Contains);
+    public static bool ContainsAll(this string st, params char[] values) =>
+        values.All(st.Contains);
     #endregion
 
     #endregion
 
     #region ContainsChar
     /// <inheritdoc cref="String.Contains"/>
-    public static bool ContainsChar(this string st, char value) => st?.Contains(value) == true;
+    public static bool ContainsChar(this string st, char value) =>
+        st?.IndexOf(value) > 0;
     #endregion
 
     #region ContainsSpace
@@ -171,12 +174,14 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <returns></returns>
     /// <exception cref="NullReferenceException">The string is null.</exception>
-    public static bool ContainsSpace(this string st) => st?.Any(Char.IsWhiteSpace) == true;
+    public static bool ContainsSpace(this string st) =>
+        st?.Any(Char.IsWhiteSpace) == true;
     #endregion
 
     #region ContainsString
     /// <inheritdoc cref="String.Contains"/>
-    public static bool ContainsString(this string st, string value) => st?.Contains(value) == true;
+    public static bool ContainsString(this string st, string value) =>
+        st?.Contains(value) == true;
     #endregion
 
     #region EndsWith
@@ -188,7 +193,7 @@ public static class StringExtensions
     /// <param name="ignoreCase"></param>
     /// <returns></returns>
     public static bool EndsWith(this string st, string value, bool ignoreCase) =>
-        value is not null && st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
+        !String.IsNullOrEmpty(value) && st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) == true;
     #endregion
 
     #region EndsWithAny
@@ -228,17 +233,9 @@ public static class StringExtensions
     public static string FillLeft(this string st, int count, string value)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(
-                nameof(count),
-                "The count must be equal or greater than 0 (zero)."
-            );
+            throw new ArgumentOutOfRangeException(nameof(count), "The count must be equal or greater than 0 (zero).");
 
-        StringBuilder newString = new();
-
-        for (int i = 0; i < count; i++)
-            newString.Append(value);
-
-        return newString.Append(st).ToString();
+        return new StringBuilder().Insert(0, value, count).Append(st).ToString();
     }
     #endregion
 
@@ -258,12 +255,7 @@ public static class StringExtensions
                 "The count must be equal or greater than 0 (zero)."
             );
 
-        StringBuilder newString = new(st);
-
-        for (int i = 0; i < count; i++)
-            newString.Append(value);
-
-        return newString.ToString();
+        return new StringBuilder(st).Insert(st.Length, value, count).ToString();
     }
     #endregion
 
@@ -275,7 +267,7 @@ public static class StringExtensions
     /// <param name="pattern"></param>
     /// <returns></returns>
     public static string[] GetMatches(this string st, string pattern) =>
-        [.. from Match match in Regex.Matches(st, pattern) select match.Value];
+        Regex.Matches(st, pattern).Cast<Match>().Select(m => m.Value).ToArray();
     #endregion
 
     #region GetValueOrDefault
@@ -340,7 +332,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsEmpty(this string st) => st == "";
+    public static bool IsEmpty(this string st) =>
+        st == "";
     #endregion
 
     #region IsEqualTo
@@ -364,7 +357,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNull(this string st) => st is null;
+    public static bool IsNull(this string st) =>
+        st is null;
     #endregion
 
     #region IsNullOrEmpty
@@ -373,7 +367,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNullOrEmpty(this string st) => String.IsNullOrEmpty(st);
+    public static bool IsNullOrEmpty(this string st) =>
+        String.IsNullOrEmpty(st);
     #endregion
 
     #region IsNullOrWhiteSpace
@@ -382,7 +377,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNullOrWhiteSpace(this string st) => String.IsNullOrWhiteSpace(st);
+    public static bool IsNullOrWhiteSpace(this string st) =>
+        String.IsNullOrWhiteSpace(st);
     #endregion
 
     #region IsWhiteSpace
@@ -391,7 +387,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsWhiteSpace(this string st) => st != null && String.IsNullOrWhiteSpace(st);
+    public static bool IsWhiteSpace(this string st) =>
+        st != null && String.IsNullOrWhiteSpace(st);
     #endregion
 
     #region Matches
@@ -401,7 +398,8 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="pattern"></param>
     /// <returns></returns>
-    public static bool Matches(this string st, string pattern) => Regex.IsMatch(st, pattern);
+    public static bool Matches(this string st, string pattern) =>
+        Regex.IsMatch(st, pattern);
     #endregion
 
     #region Prepend
@@ -411,7 +409,8 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string Prepend(this string st, string value) => value + st;
+    public static string Prepend(this string st, string value) =>
+        String.Concat(value, st);
     #endregion
 
     #region PrependMany
@@ -422,7 +421,7 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static string PrependMany(this string st, params string[] values) =>
-        String.Join(String.Empty, values) + st;
+        String.Concat(String.Join(String.Empty, values), st);
     #endregion
 
     #region PrependManyNew
@@ -433,7 +432,9 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static string PrependManyNew(this string st, params string[] values) =>
-        String.Join(String.Empty, values.Where(_ => st?.Contains(_) != true)) + st;
+        st is null
+            ? String.Concat(values)
+            : String.Concat(String.Concat(values.Where(_ => !st.Contains(_))), st);
     #endregion
 
     #region PrependNew
@@ -516,7 +517,7 @@ public static class StringExtensions
     /// <param name="ignoreCase"></param>
     /// <returns></returns>
     public static bool StartsWith(this string st, string value, bool ignoreCase) =>
-        value is not null && st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
+        !String.IsNullOrEmpty(value) && st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
     #endregion
 
     #region StartsWithAny
@@ -527,7 +528,7 @@ public static class StringExtensions
     /// <param name="values"></param>
     /// <returns></returns>
     public static bool StartsWithAny(this string st, params string[] values) =>
-        values.Any(st.StartsWith);
+        values?.Any(st.StartsWith) == true;
     #endregion
 
     #endregion
@@ -633,8 +634,10 @@ public static class StringExtensions
         object suffix = null
     )
     {
-        if (value?.ToString().IsNullOrWhiteSpace() == false)
-            sb.Append(prefix).Append(value).Append(suffix);
+        string stringValue = value?.ToString();
+
+        if (stringValue.IsNullOrWhiteSpace() == false)
+            sb.Append(prefix).Append(stringValue).Append(suffix);
 
         return sb;
     }
@@ -646,7 +649,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsNull(this StringBuilder st) => st?.ToString() is null;
+    public static bool IsNull(this StringBuilder st) =>
+        st?.ToString() is null;
     #endregion
 
     #region IsNullOrEmpty
@@ -675,7 +679,8 @@ public static class StringExtensions
     /// </summary>
     /// <param name="st"></param>
     /// <returns></returns>
-    public static bool IsWhiteSpace(this StringBuilder st) => st.ToString().IsWhiteSpace();
+    public static bool IsWhiteSpace(this StringBuilder st) =>
+        st.ToString().IsWhiteSpace();
     #endregion
 
     #endregion
