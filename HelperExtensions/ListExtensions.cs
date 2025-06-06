@@ -1,10 +1,9 @@
-﻿using System;
+﻿using HelperMethods;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using HelperMethods;
 
 // ReSharper disable UnusedMember.Global
 
@@ -82,13 +81,8 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static ICollection<T> Clone<T>(this ICollection<T> collection)
-    {
-        Collection<T> cloned = [];
-        collection.ForEach(cloned.Add);
-
-        return cloned;
-    }
+    public static ICollection<T> Clone<T>(this ICollection<T> collection) =>
+        [.. collection];
     #endregion
 
     #region IsInsideBounds
@@ -163,13 +157,8 @@ public static class ListExtensions
     /// <typeparam name="T2"></typeparam>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public static Dictionary<T1, T2> Clone<T1, T2>(this IDictionary<T1, T2> dictionary)
-    {
-        Dictionary<T1, T2> cloned = new(dictionary.Count);
-        dictionary.ForEach(cloned.Add);
-
-        return cloned;
-    }
+    public static Dictionary<T1, T2> Clone<T1, T2>(this IDictionary<T1, T2> dictionary) =>
+        new(dictionary);
     #endregion
 
     #region ForEach*
@@ -271,7 +260,7 @@ public static class ListExtensions
     }
     #endregion
 
-    #region InverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2, int>, [int?], [int?])
+    #region ReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2, int>, [int?], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary in the inverse order.
     /// </summary>
@@ -555,13 +544,12 @@ public static class ListExtensions
 
     #region Clone
     /// <summary>
-    /// Creates a copy of the current list.
+    /// Creates a copy of the current collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
     /// <returns></returns>
-    public static List<T> Clone<T>(this IList<T> list) => 
-        [..list];
+    public static IList<T> Clone<T>(this IList<T> iList) =>
+        [.. iList];
     #endregion
 
     #region FillLeft*
@@ -951,6 +939,17 @@ public static class ListExtensions
         iEnumerable.Select(converterFunction);
     #endregion
 
+    #region Clone
+    /// <summary>
+    /// Creates a copy of the current <see cref="IEnumerable{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Clone<T>(this IEnumerable<T> iEnumerable) =>
+        [.. iEnumerable];
+    #endregion
+
     #region ContainsAll
     /// <summary>
     /// Indicates whether the <see cref="IEnumerable{T}"/> contains all the specified items.
@@ -959,11 +958,15 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
-    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
-        items.All(iEnumerable.Contains);
+    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items)
+    {
+        HashSet<T> itemSet = [..iEnumerable];
+        return items.All(itemSet.Contains);
+    }
     #endregion
 
     #region ContainsAny
+
     /// <summary>
     /// Indicates whether the <see cref="IEnumerable{T}"/> contains any the specified items.
     /// </summary>
@@ -971,8 +974,11 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains any of the specified items. False, otherwise.</returns>
-    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
-        items.Any(iEnumerable.Contains);
+    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items)
+    {
+        HashSet<T> itemSet = [.. iEnumerable];
+        return items.Any(itemSet.Contains);
+    }
     #endregion
 
     #region FirstOrDefault
