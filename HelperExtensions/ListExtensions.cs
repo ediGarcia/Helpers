@@ -947,15 +947,11 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
-    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items)
-    {
-        HashSet<T> itemSet = [..iEnumerable];
-        return items.All(itemSet.Contains);
-    }
+    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items) => 
+        items.All(item => iEnumerable.Any(_ => _.Equals(item)));
     #endregion
 
     #region ContainsAny
-
     /// <summary>
     /// Indicates whether the <see cref="IEnumerable{T}"/> contains any the specified items.
     /// </summary>
@@ -963,11 +959,8 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains any of the specified items. False, otherwise.</returns>
-    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items)
-    {
-        HashSet<T> itemSet = [.. iEnumerable];
-        return items.Any(itemSet.Contains);
-    }
+    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
+        items.Any(item => iEnumerable.Any(_ => _.Equals(item)));
     #endregion
 
     #region FirstOrDefault
