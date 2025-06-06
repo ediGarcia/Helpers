@@ -1012,55 +1012,31 @@ public static class ListExtensions
 
     #endregion
 
-    #region IndexOf
-    /// <summary>
-    /// Searches for the specified object and returns the zero-based index of the first occurence within the entire <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static int IndexOf<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
-    {
-        int index = 0;
-
-        foreach (T item in collection)
-        {
-            if (predicate(item))
-                return index;
-
-            index++;
-        }
-
-        return -1;
-    }
-    #endregion
-
     #region IsEmpty
     /// <summary>
-    /// Indicates whether the current <see cref="IEnumerable{T}"/> is empty.
+    /// Indicates whether the current sequence is empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
+    /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static bool IsEmpty<T>(this IEnumerable<T> collection) =>
-        !collection.Any();
+    public static bool IsEmpty<T>(this IEnumerable<T> iEnumerable) =>
+        !iEnumerable.Any();
     #endregion
 
     #region IsNull
     /// <summary>
-    /// Indicates whether the current <see cref="IEnumerable{T}"/> is null.
+    /// Indicates whether the current sequence is null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
+    /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static bool IsNull<T>(this IEnumerable<T> collection) =>
-        collection is null;
+    public static bool IsNull<T>(this IEnumerable<T> iEnumerable) =>
+        iEnumerable is null;
     #endregion
 
     #region IsNullOrEmpty
     /// <summary>
-    /// Indicates whether the <see cref="IEnumerable{T}"/> is null or empty.
+    /// Indicates whether the current sequence is null or empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
@@ -1110,7 +1086,6 @@ public static class ListExtensions
     #endregion
 
     #region ParallelAll
-
     /// <summary>
     /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
     /// </summary>
@@ -1142,18 +1117,8 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns>The number of elements in the input sequence.</returns>
-    public static int ParallelCount<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
-    {
-        int count = 0;
-
-        Parallel.ForEach(iEnumerable, (_, state) =>
-        {
-            if (predicate(_))
-                count++;
-        });
-
-        return count;
-    }
+    public static int ParallelCount<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable.AsParallel().Count(predicate);
     #endregion
 
     #region ParallelForEach*
