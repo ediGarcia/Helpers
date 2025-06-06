@@ -29,9 +29,7 @@ public static class ListExtensions
         length ??= array.Length - startIndex;
 
         T[] newArray = new T[length.Value];
-
-        for (int i = 0; i < length; i++)
-            newArray[i] = array[startIndex + i];
+        Array.Copy(array, startIndex, newArray, 0, length.Value);
 
         return newArray;
     }
@@ -107,18 +105,12 @@ public static class ListExtensions
     /// <returns>The number of items removed.</returns>
     public static int Remove<T>(this ICollection<T> collection, Func<T, bool> predicate)
     {
-        int itemsRemovedCount = 0;
+        List<T> itemsToRemove = collection.Where(predicate).ToList<T>();
 
-        collection.ToArray().ForEach(_ =>
-        {
-            if (predicate(_))
-            {
-                collection.Remove(_);
-                itemsRemovedCount++;
-            }
-        });
+        foreach (T item in itemsToRemove)
+            collection.Remove(item);
 
-        return itemsRemovedCount;
+        return itemsToRemove.Count;
     }
     #endregion
 
@@ -179,11 +171,8 @@ public static class ListExtensions
     public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
-
-        for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
-            action(keys[i], values[i]);
+        foreach (KeyValuePair<T1, T2> item in dictionary)
+            action(item.Key, item.Value);
     }
     #endregion
 
@@ -598,7 +587,7 @@ public static class ListExtensions
     /// <param name="quantity"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static void FillRight<T>(this IList<T> list, int quantity) =>
-    list.FillRight(default, quantity);
+        list.FillRight(default, quantity);
     #endregion
 
     #region FillRight(this IList<T>, T, int)
@@ -1128,6 +1117,7 @@ public static class ListExtensions
     #endregion
 
     #region ParallelAll
+
     /// <summary>
     /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
     /// </summary>
@@ -1135,21 +1125,8 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns>true if every the element in the source pass the test in the specified predicate; otherwise, false.</returns>
-    public static bool ParallelAll<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
-    {
-        bool found = true;
-
-        Parallel.ForEach(iEnumerable, (_, state) =>
-        {
-            if (!predicate(_))
-            {
-                found = false;
-                state.Stop();
-            }
-        });
-
-        return found;
-    }
+    public static bool ParallelAll<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable.AsParallel().All(predicate);
     #endregion
 
     #region ParallelAny
@@ -1160,21 +1137,8 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns>true if any elements in the source pass the test in the specified predicate; otherwise, false.</returns>
-    public static bool ParallelAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
-    {
-        bool found = false;
-
-        Parallel.ForEach(iEnumerable, (_, state) =>
-        {
-            if (predicate(_))
-            {
-                found = true;
-                state.Stop();
-            }
-        });
-
-        return found;
-    }
+    public static bool ParallelAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
+        iEnumerable.AsParallel().Any(predicate);
     #endregion
 
     #region ParallelCount
