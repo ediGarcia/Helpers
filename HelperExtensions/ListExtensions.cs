@@ -689,6 +689,24 @@ public static class ListExtensions
     }
     #endregion
 
+    #region IndexOf
+    /// <summary>
+    /// Determines the index of the first item that matches the condition in the sequence.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static int IndexOf<T>(this IList<T> list, Func<T, bool> predicate)
+    {
+        for (int i = 0; i < list.Count; i++)
+            if (predicate(list[i]))
+                return i;
+
+        return -1;
+    }
+    #endregion
+
     #region InsertMany
     /// <summary>
     /// Insert multiple items to the list starting at the specified index.
