@@ -65,16 +65,6 @@ public static class DateTimeMethods
 
     #region GetFirstDayOfMonth*
 
-    #region GetFirstDayOfMonth()
-    /// <summary>
-    /// Gets the current month's first day.
-    /// </summary>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstDayOfMonth() =>
-        GetFirstDayOfMonth(DateTime.Now.Month);
-    #endregion
-
     #region GetFirstDayOfMonth(DateTime)
     /// <summary>
     /// Gets the selected date month's first day.
@@ -93,24 +83,13 @@ public static class DateTimeMethods
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
     /// <param name="year"></param>
     /// <returns></returns>
-    public static DateTime GetFirstDayOfMonth(int month, int? year = null) =>
-        new(year ?? DateTime.Today.Year, month, 1);
+    public static DateTime GetFirstDayOfMonth(int? month = null, int? year = null) =>
+        new(year ?? DateTime.Today.Year, month ?? DateTime.Today.Month, 1);
     #endregion
 
     #endregion
 
     #region GetFirstDayOfWeek*
-
-    #region GetFirstDayOfWeek()
-    /// <summary>
-    /// Gets the first day of the current week.
-    /// </summary>
-    /// <returns></returns>
-
-    // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstDayOfWeek() =>
-        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-    #endregion
 
     #region GetFirstDayOfWeek(DateTime)
     /// <summary>
@@ -119,11 +98,13 @@ public static class DateTimeMethods
     /// <param name="baseDay"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static DateTime GetFirstDayOfWeek(DateTime baseDay)
+    public static DateTime GetFirstDayOfWeek(DateTime? baseDay = null)
     {
+        baseDay ??= DateTime.Today;
+
         try
         {
-            return baseDay.AddDays(-(int)baseDay.DayOfWeek);
+            return baseDay.Value.AddDays(-(int)baseDay.Value.DayOfWeek);
         }
         catch (ArgumentOutOfRangeException)
         {
@@ -178,16 +159,6 @@ public static class DateTimeMethods
 
     #region GetLastDayOfMonth*
 
-    #region GetLastDayOfMonth()
-    /// <summary>
-    /// Gets the current month's last day.
-    /// </summary>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastDayOfMonth() =>
-        GetLastDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
-    #endregion
-
     #region GetLastDayOfMonth(DateTime)
     /// <summary>
     /// Gets the selected date month's last day.
@@ -196,7 +167,7 @@ public static class DateTimeMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static DateTime GetLastDayOfMonth(DateTime baseDay) =>
-        GetLastDayOfMonth(baseDay.Year, baseDay.Month);
+        GetLastDayOfMonth(baseDay.Month, baseDay.Year);
     #endregion
 
     #region GetLastDayOfMonth(int, [int])
@@ -206,30 +177,21 @@ public static class DateTimeMethods
     /// <param name="year"></param>
     /// <param name="month">The desired month, expressed as a number between 1 and 12.</param>
     /// <returns></returns>
-    public static DateTime GetLastDayOfMonth(int month, int? year = null)
+    public static DateTime GetLastDayOfMonth(int? month = null, int? year = null)
     {
-        if (month == 12 && year == 9999)
-            return DateTime.MaxValue;
+        month ??= DateTime.Today.Month;
+        year ??= DateTime.Today.Year;
 
-        DateTime firstDay = new(year ?? DateTime.Today.Year, month, 1);
-        return firstDay.AddMonths(1).AddDays(-1);
+        return month == 12 && year == 9999
+            ? DateTime.MaxValue
+            : GetFirstDayOfMonth(month, year).AddMonths(1).AddDays(-1);
     }
+
     #endregion
 
     #endregion
 
     #region GetLastDayOfWeek*
-
-    #region GetLastDayOfWeek()
-    /// <summary>
-    /// Gets the last day of the current week.
-    /// </summary>
-    /// <returns></returns>
-
-    // ReSharper disable once UnusedMember.Global
-    public static DateTime GetLastDayOfWeek() =>
-        GetLastDayOfWeek(DateTime.Now);
-    #endregion
 
     #region GetLastDayOfWeek(DateTime)
     /// <summary>
@@ -237,11 +199,13 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
-    public static DateTime GetLastDayOfWeek(DateTime baseDay)
+    public static DateTime GetLastDayOfWeek(DateTime? baseDay = null)
     {
+        baseDay ??= DateTime.Today;
+
         try
         {
-            return baseDay.AddDays(6 - (int)baseDay.DayOfWeek);
+            return baseDay.Value.AddDays(6 - (int)baseDay.Value.DayOfWeek);
         }
         catch (ArgumentOutOfRangeException)
         {
