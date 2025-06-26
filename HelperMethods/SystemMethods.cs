@@ -1,5 +1,4 @@
-﻿using CredentialManagement;
-using HelperMethods.Enums;
+﻿using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using System;
 using System.Diagnostics;
@@ -14,6 +13,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CredentialManagement;
 
 // ReSharper disable UnusedMember.Global
 
