@@ -277,6 +277,28 @@ public static class ListExtensions
 
     #endregion
 
+    #region TrySetValue
+    /// <summary>
+    /// Tries to set the value for the specified key.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns>true, if the key exists and the value is property set; false otherwise.</returns>
+    public static bool TrySetValue<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 value)
+    {
+        if (dictionary.ContainsKey(key))
+        {
+            dictionary[key] = value;
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
+
     #endregion
 
     #region IList
