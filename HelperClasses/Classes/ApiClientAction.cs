@@ -97,6 +97,7 @@ public class ApiClientAction
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
     public async Task<T> SendRequest<T>() =>
         JsonSerializer.Deserialize<T>(
             await SendRequest(),
