@@ -262,13 +262,9 @@ public static class SystemMethods
     /// <param name="identifier"></param>
     /// <returns></returns>
     /// <exception cref="SystemException"></exception>
-    public static void RemoveCredential(string identifier)
-    {
-        Credential credential = new() { Target = identifier };
+    public static bool RemoveCredential(string identifier) => 
+        new Credential { Target = identifier }.Delete();
 
-        if (!credential.Delete())
-            throw new SystemException($"The credential \"{identifier}\" could not be removed. Check if the desired credential actually exists and if you have the required privileges to remove it.");
-    }
     #endregion
 
     #region RetrieveCredential
@@ -281,24 +277,7 @@ public static class SystemMethods
     public static Credential RetrieveCredential(string identifier)
     {
         Credential credential = new() { Target = identifier };
-
-        if (!credential.Load())
-            throw new SystemException($"The credential \"{identifier}\" could not be fetched. Check if the desired credential actually exists and if you have the required privileges to access it.");
-
-        return credential;
-    }
-    #endregion
-
-    #region RetrieveCredentialData
-    /// <summary>
-    /// Retrieves the username and password of an existing credential.
-    /// </summary>
-    /// <param name="identifier"></param>
-    /// <returns></returns>
-    public static (string userName, string password) RetrieveCredentialData(string identifier)
-    {
-        Credential credential = RetrieveCredential(identifier);
-        return credential.Load() ? (credential.Username, credential.Password) : (null, null);
+        return !credential.Load() ? null : credential;
     }
     #endregion
 
