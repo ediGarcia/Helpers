@@ -1189,6 +1189,18 @@ public static class ListExtensions
 
     #endregion
 
+    #region Sum<T>(this IEnumerable<T>, Func<T, TimeSpan>)
+    /// <summary>
+    /// Calculates the sum of <see cref="TimeSpan"/> values projected from elements in a sequence.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+    /// <param name="iEnumerable">The sequence of elements to aggregate.</param>
+    /// <param name="selector">A function that projects each element of the sequence into a <see cref="TimeSpan"/> value.</param>
+    /// <returns>The total <see cref="TimeSpan"/> resulting from summing the projected values.</returns>
+    public static TimeSpan Sum<T>(this IEnumerable<T> iEnumerable, Func<T, TimeSpan> selector) =>
+        iEnumerable.Aggregate(TimeSpan.Zero, (current, item) => current + selector(item));
+    #endregion
+
     #region ToArray
 
     /// <summary>
