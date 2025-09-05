@@ -9,6 +9,8 @@ public static class TypeExtensions
 {
     #region Public Methods
 
+    #region Type
+
     #region ContainsProperty
     /// <summary>
     /// Indicates whether the specified property exists in the current type.
@@ -80,6 +82,35 @@ public static class TypeExtensions
     /// <returns></returns>
     public static bool IsNumeric(this Type type) =>
         type.IsInteger() || type.IsFloatingPoint();
+    #endregion
+
+    #endregion
+
+    #region PropertyInfo
+
+    #region TryGetValue
+    /// <summary>
+    /// Tries to get the property value from the specified object.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="obj"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryGetValue(this PropertyInfo propertyInfo, object obj, out object value)
+    {
+        try
+        {
+            value = propertyInfo.GetValue(obj);
+            return true;
+        }
+        catch
+        {
+            value = null;
+            return false;
+        }
+    }
+    #endregion
+
     #endregion
 
     #endregion
