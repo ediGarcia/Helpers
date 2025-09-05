@@ -88,6 +88,18 @@ public static class TypeExtensions
 
     #region PropertyInfo
 
+    #region GetValueOrDefault
+    /// <summary>
+    /// Returns the property value from the specified object or a default value if it cannot be retrieved.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="obj"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static object GetValueOrDefault(this PropertyInfo propertyInfo, object obj, object defaultValue = null) =>
+        propertyInfo.TryGetValue(obj, out object value) ? value : defaultValue;
+    #endregion
+
     #region TryGetValue
     /// <summary>
     /// Tries to get the property value from the specified object.
