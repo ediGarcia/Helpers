@@ -96,8 +96,18 @@ public static class TypeExtensions
     /// <param name="obj"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static object GetValueOrDefault(this PropertyInfo propertyInfo, object obj, object defaultValue = null) =>
-        propertyInfo.TryGetValue(obj, out object value) ? value : defaultValue;
+    public static object GetValueOrDefault(this PropertyInfo propertyInfo, object obj, object defaultValue = null)
+    {
+        try
+        {
+            object value = propertyInfo.GetValue(obj);
+            return value ?? defaultValue;
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
     #endregion
 
     #region TryGetValue
