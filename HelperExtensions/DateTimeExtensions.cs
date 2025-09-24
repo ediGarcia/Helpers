@@ -24,6 +24,16 @@ public static class DateTimeExtensions
         GenericMethods.IsBetween(value, minimum, maximum, inclusive);
     #endregion
 
+    #region IsToday
+    /// <summary>
+    /// Indicates whether the current date is today.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static bool IsToday(this DateTime dateTime) =>
+        dateTime == DateTime.Today;
+    #endregion
+
     #region IsWeekday
     /// <summary>
     /// Returns true if the current date is a weekday.
@@ -147,6 +157,16 @@ public static class DateTimeExtensions
     /// <returns></returns>
     public static TimeSpan AddTicks(this TimeSpan time, long value) =>
         time.Add(TimeSpan.FromTicks(value));
+    #endregion
+
+    #region IsZero
+    /// <summary>
+    /// Indicates whether the current <see cref="TimeSpan"/> is <see cref="TimeSpan.Zero"/>.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static bool IsZero(this TimeSpan timeSpan) =>
+        timeSpan == TimeSpan.Zero;
     #endregion
 
     #region RoundToDays
