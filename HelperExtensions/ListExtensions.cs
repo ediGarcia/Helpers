@@ -202,7 +202,9 @@ public static class ListExtensions
 
     #endregion
 
-    #region GetOrCreateItem
+    #region GetOrAdd
+
+    #region GetOrAdd(this IDictionary<T1, T2>, T1, [T2])
     /// <summary>
     /// Gets the value associated with the specified key. If the key doesn't exist, it's created with the <see cref="defaultValue"/>.
     /// </summary>
@@ -212,13 +214,34 @@ public static class ListExtensions
     /// <param name="key"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T2 GetOrCreateItem<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 defaultValue = default)
+    public static T2 GetOrAdd<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 defaultValue = default)
     {
         if (!dictionary.TryGetValue(key, out T2 value))
             dictionary.Add(key, value = defaultValue);
 
         return value;
     }
+    #endregion
+
+    #region GetOrAdd(this IDictionary<T1, T2>, T1, Func<T2>)
+    /// <summary>
+    /// Gets the value associated with the specified key. If the key doesn't exist, it's created with the value returned by the <see cref="valueFactory"/>.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="valueFactory"></param>
+    /// <returns></returns>
+    public static T2 GetOrAdd<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, Func<T2> valueFactory)
+    {
+        if (!dictionary.TryGetValue(key, out T2 value))
+            dictionary.Add(key, value = valueFactory());
+
+        return value;
+    }
+    #endregion
+
     #endregion
 
     #region ReverseForEach*
@@ -1202,7 +1225,6 @@ public static class ListExtensions
     #endregion
 
     #region ToArray
-
     /// <summary>
     /// Creates a T array out of the specific type from the <see cref="IEnumerable{T}"/>
     /// </summary>
