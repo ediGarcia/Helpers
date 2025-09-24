@@ -17,16 +17,6 @@ public static class BooleanExtensions
         value == false;
     #endregion
 
-    #region IsNull
-    /// <summary>
-    /// Determines whether the current <see cref="Nullable{Boolean}"/> does not contain a valid value.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static bool IsNull(this bool? value) =>
-        !value.HasValue;
-    #endregion
-
     #region IsNullOrFalse
     /// <summary>
     /// Determines whether the current <see cref="Nullable{Boolean}"/> is false or does not contain a valid value.

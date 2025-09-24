@@ -68,7 +68,7 @@ public static class EnumMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static T ToEnum<T>(int value) where T : Enum =>
+    public static T ToEnum<T>(object value) where T : Enum =>
         (T)Enum.ToObject(typeof(T), value);
     #endregion
 
@@ -79,7 +79,7 @@ public static class EnumMethods
     /// <param name="enumType"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Enum ToEnum(Type enumType, int value) =>
+    public static Enum ToEnum(Type enumType, object value) =>
         Enum.ToObject(enumType, value) as Enum;
     #endregion
 

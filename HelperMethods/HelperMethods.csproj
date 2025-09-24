@@ -92,7 +92,6 @@
     <Compile Include="FileMethods.cs" />
     <Compile Include="FunctionMethods.cs" />
     <Compile Include="ListMethods.cs" />
-    <Compile Include="BytesMethods.cs" />
     <Compile Include="Classes\CommemorativeDay.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="ColorMethods.cs" />

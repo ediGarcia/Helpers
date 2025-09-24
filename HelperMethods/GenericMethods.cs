@@ -10,21 +10,6 @@ public static class GenericMethods
 {
     #region Public Methods
 
-    #region Average
-    /// <summary>
-    /// Retrieve the average value of the selected property.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="propertyName"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static double Average<T>(string propertyName, params T[] values) =>
-        values.Length == 0
-            ? throw new ArgumentException("No values to compare.")
-            : values.Average(_ => GetDoubleValue(_, propertyName));
-    #endregion
-
     #region AreAllNotNull
     /// <summary>
     /// Indicates whether every specified value is not null.
@@ -44,18 +29,35 @@ public static class GenericMethods
     public static bool AreAllNull(params object[] values) =>
         values.All(_ => _ is null);
     #endregion
-
+    
     #region AreEqual
     /// <summary>
-    /// Indicates whether the specified properties of the given objects have the same values.
+    /// Indicates whether every specified value is equal, based on a custom comparison function.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="obj1"></param>
-    /// <param name="obj2"></param>
-    /// <param name="properties"></param>
+    /// <param name="values"></param>
+    /// <param name="customComparer"></param>
     /// <returns></returns>
-    public static bool AreEqual<T>(T obj1, T obj2, params string[] properties) =>
-        properties.Select(typeof(T).GetProperty).All(_ => _.GetValue(obj1).Equals(_.GetValue(obj2)));
+    public static bool AreEqual<T>(IList<T> values, Func<T, T, int> customComparer)
+    {
+        switch (values.Count)
+        {
+            case 0:
+                return false;
+
+            case 1:
+                return true;
+
+            default:
+                for (int i = 0; i < values.Count - 1; i++)
+                {
+                    int result = customComparer(values[i], values[i + 1]);
+                    if (result != 0) return false;
+                }
+
+                return true;
+        }
+    }
     #endregion
 
     #region Compare
@@ -81,38 +83,6 @@ public static class GenericMethods
         NumberMethods.GetRandomInt(100) < probability;
     #endregion
 
-    #region GetBetween
-    /// <summary>
-    /// Checks if value is between the specified boundaries. If it is, returns the value, otherwise, returns a value inside the boundaries.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    /// <returns></returns>
-    public static T GetBetween<T>(T value, T min, T max) => 
-        IsGreater(value, max)
-            ? max
-            : IsLess(value, min)
-                ? min
-                : value;
-    #endregion
-
-    #region GetFirstMatching
-    /// <summary>
-    /// Returns the first value that matches the condition
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="condition"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T GetFirstMatching<T>(Func<T, bool> condition, params T[] values) =>
-        values == null || values.Length == 0
-            ? throw new ArgumentException("No values to compare.")
-            : values.FirstOrDefault(condition);
-    #endregion
-
     #region GetFirstNotNull
     /// <summary>
     /// Returns the first not null element of the sequence.
@@ -121,19 +91,6 @@ public static class GenericMethods
     /// <returns></returns>
     public static object GetFirstNotNull(params object[] items) =>
         items.FirstOrDefault(_ => _ is not null);
-    #endregion
-
-    #region GetMatching
-    /// <summary>
-    /// Returns all the values that match the condition
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="condition"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static IEnumerable<T> GetMatching<T>(Func<T, bool> condition, params T[] values) =>
-        values == null || values.Length == 0 ? throw new ArgumentException("No values to compare.") : values.Where(condition);
     #endregion
 
     #region IsAnyNotNull
@@ -194,9 +151,7 @@ public static class GenericMethods
         Compare(x, y) < 0;
     #endregion
 
-    #region Max*
-
-    #region Max(T, T)
+    #region Max
     /// <summary>
     /// Returns the largest of two value.
     /// </summary>
@@ -208,58 +163,7 @@ public static class GenericMethods
         IsGreater(value1, value2) ? value1 : value2;
     #endregion
 
-    #region Max(T, params T[])
-    /// <summary>
-    /// Returns the largest value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static T Max<T>(T value, params T[] values) =>
-        values.Length == 0 ? value : Max(value, values.Max());
-    #endregion
-
-    #region Max (string, params T[])
-    /// <summary>
-    /// Returns all the objects with the larger property value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="propertyName"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T[] Max<T>(string propertyName, params T[] values)
-    {
-        if (values.Length == 0)
-            throw new ArgumentException("No values to compare.");
-
-        List<T> selectedObjects = new(values.Length) { values[0] };
-        double baseValue = GetDoubleValue(values[0], propertyName);
-
-        for(int i = 1; i < values.Length; i++)
-        {
-            double currentValue = GetDoubleValue(values[i], propertyName);
-
-            if (currentValue > baseValue)
-            {
-                baseValue = currentValue;
-                selectedObjects.Clear();
-                selectedObjects.Add(values[i]);
-            }
-            else if (currentValue == baseValue)
-                selectedObjects.Add(values[i]);
-        }
-
-        return [.. selectedObjects];
-    }
-    #endregion
-
-    #endregion
-
-    #region Min*
-
-    #region Min(T, T)
+    #region Min
     /// <summary>
     /// Retrieves the smaller of two value.
     /// </summary>
@@ -269,55 +173,6 @@ public static class GenericMethods
     /// <returns></returns>
     public static T Min<T>(T value1, T value2) =>
         IsLess(value1, value2) ? value1 : value2;
-    #endregion
-
-    #region Min(T, params T[])
-    /// <summary>
-    /// Returns the smaller value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static T Min<T>(T value, params T[] values) =>
-        values.Length == 0 ? value : Min(value, values.Min());
-    #endregion
-
-    #region Min(string, params T[])
-    /// <summary>
-    /// Returns all the objects with the smaller property value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="propertyName"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static T[] Min<T>(string propertyName, params T[] values)
-    {
-        if (values.Length == 0)
-            throw new ArgumentException("No values to compare.");
-
-        List<T> selectedObjects = new(values.Length) { values[0] };
-        double baseValue = GetDoubleValue(values[0], propertyName);
-
-        for (int i = 1; i < values.Length; i++)
-        {
-            double currentValue = GetDoubleValue(values[i], propertyName);
-
-            if (currentValue < baseValue)
-            {
-                baseValue = currentValue;
-                selectedObjects.Clear();
-                selectedObjects.Add(values[i]);
-            }
-            else if (currentValue == baseValue)
-                selectedObjects.Add(values[i]);
-        }
-
-        return [.. selectedObjects];
-    }
-    #endregion
-
     #endregion
 
     #region ReturnFirstNotNull
@@ -352,22 +207,6 @@ public static class GenericMethods
     public static void Swap<T>(ref T v1, ref T v2) => 
         (v1, v2) = (v2, v1);
 
-    #endregion
-
-    #endregion
-
-    #region Private Methods
-
-    #region GetDoubleValue
-    /// <summary>
-    /// Returns the double value of a selected property.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <param name="propertyName"></param>
-    /// <returns></returns>
-    private static double GetDoubleValue<T>(T item, string propertyName) =>
-        Convert.ToDouble(item.GetType().GetProperty(propertyName).GetValue(item));
     #endregion
 
     #endregion

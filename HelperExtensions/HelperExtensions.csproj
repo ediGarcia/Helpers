@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="BooleanExtensions.cs" />
     <Compile Include="ColorExtensions.cs" />
-    <Compile Include="ControlExtensions.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="NullableExtensions.cs" />

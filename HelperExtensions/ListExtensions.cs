@@ -114,18 +114,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region RemoveFirst
-    /// <summary>
-    /// Removes the first element that matches the specified criteria.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static bool RemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
-        collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
-    #endregion
-
     #region RemoveMany
     /// <summary>
     /// Removes the first occurence of each value from the <see cref="ICollection{T}"/>.
@@ -135,6 +123,18 @@ public static class ListExtensions
     /// <param name="values"></param>
     public static void RemoveMany<T>(this ICollection<T> collection, params T[] values) =>
         values.ForEach(_ => collection.Remove(_));
+    #endregion
+
+    #region TryRemoveFirst
+    /// <summary>
+    /// Removes the first element that matches the specified criteria.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static bool TryRemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
+        collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
     #endregion
 
     #endregion
@@ -171,8 +171,12 @@ public static class ListExtensions
     public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
         int startIndex = 0, int? length = null)
     {
-        foreach (KeyValuePair<T1, T2> item in dictionary)
-            action(item.Key, item.Value);
+        T1[] keys = [.. dictionary.Keys];
+        T2[] values = [.. dictionary.Values];
+        length ??= dictionary.Count - startIndex;
+
+        for (int i = startIndex; i < startIndex + length; i++)
+            action(keys[i], values[i]);
     }
     #endregion
 
@@ -194,8 +198,9 @@ public static class ListExtensions
     {
         T1[] keys = [.. dictionary.Keys];
         T2[] values = [.. dictionary.Values];
+        length ??= dictionary.Count - startIndex;
 
-        for (int i = startIndex; i < startIndex + (length ?? dictionary.Count); i++)
+        for (int i = startIndex; i < startIndex + length; i++)
             action(keys[i], values[i], i);
     }
     #endregion
@@ -265,7 +270,7 @@ public static class ListExtensions
         T2[] values = [.. dictionary.Values];
 
         startIndex ??= keys.Length - 1;
-        length ??= keys.Length;
+        length ??= startIndex + 1;
 
         for (int i = startIndex.Value; i > startIndex - length; i--)
             action?.Invoke(keys[i], values[i]);
@@ -291,7 +296,7 @@ public static class ListExtensions
         T2[] values = [.. dictionary.Values];
 
         startIndex ??= keys.LastIndex();
-        length ??= keys.Length;
+        length ??= startIndex + 1;
 
         for (int i = startIndex.Value; i > startIndex - length; i--)
             action?.Invoke(keys[i], values[i], i);
@@ -750,18 +755,6 @@ public static class ListExtensions
 
         return -1;
     }
-    #endregion
-
-    #region InsertMany
-    /// <summary>
-    /// Insert multiple items to the list starting at the specified index.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="startIndex"></param>
-    /// <param name="items"></param>
-    public static void InsertMany<T>(this IList<T> list, int startIndex, params T[] items) =>
-        items.ReverseForEach<T>(_ => list.Insert(startIndex, _));
     #endregion
 
     #region Last

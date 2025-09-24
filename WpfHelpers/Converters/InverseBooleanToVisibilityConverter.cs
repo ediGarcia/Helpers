@@ -1,19 +1,18 @@
-﻿using System.Globalization;
+﻿// ReSharper disable UnusedMember.Global
+
 using System.Windows;
-using System.Windows.Data;
-// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 
-public class InverseBooleanToVisibilityConverter : IValueConverter
+public class InverseBooleanToVisibilityConverter : BooleanConverter
 {
-    #region Convert
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is true ? Visibility.Collapsed : Visibility.Visible;
-    #endregion
+    #region Properties
 
-    #region ConvertBack
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is not Visibility.Visible;
+    /// <inheritdoc cref="BooleanConverter.FalseValue" />
+    public new object FalseValue { get; } = Visibility.Visible;
+
+    /// <inheritdoc cref="BooleanConverter.TrueValue" />
+    public new object TrueValue { get; } = Visibility.Collapsed;
+
     #endregion
 }

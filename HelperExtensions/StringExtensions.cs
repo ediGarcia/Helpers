@@ -531,6 +531,32 @@ public static class StringExtensions
         values?.Any(st.StartsWith) == true;
     #endregion
 
+    #region ToDouble
+    /// <summary>
+    /// Converts the string to double.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="FormatException"></exception>
+    /// <exception cref="OverflowException"></exception>
+    public static double ToDouble(this string st) =>
+        Double.Parse(st);
+    #endregion
+
+    #region ToInt
+    /// <summary>
+    /// Converts the string to int.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="FormatException"></exception>
+    /// <exception cref="OverflowException"></exception>
+    public static int ToInt(this string st) =>
+        Int32.Parse(st);
+    #endregion
+
     #endregion
 
     #region StringBuilder

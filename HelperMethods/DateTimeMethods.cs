@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Xml;
-using HelperMethods.Classes;
-using HelperMethods.Enums;
 
 // ReSharper disable UnusedMember.Global
 
@@ -18,50 +12,6 @@ namespace HelperMethods;
 public static class DateTimeMethods
 {
     #region Public Methods
-
-    #region CheckHolilday*
-
-    #region CheckHoliday(DateTime, BrazilianStates, string)
-    /// <summary>
-    /// Checks online if selected date is a holiday.
-    /// </summary>
-    /// <param name="date"></param>
-    /// <param name="state"></param>
-    /// <param name="city"></param>
-    /// <returns></returns>
-    /// <exception cref="WebException" />
-    public static bool CheckHoliday(DateTime date, BrazilianState state, string city) =>
-        CheckHoliday(RetrieveHolidays(date.Year, state, city), date);
-    #endregion
-
-    #region CheckHoliday(IEnumerable<CommemorativeDay>, DateTime, [bool])
-    /// <summary>
-    /// Checks whether the date is a holiday.
-    /// </summary>
-    /// <param name="dates"></param>
-    /// <param name="date"></param>
-    /// <param name="getOptional">Indicates whether optional holidays should be considered too.</param>
-    /// <returns></returns>
-    public static bool CheckHoliday(IEnumerable<CommemorativeDay> dates, DateTime date, bool getOptional = false) =>
-        CheckHoliday(dates.ToList(), date, getOptional);
-    #endregion
-
-    #region CheckHoliday(List<CommemorativeDay>, DateTime, [bool])
-    /// <summary>
-    /// Checks whether the date is a holiday.
-    /// </summary>
-    /// <param name="dates"></param>
-    /// <param name="day"></param>
-    /// <param name="getOptional">Indicates whether optional holidays should be considered too.</param>
-    /// <returns></returns>
-    public static bool CheckHoliday(List<CommemorativeDay> dates, DateTime day, bool getOptional = false)
-    {
-        int index = dates.BinarySearch(new() { Date = day });
-        return index >= 0 && dates[index].Type != CommemorativeDayType.RegularDay && (getOptional || dates[index].Type != CommemorativeDayType.Optional);
-    }
-    #endregion
-
-    #endregion
 
     #region GetFirstDayOfMonth*
 
@@ -89,9 +39,7 @@ public static class DateTimeMethods
 
     #endregion
 
-    #region GetFirstDayOfWeek*
-
-    #region GetFirstDayOfWeek(DateTime)
+    #region GetFirstDayOfWeek
     /// <summary>
     /// Gets the first day of the selected day week.
     /// </summary>
@@ -110,50 +58,6 @@ public static class DateTimeMethods
         {
             return DateTime.MinValue;
         }
-    }
-    #endregion
-
-    #endregion
-
-    #region GetHolidaysInRange
-    /// <summary>
-    /// Retrieve the holidays in a range.
-    /// </summary>
-    /// <param name="start"></param>
-    /// <param name="end"></param>
-    /// <param name="state"></param>
-    /// <param name="city"></param>
-    /// <param name="getOptional">Indicates whether optional holidays should be retrieved too.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException" />
-    /// <exception cref="WebException" />
-    // ReSharper disable once UnusedMember.Global
-    public static IList<CommemorativeDay> GetHolidaysInRange(DateTime start, DateTime end, BrazilianState state, string city, bool getOptional = false)
-    {
-        if (end < start)
-            throw new ArgumentException("The end date should be after the start date.");
-
-        List<CommemorativeDay> holidays = null;
-        List<CommemorativeDay> holidaysInRange = [];
-        int currentYear = 0;
-
-        while (start <= end)
-        {
-            if (currentYear != start.Year)
-            {
-                holidays = RetrieveHolidays(start.Year, state, city, getOptional).ToList();
-                currentYear = start.Year;
-            }
-
-            int index = holidays.BinarySearch(new() { Date = start });
-
-            if (index >= 0)
-                holidaysInRange.Add(holidays[index]);
-
-            start = start.AddDays(1);
-        }
-
-        return holidaysInRange;
     }
     #endregion
 
@@ -186,14 +90,11 @@ public static class DateTimeMethods
             ? DateTime.MaxValue
             : GetFirstDayOfMonth(month, year).AddMonths(1).AddDays(-1);
     }
-
     #endregion
 
     #endregion
 
-    #region GetLastDayOfWeek*
-
-    #region GetLastDayOfWeek(DateTime)
+    #region GetLastDayOfWeek
     /// <summary>
     /// Gets the last day of the selected day week.
     /// </summary>
@@ -212,8 +113,6 @@ public static class DateTimeMethods
             return DateTime.MaxValue;
         }
     }
-    #endregion
-
     #endregion
 
     #region GetShortTimeString*
@@ -273,42 +172,7 @@ public static class DateTimeMethods
     /// <param name="timeSpan"></param>
     /// <returns></returns>
     public static string GetTimeString(TimeSpan timeSpan) =>
-        GetTimeString(timeSpan.TotalSeconds);
-    #endregion
-
-    #region GetTimeString(double)
-    /// <summary>
-    /// Gets the time string in format HHH:mm:ss.
-    /// </summary>
-    /// <param name="seconds"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetTimeString(double seconds)
-    {
-        TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
-        return $@"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{timeSpan:\:mm\:ss}";
-    }
-    #endregion
-
-    #region GetTimeString(double time, TimeField timeField)
-    /// <summary>
-    /// Gets the TimeSpan string in format HHH:mm:ss.
-    /// </summary>
-    /// <param name="time"></param>
-    /// <param name="timeField"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetTimeString(double time, TimeField timeField) =>
-        timeField switch
-        {
-            TimeField.Day => GetTimeString(TimeSpan.FromDays(time)),
-            TimeField.Hour => GetTimeString(TimeSpan.FromHours(time)),
-            TimeField.Minute => GetTimeString(TimeSpan.FromMinutes(time)),
-            TimeField.Second => GetTimeString(TimeSpan.FromSeconds(time)),
-            TimeField.Millisecond => GetTimeString(TimeSpan.FromMilliseconds(time)),
-            TimeField.Ticks => GetTimeString(TimeSpan.FromTicks((long)time)),
-            _ => throw new ArgumentOutOfRangeException(time.ToString(CultureInfo.InvariantCulture))
-        };
+        $@"{(timeSpan < TimeSpan.Zero ? "-" : "")}{Math.Floor(Math.Abs(timeSpan.TotalHours)):00}:{timeSpan:\:mm\:ss}";
     #endregion
 
     #endregion
@@ -466,82 +330,6 @@ public static class DateTimeMethods
 
     #endregion
 
-    #region RetrieveCommemorativeDays
-    /// <summary>
-    /// Retrieves the commemorative days for the selected year in the selected state.
-    /// </summary>
-    /// <param name="year"></param>
-    /// <param name="state"></param>
-    /// <param name="city"></param>
-    /// <returns></returns>
-    /// <exception cref="WebException" />
-    public static IEnumerable<CommemorativeDay> RetrieveCommemorativeDays(int year, BrazilianState state, string city)
-    {
-        List<CommemorativeDay> days = [];
-        XmlDocument holidayXml = new();
-
-        //Retrieves data from the API.
-        using (WebClient web = new())
-        {
-            web.Encoding = Encoding.UTF8;
-            holidayXml.LoadXml(web.DownloadString($"http://www.calendario.com.br/api/api_feriados.php?ano={year}&estado={GetState(state)}&cidade={StringMethods.RemoveAccentuation(city).Replace("'", "").Replace(" ", "_")}&token=ZWRkeS5nYXJjaWEwN0BnbWFpbC5jb20maGFzaD00MTU2MjUxNw=="));
-        }
-
-        if (holidayXml["events"] != null)
-            days.AddRange(from XmlNode node in holidayXml["events"]?.ChildNodes
-                where node.Name != "location"
-                select new CommemorativeDay
-                {
-                    Date = DateTime.ParseExact(node["date"].FirstChild.Value, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                    Name = node["name"].FirstChild.Value,
-                    Description = node["description"].FirstChild?.Value,
-                    Type = (CommemorativeDayType)Int32.Parse(node["type_code"].FirstChild.Value),
-                    Link = node["link"].FirstChild?.Value
-                });
-
-        days.Sort();
-        return days;
-    }
-    #endregion
-
-    #region RetrieveHolidays
-    /// <summary>
-    /// Retrieves the holidays for the selected year in the selected state.
-    /// </summary>
-    /// <param name="year"></param>
-    /// <param name="state"></param>
-    /// <param name="city"></param>
-    /// <param name="getOptional">Indicates whether optional holidays should be retrieved too.</param>
-    /// <returns></returns>
-    public static IEnumerable<CommemorativeDay> RetrieveHolidays(int year, BrazilianState state, string city, bool getOptional = false) =>
-        RetrieveCommemorativeDays(year, state, city).Where(_ => _.Type != CommemorativeDayType.RegularDay && (getOptional || _.Type != CommemorativeDayType.Optional));
-    #endregion
-
-    #region TryCheckHoliday
-    /// <summary>
-    /// Attempts to check if the selected date is a holiday.
-    /// </summary>
-    /// <param name="selectedDate"></param>
-    /// <param name="state"></param>
-    /// <param name="city"></param>
-    /// <param name="isHoliday"></param>
-    /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
-    public static bool TryCheckHoliday(DateTime selectedDate, BrazilianState state, string city, out bool isHoliday)
-    {
-        try
-        {
-            isHoliday = CheckHoliday(selectedDate, state, city);
-            return true;
-        }
-        catch
-        {
-            isHoliday = false;
-            return false;
-        }
-    }
-    #endregion
-
     #region TryParse
     /// <summary>
     /// Converts the string representation of a date and time to its <see cref="DateTime"/> equivalent by using culture-specific format information and formatting style,
@@ -570,45 +358,6 @@ public static class DateTimeMethods
     /// <returns></returns>
     public static bool TryParseExact(string value, string format, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
         DateTime.TryParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles, out result);
-    #endregion
-
-    #endregion
-
-    #region Private Methods
-
-    #region GetState
-    private static string GetState(BrazilianState state) =>
-        state switch
-        {
-            BrazilianState.Acre => "ac",
-            BrazilianState.Alagoas => "al",
-            BrazilianState.Amapa => "ap",
-            BrazilianState.Amazonas => "am",
-            BrazilianState.Bahia => "ba",
-            BrazilianState.Ceara => "ce",
-            BrazilianState.DistritoFederal => "df",
-            BrazilianState.EspiritoSanto => "es",
-            BrazilianState.Goias => "go",
-            BrazilianState.Maranhao => "ma",
-            BrazilianState.MatoGrosso => "mt",
-            BrazilianState.MatoGrossoDoSul => "ms",
-            BrazilianState.MinasGerais => "mg",
-            BrazilianState.Para => "pa",
-            BrazilianState.Paraiba => "pb",
-            BrazilianState.Parana => "pr",
-            BrazilianState.Pernambuco => "pe",
-            BrazilianState.Piaui => "pi",
-            BrazilianState.RioDeJaneiro => "rj",
-            BrazilianState.RioGrandeDoNorte => "rn",
-            BrazilianState.RioGrandeDoSul => "rs",
-            BrazilianState.Rondonia => "rd",
-            BrazilianState.Roraima => "rr",
-            BrazilianState.SantaCatarina => "sc",
-            BrazilianState.SaoPaulo => "sp",
-            BrazilianState.Sergipe => "se",
-            BrazilianState.Tocantins => "to",
-            _ => "sp"
-        };
     #endregion
 
     #endregion

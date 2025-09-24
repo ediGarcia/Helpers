@@ -50,6 +50,8 @@ public static class SystemMethods
     }
     #endregion
 
+    #region Delete*
+
     #region Delete(params string[])
     /// <summary>
     /// Deletes files, folder and its contents.
@@ -91,6 +93,8 @@ public static class SystemMethods
 
         return true;
     }
+    #endregion
+
     #endregion
 
     #region Exists
@@ -184,7 +188,6 @@ public static class SystemMethods
     #endregion
 
     #region IsValidLocalPath
-
     /// <summary>
     /// Indicates whether the selected string represents a valid local path.
     /// </summary>
@@ -195,14 +198,13 @@ public static class SystemMethods
     public static bool IsValidLocalPath(string path, bool onlyAbsolute = false, bool onlyExisting = false) =>
         !String.IsNullOrWhiteSpace(path)
         && !Path.GetInvalidPathChars().Any(path.Contains)
-            && (!onlyAbsolute || Path.IsPathRooted(path))
+        && (!onlyAbsolute || Path.IsPathRooted(path))
         && (!onlyExisting || Exists(path));
-
     #endregion
 
     #region KillProcesses*
 
-    #region KillProcess(params Process[])
+    #region KillProcesses(params Process[])
     /// <summary>
     /// Kill the specified processes.
     /// </summary>
@@ -214,18 +216,25 @@ public static class SystemMethods
     }
     #endregion
 
-    #region KillProcesses(string)
+    #region KillProcesses(params string[])
     /// <summary> 
-    /// Kill process found through the search pattern.
+    /// Kill process found through the search patterns.
     /// </summary>
-    /// <param name="searchPattern"></param>
+    /// <param name="searchPatterns"></param>
     /// <returns>The number of processes killed.</returns>
-    public static int KillProcesses(string searchPattern)
+    public static int KillProcesses(params string[] searchPatterns)
     {
-        Process[] processes = GetProcesses(searchPattern);
-        KillProcesses(processes);
+        int processCount = 0;
 
-        return processes.Length;
+        foreach (string searchPattern in searchPatterns)
+        {
+            Process[] processes = GetProcesses(searchPattern);
+            KillProcesses(processes);
+
+            processCount += processes.Length;
+        }
+
+        return processCount;
     }
     #endregion
 
@@ -264,7 +273,6 @@ public static class SystemMethods
     /// <exception cref="SystemException"></exception>
     public static bool RemoveCredential(string identifier) => 
         new Credential { Target = identifier }.Delete();
-
     #endregion
 
     #region RetrieveCredential

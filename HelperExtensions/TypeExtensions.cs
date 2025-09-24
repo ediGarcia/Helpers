@@ -112,7 +112,7 @@ public static class TypeExtensions
 
     #region TryGetValue
     /// <summary>
-    /// Tries to get the property value from the specified object.
+    /// Attempts to get the property value from the specified object.
     /// </summary>
     /// <param name="propertyInfo"></param>
     /// <param name="obj"></param>

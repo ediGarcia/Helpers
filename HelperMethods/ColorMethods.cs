@@ -276,7 +276,7 @@ public static class ColorMethods
         GetMediaColorFromAhsb(255, hue, saturation, brightness);
     #endregion 
 
-    #region NeedsWhitefForeground*
+    #region NeedsWhiteForeground*
 
     #region NeedsWhiteForeground (Brush)
     /// <summary>

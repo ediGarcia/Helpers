@@ -1,18 +1,16 @@
-﻿using System.Globalization;
-using System.Windows.Data;
-// ReSharper disable UnusedMember.Global
+﻿// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 
-public class InverseBooleanConverter : IValueConverter
+public class InverseBooleanConverter : BooleanConverter
 {
-    #region Convert
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is not true;
-    #endregion
+    #region Properties
 
-    #region ConvertBack
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is not true;
+    /// <inheritdoc cref="BooleanConverter.FalseValue" />
+    public new object FalseValue { get; } = true;
+
+    /// <inheritdoc cref="BooleanConverter.TrueValue" />
+    public new object TrueValue { get; } = false;
+
     #endregion
 }

@@ -16,54 +16,15 @@ namespace HelperMethods;
 
 public static class StringMethods
 {
-    public const string SpecialChars = "!\"#$%&'()#+,-./:;<>=?@[]^_`´{}|~";
-    public const string SpaceChars = " \t";
-    public const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    public const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
-    public const string NumericChars = "0123456789";
     public const string LineBreaks = "\n";
+    public const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
+    public const string NonSpaceChars = UpperCaseChars + LowerCaseChars + NumericChars + SpecialChars;
+    public const string NumericChars = "0123456789";
+    public const string SpaceChars = " \t";
+    public const string SpecialChars = "!\"#$%&'()#+,-./:;<>=?@[]^_`´{}|~";
+    public const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     #region Public Methods
-
-    #region GetFirstNotEmpty
-    /// <summary>
-    /// Retrieves the first not empty string within the sequence.
-    /// </summary>
-    /// <param name="strings"></param>
-    /// <returns></returns>
-    public static string GetFirstNotEmpty(params string[] strings) =>
-        strings?.FirstOrDefault(_ => _ != String.Empty);
-    #endregion
-
-    #region GetFirstNotNull
-    /// <summary>
-    /// Retrieves the first not null string within the sequence.
-    /// </summary>
-    /// <param name="strings"></param>
-    /// <returns></returns>
-    public static string GetFirstNotNull(params string[] strings) =>
-        strings?.FirstOrDefault(_ => _ is not null);
-    #endregion
-
-    #region GetFirstNotNullOrEmpty
-    /// <summary>
-    /// Retrieves the first not null or empty string within the sequence.
-    /// </summary>
-    /// <param name="strings"></param>
-    /// <returns></returns>
-    public static string GetFirstNotNullOrEmpty(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !String.IsNullOrEmpty(_));
-    #endregion
-
-    #region GetFirstNotNullOrWhiteSpace
-    /// <summary>
-    /// Retrieves the first not null, empty or white-space only string within the sequence.
-    /// </summary>
-    /// <param name="strings"></param>
-    /// <returns></returns>
-    public static string GetFirstNotNullOrWhiteSpace(params string[] strings) =>
-        strings?.FirstOrDefault(_ => !String.IsNullOrWhiteSpace(_));
-    #endregion
 
     #region GenerateStringBuilder
     /// <summary>
@@ -75,204 +36,95 @@ public static class StringMethods
         new StringBuilder().Append(values);
     #endregion
 
-    #region GetCurrentStringOrDefault
-    /// <summary>
-    /// Returns the default string if the original is null or has only white space characters.
-    /// </summary>
-    /// <param name="text"></param>
-    /// <param name="defaultText"></param>
-    /// <param name="ignoreWhiteSpace">Allows white space chars-only string to be returned.</param>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetCurrentStringOrDefault(string text, string defaultText, bool ignoreWhiteSpace = false) =>
-        ignoreWhiteSpace && String.IsNullOrWhiteSpace(text) || String.IsNullOrEmpty(text) ? defaultText : text;
-    #endregion
+    #region GenerateRandomString*
 
-    #region GetRandomString*
-
-    #region GetRandomString(int, params char[])
+    #region GenerateRandomString(char[], int)
     /// <summary>
-    /// Generates a random string using the selected chars.
+    /// Generates a random string with the selected characters and width.
     /// </summary>
-    /// <param name="width"></param>
     /// <param name="validChars"></param>
+    /// <param name="width">The exact width of the resulting string. If the value is 0 (zero), an empty string will be returned.</param>
     /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Desired width smaller than zero.</exception>
-    public static string GetRandomString(int width, params char[] validChars) =>
-        width < 0
-            ? throw new ArgumentOutOfRangeException(nameof(width), "The desired string width must be greater than or equal to zero.")
-            : validChars.Length == 0
-                ? throw new ArgumentOutOfRangeException(nameof(width), "No valid chars found.")
-                : GetRandomStringPrivate(width, validChars);
-    #endregion
-
-    #region GetRandomString(int, params string[])
-    /// <summary>
-    /// Generates a random string using the selected chars.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Desired width smaller than zero.</exception>
-    public static string GetRandomString(int width, params string[] validChars) =>
-        GetRandomString(width, String.Join("", validChars).ToCharArray());
-    #endregion
-
-    #region GetRandomString(int, int, params char[])
-    /// <summary>
-    /// Generates a random string using the selected chars.
-    /// </summary>
-    /// <param name="minWidth"></param>
-    /// <param name="maxWidth"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Desired width smaller than zero.</exception>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetRandomString(int minWidth, int maxWidth, params char[] validChars)
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static string GenerateRandomString(char[] validChars, int width)
     {
-        ValidateWidth(minWidth, maxWidth);
-        return GetRandomString(NumberMethods.GetRandomInt(minWidth, maxWidth, true), validChars);
-    }
+        if (width < 0)
+            throw new ArgumentOutOfRangeException(nameof(width), "The desired string width must be greater than or equal to zero.");
 
-    #endregion
+        if (width == 0)
+            return String.Empty;
 
-    #region GetRandomString(int, int, params string[])
-    /// <summary>
-    /// Generates a random string using the selected chars.
-    /// </summary>
-    /// <param name="minWidth"></param>
-    /// <param name="maxWidth"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Desired width smaller than zero.</exception>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetRandomString(int minWidth, int maxWidth, params string[] validChars)
-    {
-        ValidateWidth(minWidth, maxWidth);
-        return GetRandomString(NumberMethods.GetRandomInt(minWidth, maxWidth, true), validChars);
-    }
+        char[] result = new char[width];
 
-    #endregion
+        for (int i = 0; i < width; i++)
+            result[i] = validChars[NumberMethods.GetRandomInt(validChars.Length)];
 
-    #region GetRandomString(int, [CharacterClass])
-    /// <summary>
-    /// Generates a random string.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="classes"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Desired width smaller than zero.</exception>
-    public static string GetRandomString(int width, CharacterClass classes = CharacterClass.All) =>
-        width < 0
-            ? throw new ArgumentOutOfRangeException(nameof(width), "The desired string width must be greater than or equal to zero.")
-            : GetRandomString(width, GenerateValidCharsString(classes));
-    #endregion
-
-    #region GetRandomString(int, int, [CharacterClass])
-    /// <summary>
-    /// Generates a random string.
-    /// </summary>
-    /// <param name="maxWidth"></param>
-    /// <param name="minWidth"></param>
-    /// <param name="classes"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"><see cref="minWidth"/> greater than <see cref="maxWidth"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><see cref="minWidth"/> or <see cref="maxWidth"/> smaller than zero.</exception>
-    // ReSharper disable once UnusedMember.Global
-    public static string GetRandomString(int minWidth, int maxWidth, CharacterClass classes = CharacterClass.All)
-    {
-        ValidateWidth(minWidth, maxWidth);
-        return GetRandomString(NumberMethods.GetRandomInt(minWidth, maxWidth, true), classes);
+        return new(result);
     }
     #endregion
 
-    #region GetRandomStrings(int, int, params char[])
+    #region GenerateRandomString(int)
     /// <summary>
-    /// Generates random strings using the valid characters.
+    /// Generates a random string with non-space characters and width.
     /// </summary>
     /// <param name="width"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="validChars"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    public static string[] GetRandomStrings(int width, int stringCount, params char[] validChars)
+    public static string GenerateRandomString(int width) =>
+        GenerateRandomString(NonSpaceChars, width);
+    #endregion
+
+    #region GenerateRandomString(int, int)
+    /// <summary>
+    /// Generates a random string with non-space characters and width between [minWidth] and [maxWidth].
+    /// </summary>
+    /// <param name="minWidth"></param>
+    /// <param name="maxWidth"></param>
+    /// <returns></returns>
+    public static string GenerateRandomString(int minWidth, int maxWidth) =>
+        GenerateRandomString(NonSpaceChars, minWidth, maxWidth);
+    #endregion
+
+    #region GenerateRandomString(char[], int, int)
+    /// <summary>
+    /// Generates a random string with the selected characters and width between [minWidth] and [maxWidth].
+    /// </summary>
+    /// <param name="validChars"></param>
+    /// <param name="minWidth"></param>
+    /// <param name="maxWidth"></param>
+    /// <returns></returns>
+    public static string GenerateRandomString(char[] validChars, int minWidth, int maxWidth)
     {
-        List<string> generatedStrings = [];
+        if (minWidth < 0 && maxWidth < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxWidth), "The desired string widths must be greater than or equal to zero.");
 
-        for (int i = 0; i < stringCount; i++)
-            generatedStrings.Add(GetRandomStringPrivate(width, validChars));
+        minWidth = Math.Max(0, minWidth);
+        maxWidth = Math.Max(0, maxWidth);
 
-        return [.. generatedStrings];
+        return GenerateRandomString(validChars, NumberMethods.GetRandomInt(minWidth, maxWidth, true));
     }
     #endregion
 
-    #region GetRandomStrings(int, int, params string[])
+    #region GenerateRandomString(string, int)
     /// <summary>
-    /// Generates random strings using the valid characters.
+    /// Generates a random string with the selected characters and width.
     /// </summary>
+    /// <param name="validChars"></param>
     /// <param name="width"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    public static string[] GetRandomStrings(int width, int stringCount, params string[] validChars) =>
-        GetRandomStrings(width, stringCount, String.Join("", validChars).ToCharArray());
+    /// <returns>The exact width of the resulting string. If the value is 0 (zero), an empty string will be returned.</returns>
+    public static string GenerateRandomString(string validChars, int width) =>
+        GenerateRandomString(validChars.ToCharArray(), width);
     #endregion
 
-    #region GetRandomStrings(int, int, int, params char[])
+    #region GenerateRandomString(string, int, int)
     /// <summary>
-    /// Generates random strings using the valid characters.
+    /// Generates a random string with the selected characters and width between [minWidth] and [maxWidth].
     /// </summary>
+    /// <param name="validChars"></param>
     /// <param name="minWidth"></param>
     /// <param name="maxWidth"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="validChars"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    public static string[] GetRandomStrings(int minWidth, int maxWidth, int stringCount, params char[] validChars) =>
-        GetRandomStrings(NumberMethods.GetRandomInt(minWidth, maxWidth, true), stringCount, validChars);
-    #endregion
-
-    #region GetRandomStrings(int, int, int, params string[])
-    /// <summary>
-    /// Generates random strings using the valid characters.
-    /// </summary>
-    /// <param name="minWidth"></param>
-    /// <param name="maxWidth"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    public static string[] GetRandomStrings(int minWidth, int maxWidth, int stringCount, params string[] validChars) =>
-        GetRandomStrings(minWidth, maxWidth, stringCount, String.Join("", validChars).ToCharArray());
-    #endregion
-
-    #region GetRandomStrings(int, int, [CharacterClass])
-    /// <summary>
-    /// Generates random strings.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="classes"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    // ReSharper disable once UnusedMember.Global
-    public static string[] GetRandomStrings(int width, int stringCount, CharacterClass classes = CharacterClass.All) =>
-        GetRandomStrings(width, stringCount, GenerateValidCharsString(classes));
-    #endregion
-
-    #region GetRandomStrings(int, int, int, [CharacterClass])
-    /// <summary>
-    /// Generates random strings.
-    /// </summary>
-    /// <param name="minWidth"></param>
-    /// <param name="maxWidth"></param>
-    /// <param name="stringCount"></param>
-    /// <param name="classes"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException" />
-    // ReSharper disable once UnusedMember.Global
-    public static string[] GetRandomStrings(int minWidth, int maxWidth, int stringCount, CharacterClass classes = CharacterClass.All) =>
-        GetRandomStrings(minWidth, maxWidth, stringCount, GenerateValidCharsString(classes));
+    public static string GenerateRandomString(string validChars, int minWidth, int maxWidth) =>
+        GenerateRandomString(validChars.ToCharArray(), minWidth, maxWidth);
     #endregion
 
     #endregion
@@ -521,22 +373,39 @@ public static class StringMethods
             .Replace("\v", replacementText);
     #endregion
 
-    #region ValidateEmail
+    #region Replace
+    /// <summary>
+    /// Replaces all occurrences of a set of strings with a new value.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="oldValues"></param>
+    /// <param name="newValue"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static string Replace(this string st, IEnumerable<string> oldValues, string newValue)
+    {
+        if (oldValues == null)
+            throw new ArgumentNullException(nameof(oldValues));
 
+        foreach (string oldValue in oldValues)
+            st = st.Replace(oldValue, newValue);
+
+        return st;
+    }
+    #endregion
+
+    #region ValidateEmail
     /// <summary>
     /// Checks if the selected string is a valid email.
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static bool ValidateEmail(string email) =>
         email is not null && Regex.IsMatch(email,
             @"\A(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)\Z");
-
     #endregion
 
     #region ValidateUrl
-
     /// <summary>
     /// Checks URL type.
     /// </summary>
@@ -546,7 +415,6 @@ public static class StringMethods
     public static UrlType ValidateUrl(string url) =>
         Uri.IsWellFormedUriString(url, UriKind.Absolute) ? UrlType.Absolute :
         Uri.IsWellFormedUriString(url, UriKind.Relative) ? UrlType.Relative : UrlType.Invalid;
-
     #endregion
 
     #endregion
@@ -580,87 +448,6 @@ public static class StringMethods
         int posteriorWidth = (int)Math.Floor(maxWidth / 2.0);
 
         return $"{text.Substring(0, previousWidth)}...{text.Substring(text.Length - posteriorWidth)}";
-    }
-    #endregion
-
-    #region GetRandomString
-    /// <summary>
-    /// Generates a random string using the selected chars.
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="validChars"></param>
-    /// <returns></returns>
-    private static string GetRandomStringPrivate(int width, IReadOnlyList<char> validChars)
-    {
-        StringBuilder text = new();
-
-        for (int i = 0; i < width; i++)
-            text.Append(validChars[NumberMethods.GetRandomInt(validChars.Count)]);
-
-        return text.ToString();
-    }
-    #endregion
-
-    #region GenerateValidCharsString
-    /// <summary>
-    /// Generates the valid chars string.
-    /// </summary>
-    /// <param name="classes"></param>
-    /// <returns></returns>
-    private static string GenerateValidCharsString(CharacterClass classes)
-    {
-        StringBuilder characters = new(96); //Max possible size.
-
-        if (classes.HasFlag(CharacterClass.All))
-            characters.Append(SpecialChars)
-                .Append(SpaceChars)
-                .Append(UpperCaseChars)
-                .Append(LowerCaseChars)
-                .Append(NumericChars)
-                .Append(LineBreaks);
-        else
-        {
-            if (classes.HasFlag(CharacterClass.Space))
-                characters.Append(SpaceChars);
-
-            if (classes.HasFlag(CharacterClass.Special))
-                characters.Append(SpecialChars);
-
-            if (classes.HasFlag(CharacterClass.UpperCase))
-                characters.Append(UpperCaseChars);
-
-            if (classes.HasFlag(CharacterClass.LowerCase))
-                characters.Append(LowerCaseChars);
-
-            if (classes.HasFlag(CharacterClass.Number))
-                characters.Append(NumericChars);
-
-            if (classes.HasFlag(CharacterClass.LineBreak))
-                characters.Append(LineBreaks);
-        }
-
-        return characters.ToString();
-    }
-    #endregion
-
-    #region ValidateWidth
-    /// <summary>
-    /// Validates the string width boundaries.
-    /// </summary>
-    /// <param name="minWidth"></param>
-    /// <param name="maxWidth"></param>
-    /// <exception cref="ArgumentOutOfRangeException">Any of the width boundaries smaller than zero.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Minimum width greater than the maximum width.</exception>
-    private static void ValidateWidth(int minWidth, int maxWidth)
-    {
-        if (maxWidth < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxWidth), "The maximum string width must be greater than or equal to zero.");
-
-        if (minWidth < 0)
-            throw new ArgumentOutOfRangeException(nameof(minWidth), "The minimum string width must be greater than or equal to zero.");
-
-        if (minWidth > maxWidth)
-            throw new ArgumentOutOfRangeException(nameof(minWidth), "The minimum string width must be smaller than the maximum width.");
     }
     #endregion
 

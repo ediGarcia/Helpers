@@ -7,29 +7,25 @@ namespace HelperMethods;
 
 public static class FunctionMethods
 {
-    #region RepeatExecutions
-    /// <summary>
-    /// Runs the action the specified number of times.
-    /// </summary>
-    /// <param name="action"></param>
-    /// <param name="repetitions"></param>
-    /// <param name="interval">Time interval (in milliseconds) between action calls.</param>
-    public static async void RepeatExecutions(Action action, int repetitions, int interval)
-    {
-        for (int i = 0; i < repetitions; i++)
-        {
-            action?.Invoke();
-            await Wait(interval);
-        }
-    }
-    #endregion
-
     #region Wait
     /// <summary>
     /// Awaits the specified time.
     /// </summary>
     /// <param name="interval"></param>
-    public static async Task Wait(int interval) =>
-        await Task.Run(() => Thread.Sleep(interval));
+    public static async Task Wait(int interval)
+    {
+        switch (interval)
+        {
+            case < 0:
+                throw new ArgumentOutOfRangeException(nameof(interval), "Interval must be a non-negative number.");
+
+            case 0:
+                return;
+
+            default:
+                await Task.Run(() => Thread.Sleep(interval));
+                break;
+        }
+    }
     #endregion
 }
