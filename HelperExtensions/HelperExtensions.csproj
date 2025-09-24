@@ -52,6 +52,7 @@
     <Compile Include="ControlExtensions.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="ListExtensions.cs" />
+    <Compile Include="NullableExtensions.cs" />
     <Compile Include="NumberExtensions.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
