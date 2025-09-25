@@ -7,10 +7,10 @@ public class InverseBooleanConverter : BooleanConverter
     #region Properties
 
     /// <inheritdoc cref="BooleanConverter.FalseValue" />
-    public new object FalseValue { get; } = true;
+    public new object FalseValue => true;
 
     /// <inheritdoc cref="BooleanConverter.TrueValue" />
-    public new object TrueValue { get; } = false;
+    public new object TrueValue => false;
 
     #endregion
 }

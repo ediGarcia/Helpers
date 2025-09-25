@@ -33,7 +33,7 @@ public class ApiClientAction
 
     #region AddHeader
     /// <summary>
-    /// Adds a new header.
+    /// Adds or replaces a new header.
     /// </summary>
     /// <param name="key"></param>
     /// <param name="value"></param>
@@ -115,16 +115,13 @@ public class ApiClientAction
 
     #region SetContent(HttpContent)
     /// <summary>
-    /// Sets the content for HTTP methods that support content.
+    /// Sets or replaces the content for HTTP methods that support content.
     /// </summary>
     /// <param name="content"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     public ApiClientAction SetContent(HttpContent content)
     {
-        if (_content is not null)
-            throw new InvalidOperationException("The content is already set.");
-
         _content = content;
         return this;
     }
@@ -132,7 +129,7 @@ public class ApiClientAction
 
     #region SetJsonContent(string)
     /// <summary>
-    /// Sets the JSON content for HTTP methods that support content.
+    /// Sets or replaces the content for HTTP methods that support content.
     /// </summary>
     /// <param name="json"></param>
     /// <returns></returns>
@@ -143,13 +140,54 @@ public class ApiClientAction
 
     #region SetJsonContent(object)
     /// <summary>
-    /// Sets the JSON content for HTTP methods that support content.
+    /// Sets or replaces the content for HTTP methods that support content.
     /// </summary>
     /// <param name="content"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     public ApiClientAction SetJsonContent(object content) =>
         SetJsonContent(JsonSerializer.Serialize(content));
+    #endregion
+
+    #endregion
+
+    #region TrySendRequest*
+
+    #region TrySendRequest
+    /// <summary>
+    /// Attempts to send the request and retrieves the result.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<(bool success, string result)> TrySendRequest()
+    {
+        try
+        {
+            return (true, await SendRequest());
+        }
+        catch
+        {
+            return (false, null);
+        }
+    }
+    #endregion
+
+    #region TrySendRequest<T>
+    /// <summary>
+    /// Attempts to send the request and retrieves the deserialized result.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public async Task<(bool success, T result)> TrySendRequest<T>()
+    {
+        try
+        {
+            return (true, await SendRequest<T>());
+        }
+        catch
+        {
+            return (false, default);
+        }
+    }
     #endregion
 
     #endregion

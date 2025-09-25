@@ -23,6 +23,9 @@ csharp_style_expression_bodied_lambdas = true:warning
 csharp_style_expression_bodied_local_functions = true:warning
 csharp_prefer_system_threading_lock = true:suggestion
 
+# CS8619: Nullability of reference types in value doesn't match target type.
+dotnet_diagnostic.CS8619.severity = none
+
 [*.{cs,vb}]
 #### Naming styles ####
 

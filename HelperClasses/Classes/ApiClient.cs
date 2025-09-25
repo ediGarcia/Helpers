@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.IO;
+using System.Net.Http;
 using System.Text;
 
 namespace HelperClasses.Classes;
@@ -54,9 +55,10 @@ public class ApiClient
         : this(baseUrl)
     {
         string authorizationToken = bearerToken;
+        string authorizationPrefix = "Bearer ";
 
-        if (!authorizationToken.StartsWith("Bearer "))
-            authorizationToken = "Bearer " + authorizationToken;
+        if (!authorizationToken.StartsWith(authorizationPrefix))
+            authorizationToken = authorizationPrefix + authorizationToken;
 
         _defaultHeaders.Add("Authorization", authorizationToken);
     }
@@ -89,7 +91,7 @@ public class ApiClient
                 throw new InvalidOperationException($"The \"{endpoint}\" base path does not match \"{BaseUrl}\". Consider using a relative URL.");
         }
         else
-            endpoint = BaseUrl + endpoint;
+            endpoint = Path.Combine(BaseUrl, endpoint);
 
         return new(httpMethod, endpoint, _defaultHeaders);
     }
