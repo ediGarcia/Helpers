@@ -2,8 +2,6 @@
 using System.Globalization;
 using System.Linq;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperMethods;
 
 /// <summary>

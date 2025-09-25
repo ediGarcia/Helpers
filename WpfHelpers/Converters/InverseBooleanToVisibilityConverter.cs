@@ -1,6 +1,4 @@
-﻿// ReSharper disable UnusedMember.Global
-
-using System.Windows;
+﻿using System.Windows;
 
 namespace WpfHelpers.Converters;
 

@@ -1,8 +1,6 @@
 ﻿using System.Windows.Media;
 using HelperMethods;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperExtensions;
 
 public static class ColorExtensions

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperExtensions;
 
 public static class TypeExtensions

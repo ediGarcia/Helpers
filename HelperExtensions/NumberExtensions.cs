@@ -1,10 +1,11 @@
 ﻿using System;
-// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 
 public static class NumberExtensions
 {
+    #region Public Methods
+
     #region IsBetween*
 
     #region IsBetween(int)
@@ -69,6 +70,8 @@ public static class NumberExtensions
     #region IsPositiveInfinity
     ///<inheritdoc cref="Double.IsPositiveInfinity"/>
     public static bool IsPositiveInfinity(this double value) =>
-        Double.IsPositiveInfinity(value); 
+        Double.IsPositiveInfinity(value);
+    #endregion
+
     #endregion
 }

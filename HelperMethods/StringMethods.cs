@@ -10,8 +10,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperMethods;
 
 public static class StringMethods

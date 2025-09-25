@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-
-// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
@@ -111,7 +108,7 @@ public static class NumberMethods
 
     #region Min
     /// <summary>
-    /// Returns the smalled of two numbers.
+    /// Returns the smallest of two numbers.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value1"></param>

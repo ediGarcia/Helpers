@@ -1,10 +1,8 @@
 ﻿using HelperMethods;
 using System;
-// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 
-// ReSharper disable once UnusedMember.Global
 public static class DateTimeExtensions
 {
     #region Public Methods

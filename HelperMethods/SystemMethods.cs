@@ -15,8 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CredentialManagement;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperMethods;
 
 public static class SystemMethods

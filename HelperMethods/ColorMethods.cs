@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Windows.Media;
 using Color = System.Windows.Media.Color;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperMethods;
 
 /// <summary>

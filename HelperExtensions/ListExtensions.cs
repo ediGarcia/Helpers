@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-// ReSharper disable UnusedMember.Global
-
 namespace HelperExtensions;
 
 public static class ListExtensions
@@ -116,7 +114,7 @@ public static class ListExtensions
 
     #region RemoveMany
     /// <summary>
-    /// Removes the first occurence of each value from the <see cref="ICollection{T}"/>.
+    /// Removes the first occurrence of each value from the <see cref="ICollection{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>

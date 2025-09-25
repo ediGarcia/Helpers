@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-// ReSharper disable MemberCanBePrivate.Local
-// ReSharper disable FieldCanBeMadeReadOnly.Local
-// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods.Helpers;
 
