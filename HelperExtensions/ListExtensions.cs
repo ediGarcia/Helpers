@@ -81,6 +81,17 @@ public static class ListExtensions
         [.. collection];
     #endregion
 
+    #region IsEmpty
+    /// <summary>
+    /// Indicates whether the current collection is empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsEmpty<T>(this ICollection<T> collection) =>
+        collection.Count == 0;
+    #endregion
+
     #region IsInsideBounds
     /// <summary>
     /// Indicates whether the specified <see cref="index"/> is inside the bound of the current collection.
@@ -91,6 +102,17 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool IsInsideBounds<T>(this ICollection<T> collection, int index) =>
         !collection.IsNullOrEmpty() && index >= 0 && index < collection.Count;
+    #endregion
+
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the current collection is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this ICollection<T> collection) =>
+        collection == null || collection.Count == 0;
     #endregion
 
     #region Remove
