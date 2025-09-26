@@ -159,28 +159,28 @@ public static class ListExtensions
 
     #endregion
 
-    #region IDictionary<T1, T2>
+    #region IDictionary<TKey, TValue>
 
     #region Clone
     /// <summary>
     /// Creates a copy of the current dictionary.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public static Dictionary<T1, T2> Clone<T1, T2>(this IDictionary<T1, T2> dictionary) =>
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) =>
         new(dictionary);
     #endregion
 
     #region ForEach*
 
-    #region ForEach(this IDictionary<T1, T2>, Action<T1, T2>, [int], [int?])
+    #region ForEach(this IDictionary<TKey, TValue>, Action<TKey, TValue>, [int], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
@@ -188,11 +188,11 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action,
+    public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
+        TKey[] keys = [.. dictionary.Keys];
+        TValue[] values = [.. dictionary.Values];
         length ??= dictionary.Count - startIndex;
 
         for (int i = startIndex; i < startIndex + length; i++)
@@ -200,12 +200,12 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ForEach(this IDictionary<T1, T2>, Action<T1, T2, int>, [int], [int?])
+    #region ForEach(this IDictionary<TKey, TValue>, Action<TKey, TValue, int>, [int], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
@@ -213,11 +213,11 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action,
+    public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue, int> action,
         int startIndex = 0, int? length = null)
     {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
+        TKey[] keys = [.. dictionary.Keys];
+        TValue[] values = [.. dictionary.Values];
         length ??= dictionary.Count - startIndex;
 
         for (int i = startIndex; i < startIndex + length; i++)
@@ -229,38 +229,38 @@ public static class ListExtensions
 
     #region GetOrAdd
 
-    #region GetOrAdd(this IDictionary<T1, T2>, T1, [T2])
+    #region GetOrAdd(this IDictionary<TKey, TValue>, TKey, [TValue])
     /// <summary>
     /// Gets the value associated with the specified key. If the key doesn't exist, it's created with the <see cref="defaultValue"/>.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="key"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T2 GetOrAdd<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 defaultValue = default)
+    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default)
     {
-        if (!dictionary.TryGetValue(key, out T2 value))
+        if (!dictionary.TryGetValue(key, out TValue value))
             dictionary.Add(key, value = defaultValue);
 
         return value;
     }
     #endregion
 
-    #region GetOrAdd(this IDictionary<T1, T2>, T1, Func<T2>)
+    #region GetOrAdd(this IDictionary<TKey, TValue>, TKey, Func<TValue>)
     /// <summary>
     /// Gets the value associated with the specified key. If the key doesn't exist, it's created with the value returned by the <see cref="valueFactory"/>.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="key"></param>
     /// <param name="valueFactory"></param>
     /// <returns></returns>
-    public static T2 GetOrAdd<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, Func<T2> valueFactory)
+    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFactory)
     {
-        if (!dictionary.TryGetValue(key, out T2 value))
+        if (!dictionary.TryGetValue(key, out TValue value))
             dictionary.Add(key, value = valueFactory());
 
         return value;
@@ -271,12 +271,12 @@ public static class ListExtensions
 
     #region ReverseForEach*
 
-    #region ReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2>, [int?], [int?])
+    #region ReverseForEach(this IDictionary<TKey, TValue>, Action<TKey, TValue>, [int?], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary in the inverse order.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
@@ -284,10 +284,10 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
+        TKey[] keys = [.. dictionary.Keys];
+        TValue[] values = [.. dictionary.Values];
 
         startIndex ??= keys.Length - 1;
         length ??= startIndex + 1;
@@ -297,12 +297,12 @@ public static class ListExtensions
     }
     #endregion
 
-    #region ReverseForEach<T1, T2>(this IDictionary<T1, T2>, Action<T1, T2, int>, [int?], [int?])
+    #region ReverseForEach(this IDictionary<TKey, TValue>, Action<TKey, TValue, int>, [int?], [int?])
     /// <summary>
     /// Performs the specified action on each element of the dictionary in the inverse order.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
@@ -310,10 +310,10 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T1, T2>(this IDictionary<T1, T2> dictionary, Action<T1, T2, int> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue, int> action, int? startIndex = null, int? length = null)
     {
-        T1[] keys = [.. dictionary.Keys];
-        T2[] values = [.. dictionary.Values];
+        TKey[] keys = [.. dictionary.Keys];
+        TValue[] values = [.. dictionary.Values];
 
         startIndex ??= keys.LastIndex();
         length ??= startIndex + 1;
@@ -325,17 +325,37 @@ public static class ListExtensions
 
     #endregion
 
+    #region TryAdd
+    /// <summary>
+    /// Attempts to add the specified key and value to the dictionary.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+    {
+        if (dictionary.ContainsKey(key))
+            return false;
+
+        dictionary[key] = value;
+        return true;
+    }
+    #endregion
+
     #region TrySetValue
     /// <summary>
     /// Tries to set the value for the specified key.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns>true, if the key exists and the value is property set; false otherwise.</returns>
-    public static bool TrySetValue<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 value)
+    public static bool TrySetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
         if (dictionary.ContainsKey(key))
         {
