@@ -175,6 +175,38 @@ public static class DateTimeMethods
 
     #endregion
 
+    #region IsSameDate
+    /// <summary>
+    /// Indicates whether all provided dates are the same date (ignoring time).
+    /// </summary>
+    /// <param name="dateTimes"></param>
+    /// <returns></returns>
+    public static bool IsSameDate(params DateTime[] dateTimes)
+    {
+        if (dateTimes.Length == 0)
+            return false;
+
+        DateTime first = dateTimes[0];
+        return dateTimes.All(d => d.Date == first.Date);
+    }
+    #endregion
+
+    #region IsSameMonth
+    /// <summary>
+    /// Indicates whether all provided dates are in the same month and year.
+    /// </summary>
+    /// <param name="dateTimes"></param>
+    /// <returns></returns>
+    public static bool IsSameMonth(params DateTime[] dateTimes)
+    {
+        if (dateTimes.Length == 0)
+            return false;
+
+        DateTime firstDateTime = dateTimes[0];
+        return dateTimes.All(_ => _.Month == firstDateTime.Month && _.Year == firstDateTime.Year);
+    }
+    #endregion
+
     #region Max*
 
     #region Max(params DateTime[])

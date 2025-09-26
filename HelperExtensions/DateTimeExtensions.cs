@@ -22,6 +22,51 @@ public static class DateTimeExtensions
         GenericMethods.IsBetween(value, minimum, maximum, inclusive);
     #endregion
 
+    #region IsDay
+    /// <summary>
+    /// Indicates whether the current date is the specified day of the month.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="day"></param>
+    /// <returns></returns>
+    public static bool IsDay(this DateTime dateTime, int day) =>
+        dateTime.Day == day;
+    #endregion
+
+    #region IsMonth
+    /// <summary>
+    /// Indicates whether the current date is the specified month and year (if provided).
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="month"></param>
+    /// <param name="year"></param>
+    /// <returns></returns>
+    public static bool IsMonth(this DateTime dateTime, int month, int? year) =>
+        dateTime.Month == month && (!year.HasValue || dateTime.Year == year.Value);
+    #endregion
+
+    #region IsSameDate
+    /// <summary>
+    /// Indicates whether the current date is the same as the specified dates (ignoring time).
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="dates"></param>
+    /// <returns></returns>
+    public static bool IsSameDate(this DateTime dateTime, params DateTime[] dates) => 
+        DateTimeMethods.IsSameDate([dateTime, .. dates]);
+    #endregion
+
+    #region IsSameMonth
+    /// <summary>
+    /// Indicates whether the current date is in the same month and year as the specified dates.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="dates"></param>
+    /// <returns></returns>
+    public static bool IsSameMonth(this DateTime dateTime, params DateTime[] dates) =>
+        DateTimeMethods.IsSameMonth([dateTime, .. dates]);
+    #endregion
+
     #region IsToday
     /// <summary>
     /// Indicates whether the current date is today.
