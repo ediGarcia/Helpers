@@ -1,7 +1,7 @@
 ﻿namespace HelperMethods.Enums;
 
 /// <summary>
-/// Gets the directory action when trying to copy/move over an already existing file.
+/// Gets the directory action when trying to copy/move over an already existing file/folder.
 /// </summary>
 public enum FileNameConflictAction
 {

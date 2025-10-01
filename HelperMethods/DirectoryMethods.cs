@@ -385,18 +385,15 @@ public static class DirectoryMethods
             return;
         }
 
-        Action<string, string, FileNameConflictAction> transferFile =
+        Action<string, string, FileNameConflictAction> transferMethod =
             keepOriginal ? FileMethods.CopyToDirectory : FileMethods.MoveToDirectory;
 
         try
         {
-            CreateFolder(source, destination);
+            CreateFolder(source, destination, transferMethod);
 
             foreach (string sourceDir in ListDirectories(source, searchSubFolders: true))
-                CreateFolder(
-                    sourceDir,
-                    sourceDir.Replace(source, destination)
-                );
+                CreateFolder(sourceDir, sourceDir.Replace(source, destination), transferMethod);
 
             if (!keepOriginal)
                 Delete(source);
@@ -411,13 +408,13 @@ public static class DirectoryMethods
 
         #region CreateFolder
         // Creates a new folder, if needed, and copies or moves the contents of the original folder into the new one.
-        void CreateFolder(string sourceDir, string destinationDir)
+        void CreateFolder(string sourceDir, string destinationDir, Action<string, string, FileNameConflictAction> transferAction)
         {
             if (!Exists(destinationDir))
                 Create(destinationDir);
 
             foreach (string sourceFile in ListFiles(sourceDir))
-                transferFile(sourceFile, destinationDir, conflictAction);
+                transferAction(sourceFile, destinationDir, conflictAction);
         }
         #endregion
 
