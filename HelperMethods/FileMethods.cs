@@ -197,11 +197,27 @@ public static class FileMethods
         Move(sourceFile, Path.Combine(destinationDirectory, Path.GetFileName(sourceFile)), conflictAction);
     #endregion
 
-    #region ReadFileLines
+    #region ReadAllText
+    /// <summary>
+    /// Reads all text from a file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <returns></returns>
+    public static string ReadAllText(string path, FileShare fileShare = FileShare.ReadWrite)
+    {
+        using FileStream fs = new(path, FileMode.Open, FileAccess.Read, fileShare);
+        using StreamReader reader = new(fs);
+        return reader.ReadToEnd();
+    }
+    #endregion
+
+    #region ReadAllLines
     /// <summary>
     /// Returns the lines of a file's content.
     /// </summary>
     /// <param name="path"></param>
+    /// <param name="fileShare"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException" />
     /// <exception cref="ArgumentNullException" />
@@ -210,12 +226,11 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static string[] ReadFileLines(string path)
+    public static string[] ReadAllLines(string path, FileShare fileShare = FileShare.ReadWrite)
     {
         List<string> lines = [];
 
-        //Opens the file in read-only mode without any kind of block.
-        using StreamReader reader = new(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+        using StreamReader reader = new(new FileStream(path, FileMode.Open, FileAccess.Read, fileShare));
         while (!reader.EndOfStream)
             lines.Add(reader.ReadLine());
 
