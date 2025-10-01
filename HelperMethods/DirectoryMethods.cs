@@ -68,17 +68,28 @@ public static class DirectoryMethods
     /// Creates a new empty directory.
     /// </summary>
     /// <param name="path"></param>
-    /// <param name="overwrite"></param>
+    /// <param name="conflictAction"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="IOException"></exception>
-    public static void Create(string path, bool overwrite = false)
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="UnauthorizedAccessException"></exception>
+    public static void Create(string path, FileNameConflictAction conflictAction = FileNameConflictAction.Skip)
     {
         if (Exists(path))
-        {
-            if (overwrite)
-                Delete(path);
-            else
-                throw new IOException($"\"{path}\" already exists.");
-        }
+            switch (conflictAction)
+            {
+                case FileNameConflictAction.ThrowError:
+                    throw new IOException($"\"{path}\" already exists.");
+
+                case FileNameConflictAction.Overwrite:
+                    Delete(path);
+                    break;
+
+                case FileNameConflictAction.Skip:
+                    return;
+            }
 
         Directory.CreateDirectory(path);
     }
@@ -338,7 +349,7 @@ public static class DirectoryMethods
 
     #region Move
     /// <summary>
-    /// Moves a folder o a new location.
+    /// Moves a folder to a new location.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="destination"></param>
