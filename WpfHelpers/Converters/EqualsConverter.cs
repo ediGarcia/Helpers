@@ -1,5 +1,4 @@
-﻿using HelperExtensions;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 
 namespace WpfHelpers.Converters;
@@ -8,7 +7,7 @@ public class EqualsConverter : IMultiValueConverter
     #region Convert
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.IsNullOrEmpty())
+        if (values.Length == 0)
             return false;
 
         if (values.Length == 1)
