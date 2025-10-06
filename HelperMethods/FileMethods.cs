@@ -226,7 +226,7 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static string[] ReadAllLines(string path, FileShare fileShare = FileShare.ReadWrite)
+    public static IReadOnlyList<string> ReadAllLines(string path, FileShare fileShare = FileShare.ReadWrite)
     {
         List<string> lines = [];
 

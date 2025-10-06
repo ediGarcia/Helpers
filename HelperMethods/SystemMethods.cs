@@ -1,6 +1,8 @@
-﻿using HelperMethods.Enums;
+﻿using CredentialManagement;
+using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -13,15 +15,11 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using CredentialManagement;
 
 namespace HelperMethods;
 
 public static class SystemMethods
 {
-    public static string ApplicationDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-    public static string UserDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-
     #region Public Methods
 
     #region Copy
@@ -178,10 +176,10 @@ public static class SystemMethods
     /// </summary>
     /// <param name="searchPattern"></param>
     /// <returns></returns>
-    public static Process[] GetProcesses(string searchPattern)
+    public static IReadOnlyList<Process> GetProcesses(string searchPattern)
     {
-        Regex regex = new(searchPattern.Replace(".", "\\."), RegexOptions.IgnoreCase);
-        return [.. Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName))];
+        Regex regex = new(searchPattern.Replace(".", "\\.").Replace("*", ".*").Replace("?", "."), RegexOptions.IgnoreCase);
+        return [..Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName))];
     }
     #endregion
 
@@ -207,6 +205,18 @@ public static class SystemMethods
     /// Kill the specified processes.
     /// </summary>
     /// <param name="processes"></param>
+    public static void KillProcesses(IEnumerable<Process> processes)
+    {
+        foreach (Process process in processes)
+            process.Kill();
+    }
+    #endregion
+
+    #region KillProcesses(params Process[])
+    /// <summary>
+    /// Kill the specified processes.
+    /// </summary>
+    /// <param name="processes"></param>
     public static void KillProcesses(params Process[] processes)
     {
         foreach (Process process in processes)
@@ -226,10 +236,9 @@ public static class SystemMethods
 
         foreach (string searchPattern in searchPatterns)
         {
-            Process[] processes = GetProcesses(searchPattern);
+            IReadOnlyList<Process> processes = GetProcesses(searchPattern);
             KillProcesses(processes);
-
-            processCount += processes.Length;
+            processCount += processes.Count;
         }
 
         return processCount;

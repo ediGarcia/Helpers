@@ -2,6 +2,7 @@
 using HelperMethods.Helpers;
 using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -17,6 +18,10 @@ namespace HelperMethods;
 
 public static class DirectoryMethods
 {
+    public static string ApplicationDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    public static string TemporaryDirectory = Path.GetTempPath();
+    public static string UserDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
     #region Public Methods
 
     #region Copy
@@ -306,7 +311,7 @@ public static class DirectoryMethods
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListDirectories(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
+    public static IReadOnlyList<string> ListDirectories(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
         Directory.GetDirectories(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
 
@@ -324,7 +329,7 @@ public static class DirectoryMethods
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListFiles(string dirPath, string searchPattern = "*.*", bool searchSubfolders = false) =>
+    public static IReadOnlyList<string> ListFiles(string dirPath, string searchPattern = "*.*", bool searchSubfolders = false) =>
         Directory.GetFiles(dirPath, searchPattern, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
 
@@ -343,7 +348,7 @@ public static class DirectoryMethods
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="SecurityException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static string[] ListFilesAndDirs(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
+    public static IReadOnlyList<string> ListFilesAndDirs(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
         Directory.GetFileSystemEntries(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     #endregion
 

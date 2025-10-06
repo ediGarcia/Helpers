@@ -2,6 +2,7 @@
 using System.Windows.Data;
 
 namespace WpfHelpers.Converters;
+
 public class EqualsConverter : IMultiValueConverter
 {
     #region Convert

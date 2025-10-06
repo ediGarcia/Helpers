@@ -459,7 +459,7 @@ public static class StringExtensions
     /// <param name="separator">A character array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(
+    public static IReadOnlyList<string> Split(
         this string st,
         char separator,
         StringSplitOptions options = StringSplitOptions.None
@@ -474,7 +474,7 @@ public static class StringExtensions
     /// <param name="separator">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(
+    public static IReadOnlyList<string> Split(
         this string st,
         string separator,
         StringSplitOptions options = StringSplitOptions.None
@@ -489,7 +489,7 @@ public static class StringExtensions
     /// <param name="separators">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <param name="options"><see cref="F:System.StringSplitOptions.RemoveEmptyEntries" /> to omit empty array elements from the array returned; or <see cref="F:System.StringSplitOptions.None" /> to include empty array elements in the array returned.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, string[] separators, StringSplitOptions options) =>
+    public static IReadOnlyList<string> Split(this string st, string[] separators, StringSplitOptions options) =>
         st.Split(separators, options);
     #endregion
 
@@ -500,7 +500,7 @@ public static class StringExtensions
     /// <param name="st"></param>
     /// <param name="separators">A string array that delimits the substrings in this string, an empty array that contains no delimiters, or <see langword="null" />.</param>
     /// <returns></returns>
-    public static string[] Split(this string st, params string[] separators) =>
+    public static IReadOnlyList<string> Split(this string st, params string[] separators) =>
         st.Split(separators, StringSplitOptions.None);
     #endregion
 
