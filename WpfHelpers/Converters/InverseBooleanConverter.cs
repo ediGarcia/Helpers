@@ -5,10 +5,10 @@ public class InverseBooleanConverter : BooleanConverter
     #region Properties
 
     /// <inheritdoc cref="BooleanConverter.FalseValue" />
-    public new object FalseValue => true;
+    public override object FalseValue => true;
 
     /// <inheritdoc cref="BooleanConverter.TrueValue" />
-    public new object TrueValue => false;
+    public override object TrueValue => false;
 
     #endregion
 }

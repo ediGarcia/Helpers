@@ -10,12 +10,12 @@ public class BooleanConverter : IValueConverter
     /// <summary>
     /// Gets or sets the value to return when the input is false.
     /// </summary>
-    public object FalseValue { get; set; } = false;
+    public virtual object FalseValue { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the value to return when the input is true.
     /// </summary>
-    public object TrueValue { get; set; } = true;
+    public virtual object TrueValue { get; set; } = true;
 
     #endregion
 
