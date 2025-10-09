@@ -923,14 +923,15 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
+    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T FirstOrDefault<T>(this IEnumerable iEnumerable, Func<T, bool> predicate)
+    public static T FirstOrDefault<T>(this IEnumerable iEnumerable, Func<T, bool> predicate, T defaultValue = default)
     {
         foreach (T item in iEnumerable)
             if (predicate(item))
                 return item;
 
-        return default;
+        return defaultValue;
     }
     #endregion
 
@@ -947,6 +948,62 @@ public static class ListExtensions
         foreach (T item in iEnumerable)
             action(item);
     }
+    #endregion
+
+    #region IsEmpty
+    /// <summary>
+    /// Indicates whether the current sequence is empty.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool IsEmpty(this IEnumerable iEnumerable) =>
+        iEnumerable != null && !iEnumerable.Any();
+    #endregion
+
+    #region IsNull
+    /// <summary>
+    /// Indicates whether the current sequence is null.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool IsNull(this IEnumerable iEnumerable) =>
+        iEnumerable is null;
+    #endregion
+
+    #region IsNullOrEmpty
+    /// <summary>
+    /// Indicates whether the current sequence is null or empty.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty(this IEnumerable iEnumerable) =>
+        iEnumerable?.Any() != true;
+    #endregion
+
+    #region Join*
+
+    #region Join(this IEnumerable, char)
+    /// <summary>
+    /// Concatenates the members of a collection, using the specified separator between each member.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <param name="separator"></param>
+    /// <returns>A string that consists of the member of the value delimited by the separator char. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
+    public static string Join(this IEnumerable iEnumerable, char separator) =>
+        String.Join($"{separator}", iEnumerable);
+    #endregion
+
+    #region Join(this IEnumerable, string)
+    /// <summary>
+    /// Concatenates the members of a collection, using the specified separator between each member.
+    /// </summary>
+    /// <param name="iEnumerable"></param>
+    /// <param name="separator"></param>
+    /// <returns>A string that consists of the member of the value delimited by the separator string. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
+    public static string Join(this IEnumerable iEnumerable, string separator) =>
+        String.Join(separator, iEnumerable);
+    #endregion
+
     #endregion
 
     #region Select
@@ -1043,8 +1100,14 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
-    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items) => 
-        items.All(item => iEnumerable.Any(_ => _.Equals(item)));
+    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items)
+    {
+        if (items.Length == 0)
+            return true;
+
+        HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? iEnumerable.ToHashSet();
+        return items.All(sourceSet.Contains);
+    }
     #endregion
 
     #region ContainsAny
@@ -1055,21 +1118,14 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="items"></param>
     /// <returns>True, if the enumeration contains any of the specified items. False, otherwise.</returns>
-    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items) =>
-        items.Any(item => iEnumerable.Any(_ => _.Equals(item)));
-    #endregion
+    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items)
+    {
+        if (items.Length == 0)
+            return true;
 
-    #region FirstOrDefault
-    /// <summary>
-    /// Returns the first element that satisfies a specified condition, or the default value if no such element is found.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <param name="defaultValue"></param>
-    /// <returns></returns>
-    public static T FirstOrDefault<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate, T defaultValue) =>
-        iEnumerable.FirstOrDefault(predicate) ?? default;
+        HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? iEnumerable.ToHashSet();
+        return items.Any(sourceSet.Contains);
+    }
     #endregion
 
     #region ForEach*
@@ -1108,39 +1164,6 @@ public static class ListExtensions
 
     #endregion
 
-    #region IsEmpty
-    /// <summary>
-    /// Indicates whether the current sequence is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static bool IsEmpty<T>(this IEnumerable<T> iEnumerable) =>
-        !iEnumerable.Any();
-    #endregion
-
-    #region IsNull
-    /// <summary>
-    /// Indicates whether the current sequence is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static bool IsNull<T>(this IEnumerable<T> iEnumerable) =>
-        iEnumerable is null;
-    #endregion
-
-    #region IsNullOrEmpty
-    /// <summary>
-    /// Indicates whether the current sequence is null or empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T> iEnumerable) =>
-        iEnumerable?.Any() != true;
-    #endregion
-
     #region None
     /// <summary>
     /// Determines whether no elements of a sequence satisfy a condition.
@@ -1151,34 +1174,6 @@ public static class ListExtensions
     /// <returns></returns>
     public static bool None<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
         iEnumerable.All(item => !predicate(item));
-    #endregion
-
-    #region Join*
-
-    #region Join<T>(this IEnumerable<T>, char)
-    /// <summary>
-    /// Concatenates the members of a collection, using the specified separator between each member.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="separator"></param>
-    /// <returns>A string that consists of the member of the value delimited by the separator char. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
-    public static string Join<T>(this IEnumerable<T> iEnumerable, char separator) =>
-        String.Join($"{separator}", iEnumerable);
-    #endregion
-
-    #region Join<T>(this IEnumerable<T>, string)
-    /// <summary>
-    /// Concatenates the members of a collection, using the specified separator between each member.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="separator"></param>
-    /// <returns>A string that consists of the member of the value delimited by the separator string. If the collection has no members, the method returns <see cref="String.Empty"/>.</returns>
-    public static string Join<T>(this IEnumerable<T> iEnumerable, string separator) =>
-        String.Join(separator, iEnumerable);
-    #endregion
-
     #endregion
 
     #region ParallelAll
