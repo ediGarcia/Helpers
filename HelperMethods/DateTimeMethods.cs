@@ -19,7 +19,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDate"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime GetFirstDayOfMonth(DateTime baseDate) =>
         GetFirstDayOfMonth(baseDate.Month, baseDate.Year);
     #endregion
@@ -43,7 +42,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime GetFirstDayOfWeek(DateTime? baseDay = null)
     {
         baseDay ??= DateTime.Today;
@@ -67,7 +65,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="baseDay"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime GetLastDayOfMonth(DateTime baseDay) =>
         GetLastDayOfMonth(baseDay.Month, baseDay.Year);
     #endregion
@@ -141,7 +138,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="seconds"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static string GetShortTimeString(double seconds)
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
@@ -215,7 +211,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime Max(params DateTime[] values) =>
         values is null || values.Length == 0 ? DateTime.MaxValue : values.Max();
     #endregion
@@ -226,7 +221,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static TimeSpan Max(params TimeSpan[] values) =>
         values is null || values.Length == 0 ? TimeSpan.MaxValue : values.Max();
     #endregion
@@ -241,7 +235,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime Min(params DateTime[] values) =>
         values is null || values.Length == 0 ? DateTime.MinValue : values.Min();
     #endregion
@@ -252,7 +245,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static TimeSpan Min(params TimeSpan[] values) =>
         values is null || values.Length == 0 ? TimeSpan.MinValue : values.Min();
     #endregion
@@ -285,6 +277,29 @@ public static class DateTimeMethods
         DateTime.ParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles);
     #endregion
 
+    #region RemoveMilliseconds*
+
+    #region RemoveMilliseconds(DateTime)
+    /// <summary>
+    /// Returns a new DateTime without the milliseconds and ticks.
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static DateTime RemoveMilliseconds(DateTime dateTime) =>
+        new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
+    #endregion
+
+    #region RemoveMilliseconds(TimeSpan)
+    /// <summary>
+    /// Returns a new TimeSpan without the milliseconds and ticks.
+    /// </summary>
+    /// <returns></returns>
+    public static TimeSpan RemoveMilliseconds(TimeSpan timeSpan) =>
+        new(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    #endregion
+
+    #endregion
+
     #region RemoveSeconds*
 
     #region RemoveSeconds(DateTime)
@@ -293,7 +308,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime RemoveSeconds(DateTime dateTime) =>
         new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0);
     #endregion
@@ -303,7 +317,6 @@ public static class DateTimeMethods
     /// Returns a new TimeSpan without the seconds, milliseconds and ticks.
     /// </summary>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static TimeSpan RemoveSeconds(TimeSpan timeSpan) =>
         new(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, 0);
     #endregion
@@ -318,7 +331,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime RoundToMinutes(DateTime dateTime) =>
         dateTime.Date.Add(RoundToMinutes(dateTime.TimeOfDay));
     #endregion
@@ -343,7 +355,6 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    // ReSharper disable once UnusedMember.Global
     public static DateTime RoundToSeconds(DateTime dateTime) =>
         dateTime.Date.Add(RoundToSeconds(dateTime.TimeOfDay));
     #endregion
