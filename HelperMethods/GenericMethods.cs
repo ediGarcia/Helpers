@@ -58,6 +58,32 @@ public static class GenericMethods
     }
     #endregion
 
+    #region Coerce
+    /// <summary>
+    /// Coerces a value to be within the specified minimum and maximum range.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="minimum"></param>
+    /// <param name="maximum"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"><see cref="minimum"/> is greater than <see cref="maximum"/>,
+    /// or <see cref="T"/> does not implement <see cref="IComparable{T}"/> or <see cref="IComparable"/>.</exception>
+    public static T Coerce<T>(T value, T minimum, T maximum)
+    {
+        if (Compare(minimum, maximum) > 0)
+            throw new ArgumentException("Minimum value cannot be greater than maximum value.");
+
+        if (Compare(value, minimum) < 0)
+            return minimum;
+
+        if (Compare(value, maximum) > 0)
+            return maximum;
+
+        return value;
+    }
+    #endregion
+
     #region Compare
     /// <summary>
     /// Performs a comparison of two objects of the same type and returns a value indicating whether x is less than, equal to, or greater than the y
@@ -65,10 +91,23 @@ public static class GenericMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="x"></param>
     /// <param name="y"></param>
-    /// <returns>A signed integer that indicates the relative values of value and other. If the return os less than zero, then x is less than y. If the return is zero, x is equal to y. And if the return is greater than zero, then x is greater than y.</returns>
+    /// <returns>A signed integer that indicates the relative values of value and other. If the return os less than zero, then x is less than y.
+    /// If the return is zero, x is equal to y. And if the return is greater than zero, then x is greater than y.</returns>
     /// <exception cref="ArgumentException"><see cref="T"/> does not implement <see cref="IComparable{T}"/> or <see cref="IComparable"/>.</exception>
     public static int Compare<T>(T x, T y) =>
         Comparer<T>.Default.Compare(x, y);
+    #endregion
+
+    #region Equals
+    /// <summary>
+    /// Determines whether two specified objects of type <typeparamref name="T"/> are equal.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns><see langword="true"/> if the two objects are considered equal; otherwise, <see langword="false"/>.</returns>
+    public static bool Equals<T>(T x, T y) =>
+        Compare(x, y) == 0;
     #endregion
 
     #region EvaluateChance
