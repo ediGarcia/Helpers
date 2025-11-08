@@ -775,24 +775,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region IndexOf
-    /// <summary>
-    /// Determines the index of the first item that matches the condition in the sequence.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static int IndexOf<T>(this IList<T> list, Func<T, bool> predicate)
-    {
-        for (int i = 0; i < list.Count; i++)
-            if (predicate(list[i]))
-                return i;
-
-        return -1;
-    }
-    #endregion
-
     #region Last
     /// <summary>
     /// Retrieves the last item of the list.
@@ -1158,6 +1140,30 @@ public static class ListExtensions
     }
     #endregion
 
+    #endregion
+
+    #region IndexOf
+    /// <summary>
+    /// Determines the index of the first item that matches the condition in the sequence.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="iEnumerable"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static int IndexOf<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
+    {
+        int index = 0;
+
+        foreach (T item in iEnumerable)
+        {
+            if (predicate(item))
+                return index;
+
+            index++;
+        }
+
+        return -1;
+    }
     #endregion
 
     #region None
