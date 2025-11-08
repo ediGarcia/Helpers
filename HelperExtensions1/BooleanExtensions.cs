@@ -1,4 +1,6 @@
-﻿namespace HelperExtensions;
+﻿using System;
+
+namespace HelperExtensions;
 
 public static class BooleanExtensions
 {

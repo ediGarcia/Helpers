@@ -1,7 +1,13 @@
 ﻿using HelperMethods.Enums;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace HelperMethods;
@@ -119,6 +125,30 @@ public static class StringMethods
         GenerateRandomString(validChars.ToCharArray(), minWidth, maxWidth);
     #endregion
 
+    #endregion
+
+    #region FitsText
+    /// <summary>
+    /// Inserts ellipsis into a string to make it fit into the desired width.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="font"></param>
+    /// <param name="desiredWidth"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException" />
+    // ReSharper disable once UnusedMember.Global
+    public static string FitsText(string text, Font font, int desiredWidth)
+    {
+        StringBuilder stringTest = new();
+
+        //Calculates the maximum string width.
+        using (Graphics graphics = new Control().CreateGraphics())
+            do
+                stringTest.Append("a");
+            while (graphics.MeasureString(stringTest.ToString(), font, Point.Empty, StringFormat.GenericTypographic).Width < desiredWidth);
+
+        return InsertEllipsisPrivate(text, stringTest.Length, false);
+    }
     #endregion
 
     #region FormatXml

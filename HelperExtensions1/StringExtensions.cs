@@ -1,5 +1,8 @@
 ﻿using HelperMethods;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -262,7 +265,7 @@ public static class StringExtensions
     /// <param name="pattern"></param>
     /// <returns></returns>
     public static string[] GetMatches(this string st, string pattern) =>
-        Regex.Matches(st, pattern).Select(m => m.Value).ToArray();
+        Regex.Matches(st, pattern).Cast<Match>().Select(m => m.Value).ToArray();
     #endregion
 
     #region GetValueOrDefault

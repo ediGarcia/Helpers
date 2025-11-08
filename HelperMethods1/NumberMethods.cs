@@ -1,4 +1,6 @@
-﻿namespace HelperMethods;
+﻿using System;
+
+namespace HelperMethods;
 
 public static class NumberMethods
 {

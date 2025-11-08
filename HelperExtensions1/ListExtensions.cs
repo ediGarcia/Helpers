@@ -1,5 +1,9 @@
 ﻿using HelperMethods;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HelperExtensions;
 
@@ -149,7 +153,7 @@ public static class ListExtensions
     /// <param name="collection"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool TryRemoveFirst<T>(this ICollection<T> collection, Func<T?, bool> predicate) =>
+    public static bool TryRemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate) =>
         collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
     #endregion
 
@@ -165,7 +169,7 @@ public static class ListExtensions
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) where TKey : notnull =>
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) =>
         new(dictionary);
     #endregion
 
@@ -637,7 +641,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="quantity"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void FillLeft<T>(this IList<T?> list, int quantity) =>
+    public static void FillLeft<T>(this IList<T> list, int quantity) =>
         list.FillLeft(default, quantity);
     #endregion
 
@@ -672,7 +676,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="quantity"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void FillRight<T>(this IList<T?> list, int quantity) =>
+    public static void FillRight<T>(this IList<T> list, int quantity) =>
         list.FillRight(default, quantity);
     #endregion
 
@@ -908,7 +912,7 @@ public static class ListExtensions
     /// <param name="predicate"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static T First<T>(this IEnumerable iEnumerable, Func<T?, bool> predicate) =>
+    public static T First<T>(this IEnumerable iEnumerable, Func<T, bool> predicate) =>
         iEnumerable.FirstOrDefault(predicate) ?? throw new InvalidOperationException("Sequence contains no matching element");
     #endregion
 

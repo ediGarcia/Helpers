@@ -1,9 +1,13 @@
 ﻿using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using Microsoft.VisualBasic.FileIO;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;

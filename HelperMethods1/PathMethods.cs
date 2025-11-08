@@ -1,4 +1,9 @@
-﻿namespace HelperMethods;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace HelperMethods;
 
 public static class PathMethods
 {
