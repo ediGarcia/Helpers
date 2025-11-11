@@ -7,6 +7,52 @@ namespace HelperExtensions;
 
 public static class StringExtensions
 {
+    #region Char
+
+    #region IsDigit
+    /// <inheritdoc cref="Char.IsDigit" />
+    public static bool IsDigit(this char c) =>
+        Char.IsDigit(c);
+    #endregion
+
+    #region IsLetter
+    /// <inheritdoc cref="Char.IsLetter" />
+    public static bool IsLetter(this char c) =>
+        Char.IsLetter(c);
+    #endregion
+
+    #region IsLetterOrDigit
+    /// <inheritdoc cref="Char.IsLetterOrDigit" />
+    public static bool IsLetterOrDigit(this char c) =>
+        Char.IsLetterOrDigit(c);
+    #endregion
+
+    #region IsLower
+    /// <inheritdoc cref="Char.IsLower" />
+    public static bool IsLower(this char c) =>
+        Char.IsLower(c);
+    #endregion
+
+    #region IsUpper
+    /// <inheritdoc cref="Char.IsUpper" />
+    public static bool IsUpper(this char c) =>
+        Char.IsUpper(c);
+    #endregion
+
+    #region ToLower
+    /// <inheritdoc cref="Char.ToLower" />
+    public static char ToLower(this char c) =>
+        Char.ToLower(c);
+    #endregion
+
+    #region ToUpper
+    /// <inheritdoc cref="Char.ToUpper" />
+    public static char ToUpper(this char c) =>
+        Char.ToUpper(c);
+    #endregion
+
+    #endregion
+
     #region String
 
     #region Append
