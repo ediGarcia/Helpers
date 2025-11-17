@@ -6,6 +6,87 @@ public static class TypeExtensions
 {
     #region Public Methods
 
+    #region bool?
+
+    #region IsFalse
+    /// <summary>
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is false.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsFalse(this bool? value) => value == false;
+    #endregion
+
+    #region IsNullOrFalse
+    /// <summary>
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is false or does not contain a valid value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsNullOrFalse(this bool? value) => value.IsNull() || value.IsFalse();
+    #endregion
+
+    #region IsNullOrTrue
+    /// <summary>
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is true or does not contain a valid value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsNullOrTrue(this bool? value) => value.IsNull() || value.IsTrue();
+    #endregion
+
+    #region IsTrue
+    /// <summary>
+    /// Determines whether the current <see cref="Nullable{Boolean}"/> is false.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsTrue(this bool? value) => value == true;
+    #endregion
+
+    #endregion
+
+    #region Enum
+
+    #region HasAllFlags
+    /// <summary>
+    /// Determines whether the specified enumeration has all the specified flags.
+    /// </summary>
+    /// <param name="enumeration"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public static bool HasAllFlags(this Enum enumeration, params Enum[] flags) =>
+        flags.All(enumeration.HasFlag);
+    #endregion
+
+    #region HasAnyFlags
+    /// <summary>
+    /// Determines whether the specified enumeration has any of the specified flags.
+    /// </summary>
+    /// <param name="enumeration"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public static bool HasAnyFlags(this Enum enumeration, params Enum[] flags) =>
+        flags.Any(enumeration.HasFlag);
+    #endregion
+
+    #endregion
+
+    #region Nullable
+
+    #region IsNull
+    /// <summary>
+    /// Gets or sets a value indicating whether the specified nullable object is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns><see langword="true"/> if <paramref name="obj"/> is null; otherwise, <see langword="false"/>.</returns>
+    public static bool IsNull<T>(this T? obj)
+        where T : struct => !obj.HasValue;
+    #endregion
+
+    #endregion
+
     #region Type
 
     #region ContainsProperty
@@ -16,8 +97,11 @@ public static class TypeExtensions
     /// <param name="propertyName"></param>
     /// <param name="comparisonType"></param>
     /// <returns></returns>
-    public static bool ContainsProperty(this Type type, string propertyName, StringComparison comparisonType = StringComparison.Ordinal) =>
-        type.GetProperties().Any<PropertyInfo>(_ => propertyName.Equals(_.Name, comparisonType));
+    public static bool ContainsProperty(
+        this Type type,
+        string propertyName,
+        StringComparison comparisonType = StringComparison.Ordinal
+    ) => type.GetProperties().Any<PropertyInfo>(_ => propertyName.Equals(_.Name, comparisonType));
     #endregion
 
     #region GetCode
@@ -26,8 +110,7 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static TypeCode GetCode(this Type type) =>
-        Type.GetTypeCode(type);
+    public static TypeCode GetCode(this Type type) => Type.GetTypeCode(type);
     #endregion
 
     #region GetDefaultValue
@@ -46,8 +129,7 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static bool IsBuiltIn(this Type type) =>
-        type.Namespace == "System";
+    public static bool IsBuiltIn(this Type type) => type.Namespace == "System";
     #endregion
 
     #region IsFloatingPoint
@@ -67,8 +149,15 @@ public static class TypeExtensions
     /// <param name="type"></param>
     /// <returns></returns>
     public static bool IsInteger(this Type type) =>
-        type.GetCode() is TypeCode.SByte or TypeCode.Byte or TypeCode.Int16 or TypeCode.Int32 or TypeCode.Int64
-            or TypeCode.UInt16 or TypeCode.UInt32 or TypeCode.UInt64;
+        type.GetCode()
+            is TypeCode.SByte
+                or TypeCode.Byte
+                or TypeCode.Int16
+                or TypeCode.Int32
+                or TypeCode.Int64
+                or TypeCode.UInt16
+                or TypeCode.UInt32
+                or TypeCode.UInt64;
     #endregion
 
     #region IsNumeric
@@ -77,8 +166,7 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static bool IsNumeric(this Type type) =>
-        type.IsInteger() || type.IsFloatingPoint();
+    public static bool IsNumeric(this Type type) => type.IsInteger() || type.IsFloatingPoint();
     #endregion
 
     #endregion
@@ -93,7 +181,11 @@ public static class TypeExtensions
     /// <param name="obj"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static object GetValueOrDefault(this PropertyInfo propertyInfo, object obj, object defaultValue = null)
+    public static object GetValueOrDefault(
+        this PropertyInfo propertyInfo,
+        object obj,
+        object defaultValue = null
+    )
     {
         try
         {
