@@ -1,5 +1,5 @@
-﻿using HelperMethods;
-using System.Collections;
+﻿using System.Collections;
+using HelperMethods;
 
 namespace HelperExtensions;
 
@@ -36,8 +36,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="array"></param>
     /// <returns></returns>
-    public static int LastIndex<T>(this T[] array) =>
-        array.Length - 1;
+    public static int LastIndex<T>(this T[] array) => array.Length - 1;
     #endregion
 
     #endregion
@@ -73,8 +72,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static ICollection<T> Clone<T>(this ICollection<T> collection) =>
-        [.. collection];
+    public static ICollection<T> Clone<T>(this ICollection<T> collection) => [.. collection];
     #endregion
 
     #region IsEmpty
@@ -84,8 +82,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool IsEmpty<T>(this ICollection<T> collection) =>
-        collection.Count == 0;
+    public static bool IsEmpty<T>(this ICollection<T> collection) => collection.Count == 0;
     #endregion
 
     #region IsInsideBounds
@@ -149,7 +146,10 @@ public static class ListExtensions
     /// <param name="collection"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool TryRemoveFirst<T>(this ICollection<T> collection, Func<T?, bool> predicate) =>
+    public static bool TryRemoveFirst<T>(
+        this ICollection<T> collection,
+        Func<T?, bool> predicate
+    ) =>
         collection.FirstOrDefault(predicate) is { } itemToRemove && collection.Remove(itemToRemove);
     #endregion
 
@@ -165,8 +165,10 @@ public static class ListExtensions
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> dictionary) where TKey : notnull =>
-        new(dictionary);
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary
+    )
+        where TKey : notnull => new(dictionary);
     #endregion
 
     #region ForEach*
@@ -184,8 +186,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue> action,
-        int startIndex = 0, int? length = null)
+    public static void ForEach<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        Action<TKey, TValue> action,
+        int startIndex = 0,
+        int? length = null
+    )
     {
         TKey[] keys = [.. dictionary.Keys];
         TValue[] values = [.. dictionary.Values];
@@ -209,8 +215,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue, int> action,
-        int startIndex = 0, int? length = null)
+    public static void ForEach<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        Action<TKey, TValue, int> action,
+        int startIndex = 0,
+        int? length = null
+    )
     {
         TKey[] keys = [.. dictionary.Keys];
         TValue[] values = [.. dictionary.Values];
@@ -235,7 +245,11 @@ public static class ListExtensions
     /// <param name="key"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default)
+    public static TValue GetOrAdd<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        TKey key,
+        TValue defaultValue = default
+    )
     {
         if (!dictionary.TryGetValue(key, out TValue value))
             dictionary.Add(key, value = defaultValue);
@@ -254,7 +268,11 @@ public static class ListExtensions
     /// <param name="key"></param>
     /// <param name="valueFactory"></param>
     /// <returns></returns>
-    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFactory)
+    public static TValue GetOrAdd<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        TKey key,
+        Func<TValue> valueFactory
+    )
     {
         if (!dictionary.TryGetValue(key, out TValue value))
             dictionary.Add(key, value = valueFactory());
@@ -280,7 +298,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        Action<TKey, TValue> action,
+        int? startIndex = null,
+        int? length = null
+    )
     {
         TKey[] keys = [.. dictionary.Keys];
         TValue[] values = [.. dictionary.Values];
@@ -306,7 +329,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue, int> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        Action<TKey, TValue, int> action,
+        int? startIndex = null,
+        int? length = null
+    )
     {
         TKey[] keys = [.. dictionary.Keys];
         TValue[] values = [.. dictionary.Values];
@@ -321,26 +349,6 @@ public static class ListExtensions
 
     #endregion
 
-    #region TryAdd
-    /// <summary>
-    /// Attempts to add the specified key and value to the dictionary.
-    /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
-    {
-        if (dictionary.ContainsKey(key))
-            return false;
-
-        dictionary[key] = value;
-        return true;
-    }
-    #endregion
-
     #region TrySetValue
     /// <summary>
     /// Tries to set the value for the specified key.
@@ -351,7 +359,11 @@ public static class ListExtensions
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns>true, if the key exists and the value is property set; false otherwise.</returns>
-    public static bool TrySetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+    public static bool TrySetValue<TKey, TValue>(
+        this IDictionary<TKey, TValue> dictionary,
+        TKey key,
+        TValue value
+    )
     {
         if (dictionary.ContainsKey(key))
         {
@@ -373,8 +385,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="list"></param>
     /// <returns></returns>
-    public static IList Clone(this IList list) =>
-        list.ToList<object>();
+    public static IList Clone(this IList list) => list.ToList<object>();
     #endregion
 
     #region GetItem
@@ -385,8 +396,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    public static T GetItem<T>(this IList list, int index) =>
-        (T)list[index];
+    public static T GetItem<T>(this IList list, int index) => (T)list[index];
     #endregion
 
     #region GetRandomItem
@@ -462,8 +472,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="list"></param>
     /// <param name="index"></param>
-    public static void MoveDownAt(this IList list, int index) =>
-        list.MoveAt(index, index + 1);
+    public static void MoveDownAt(this IList list, int index) => list.MoveAt(index, index + 1);
     #endregion
 
     #region MoveUp
@@ -488,8 +497,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="list"></param>
     /// <param name="index"></param>
-    public static void MoveUpAt(this IList list, int index) =>
-        list.MoveAt(index, index - 1);
+    public static void MoveUpAt(this IList list, int index) => list.MoveAt(index, index - 1);
 
     #endregion
 
@@ -507,7 +515,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T>(this IList list, Action<T> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<T>(
+        this IList list,
+        Action<T> action,
+        int? startIndex = null,
+        int? length = null
+    )
     {
         startIndex ??= list.Count - 1;
         int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
@@ -529,7 +542,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ReverseForEach<T>(this IList list, Action<T, int> action, int? startIndex = null, int? length = null)
+    public static void ReverseForEach<T>(
+        this IList list,
+        Action<T, int> action,
+        int? startIndex = null,
+        int? length = null
+    )
     {
         startIndex ??= list.Count - 1;
         int lastIndex = length.HasValue ? startIndex.Value - length.Value : 0;
@@ -555,7 +573,12 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static bool All<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length = null)
+    public static bool All<T>(
+        this IList<T> list,
+        Func<T, bool> predicate,
+        int startIndex,
+        int? length = null
+    )
     {
         int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
 
@@ -577,7 +600,12 @@ public static class ListExtensions
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static bool Any<T>(this IList<T> list, Func<T, bool> predicate, int startIndex, int? length = null)
+    public static bool Any<T>(
+        this IList<T> list,
+        Func<T, bool> predicate,
+        int startIndex,
+        int? length = null
+    )
     {
         int finalIndex = length.HasValue ? startIndex + length.Value : list.LastIndex();
 
@@ -599,8 +627,8 @@ public static class ListExtensions
     /// <param name="value"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static T BinarySearch<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey> =>
-        ListMethods.BinarySearch(list, value, selector);
+    public static T BinarySearch<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector)
+        where TKey : IComparable<TKey> => ListMethods.BinarySearch(list, value, selector);
     #endregion
 
     #region BinarySearchIndex
@@ -613,8 +641,12 @@ public static class ListExtensions
     /// <param name="value"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static int BinarySearchIndex<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey> =>
-        ListMethods.BinarySearchIndex(list, value, selector);
+    public static int BinarySearchIndex<T, TKey>(
+        this IList<T> list,
+        TKey value,
+        Func<T, TKey> selector
+    )
+        where TKey : IComparable<TKey> => ListMethods.BinarySearchIndex(list, value, selector);
     #endregion
 
     #region Clone
@@ -623,8 +655,7 @@ public static class ListExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static IList<T> Clone<T>(this IList<T> iList) =>
-        [.. iList];
+    public static IList<T> Clone<T>(this IList<T> iList) => [.. iList];
     #endregion
 
     #region FillLeft*
@@ -653,7 +684,10 @@ public static class ListExtensions
     public static void FillLeft<T>(this IList<T> list, T value, int quantity)
     {
         if (quantity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
+            throw new ArgumentOutOfRangeException(
+                nameof(quantity),
+                "The fill quantity must be greater than zero (0)."
+            );
 
         for (int i = 0; i < quantity; i++)
             list.Insert(0, value);
@@ -688,7 +722,10 @@ public static class ListExtensions
     public static void FillRight<T>(this IList<T> list, T value, int quantity)
     {
         if (quantity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(quantity), "The fill quantity must be greater than zero (0).");
+            throw new ArgumentOutOfRangeException(
+                nameof(quantity),
+                "The fill quantity must be greater than zero (0)."
+            );
 
         for (int i = 0; i < quantity; i++)
             list.Add(value);
@@ -711,7 +748,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IList<T> list, Action<T> action, int startIndex, int? length = null)
+    public static void ForEach<T>(
+        this IList<T> list,
+        Action<T> action,
+        int startIndex,
+        int? length = null
+    )
     {
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
@@ -732,7 +774,12 @@ public static class ListExtensions
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="action" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.InvalidOperationException">An element in the collection has been modified.</exception>
-    public static void ForEach<T>(this IList<T> list, Action<T, int> action, int startIndex = 0, int? length = null)
+    public static void ForEach<T>(
+        this IList<T> list,
+        Action<T, int> action,
+        int startIndex = 0,
+        int? length = null
+    )
     {
         int finalIndex = length is null ? list.LastIndex() : startIndex + length.Value;
 
@@ -782,8 +829,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    public static T Last<T>(this IList<T> list) =>
-        list[list.LastIndex()];
+    public static T Last<T>(this IList<T> list) => list[list.LastIndex()];
     #endregion
 
     #region LastIndex
@@ -793,8 +839,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    public static int LastIndex<T>(this IList<T> list) =>
-        list.Count - 1;
+    public static int LastIndex<T>(this IList<T> list) => list.Count - 1;
     #endregion
 
     #region ToArray
@@ -850,7 +895,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static bool Any(this IEnumerable iEnumerable) => 
+    public static bool Any(this IEnumerable iEnumerable) =>
         iEnumerable is not null && Enumerable.Any(iEnumerable.Cast<object>());
     #endregion
 
@@ -862,7 +907,7 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate) => 
+    public static bool Any<T>(this IEnumerable iEnumerable, Func<T, bool> predicate) =>
         iEnumerable is not null && iEnumerable.Cast<T>().Any(item => predicate(item));
     #endregion
 
@@ -877,8 +922,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="converterFunction"></param>
     /// <returns></returns>
-    public static IEnumerable Cast<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> converterFunction) =>
-        iEnumerable.Select(converterFunction);
+    public static IEnumerable Cast<T1, T2>(
+        this IEnumerable iEnumerable,
+        Func<T1, T2> converterFunction
+    ) => iEnumerable.Select(converterFunction);
     #endregion
 
     #region First
@@ -891,7 +938,8 @@ public static class ListExtensions
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     public static T First<T>(this IEnumerable iEnumerable, Func<T?, bool> predicate) =>
-        iEnumerable.FirstOrDefault(predicate) ?? throw new InvalidOperationException("Sequence contains no matching element");
+        iEnumerable.FirstOrDefault(predicate)
+        ?? throw new InvalidOperationException("Sequence contains no matching element");
     #endregion
 
     #region FirstOrDefault
@@ -903,7 +951,11 @@ public static class ListExtensions
     /// <param name="predicate"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T FirstOrDefault<T>(this IEnumerable iEnumerable, Func<T, bool> predicate, T defaultValue = default)
+    public static T FirstOrDefault<T>(
+        this IEnumerable iEnumerable,
+        Func<T, bool> predicate,
+        T defaultValue = default
+    )
     {
         foreach (T item in iEnumerable)
             if (predicate(item))
@@ -944,8 +996,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static bool IsNull(this IEnumerable iEnumerable) =>
-        iEnumerable is null;
+    public static bool IsNull(this IEnumerable iEnumerable) => iEnumerable is null;
     #endregion
 
     #region IsNullOrEmpty
@@ -954,8 +1005,7 @@ public static class ListExtensions
     /// </summary>
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static bool IsNullOrEmpty(this IEnumerable iEnumerable) =>
-        iEnumerable?.Any() != true;
+    public static bool IsNullOrEmpty(this IEnumerable iEnumerable) => iEnumerable?.Any() != true;
     #endregion
 
     #region Join*
@@ -993,7 +1043,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static IEnumerable<T2> Select<T1, T2>(this IEnumerable iEnumerable, Func<T1, T2> selector)
+    public static IEnumerable<T2> Select<T1, T2>(
+        this IEnumerable iEnumerable,
+        Func<T1, T2> selector
+    )
     {
         List<T2> items = [];
         iEnumerable.ForEach<T1>(_ => items.Add(selector(_)));
@@ -1055,8 +1108,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="converterFunction"></param>
     /// <returns></returns>
-    public static IEnumerable<T2> Cast<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> converterFunction) =>
-        iEnumerable.Select(converterFunction);
+    public static IEnumerable<T2> Cast<T1, T2>(
+        this IEnumerable<T1> iEnumerable,
+        Func<T1, T2> converterFunction
+    ) => iEnumerable.Select(converterFunction);
     #endregion
 
     #region Clone
@@ -1066,8 +1121,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="iEnumerable"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Clone<T>(this IEnumerable<T> iEnumerable) =>
-        [.. iEnumerable];
+    public static IEnumerable<T> Clone<T>(this IEnumerable<T> iEnumerable) => [.. iEnumerable];
     #endregion
 
     #region ContainsAll
@@ -1224,8 +1278,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="body"></param>
     /// /// <returns>A structure that contains information about which portion of the loop completed.</returns>
-    public static ParallelLoopResult ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T> body) =>
-        Parallel.ForEach(iEnumerable, body);
+    public static ParallelLoopResult ParallelForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T> body
+    ) => Parallel.ForEach(iEnumerable, body);
     #endregion
 
     #region ParallelForEach(this IEnumerable<T>, Action<T, ParallelLoopState>)
@@ -1236,8 +1292,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="body"></param>
     /// <returns>A structure that contains information about which portion of the loop completed.</returns>
-    public static ParallelLoopResult ParallelForEach<T>(this IEnumerable<T> iEnumerable, Action<T, ParallelLoopState> body) =>
-        Parallel.ForEach(iEnumerable, body);
+    public static ParallelLoopResult ParallelForEach<T>(
+        this IEnumerable<T> iEnumerable,
+        Action<T, ParallelLoopState> body
+    ) => Parallel.ForEach(iEnumerable, body);
     #endregion
 
     #endregion
@@ -1263,8 +1321,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="conversionFunction"></param>
     /// <returns></returns>
-    public static T2[] ToArray<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> conversionFunction) =>
-        [.. iEnumerable.Select(conversionFunction)];
+    public static T2[] ToArray<T1, T2>(
+        this IEnumerable<T1> iEnumerable,
+        Func<T1, T2> conversionFunction
+    ) => [.. iEnumerable.Select(conversionFunction)];
     #endregion
 
     #region ToList
@@ -1276,8 +1336,10 @@ public static class ListExtensions
     /// <param name="iEnumerable"></param>
     /// <param name="conversionFunction"></param>
     /// <returns></returns>
-    public static List<T2> ToList<T1, T2>(this IEnumerable<T1> iEnumerable, Func<T1, T2> conversionFunction) =>
-        [.. iEnumerable.Select(conversionFunction)];
+    public static List<T2> ToList<T1, T2>(
+        this IEnumerable<T1> iEnumerable,
+        Func<T1, T2> conversionFunction
+    ) => [.. iEnumerable.Select(conversionFunction)];
     #endregion
 
     #endregion
