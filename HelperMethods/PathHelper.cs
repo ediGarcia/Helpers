@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class PathMethods
+public static class PathHelper
 {
     #region Public Methods
 
@@ -14,7 +14,12 @@ public static class PathMethods
     // ReSharper disable once UnusedMember.Global
     public static bool CheckExtension(string fileName, params string[] extensions) =>
         extensions.Any(extension =>
-            String.Equals(Path.GetExtension(fileName), InsertExtensionDot(extension), StringComparison.OrdinalIgnoreCase));
+            String.Equals(
+                Path.GetExtension(fileName),
+                InsertExtensionDot(extension),
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
     #endregion
 
     #region GetAllMatchingPaths
@@ -27,7 +32,7 @@ public static class PathMethods
     {
         //If the pattern contains no wildcards.
         if (!pattern.Contains("*") && !pattern.Contains("?"))
-            return SystemMethods.Exists(pattern) ? [pattern] : [];
+            return SystemHelper.Exists(pattern) ? [pattern] : [];
 
         string separator = Path.DirectorySeparatorChar.ToString();
         string[] parts = pattern.Split(Path.DirectorySeparatorChar);
@@ -46,10 +51,22 @@ public static class PathMethods
                     return [];
 
                 if (i == parts.Length - 1) //If this is the end of the path (a file name).
-                    return Directory.GetFileSystemEntries(combined, parts[i], SearchOption.TopDirectoryOnly);
+                    return Directory.GetFileSystemEntries(
+                        combined,
+                        parts[i],
+                        SearchOption.TopDirectoryOnly
+                    );
 
-                IEnumerable<string> directories = Directory.EnumerateDirectories(combined, parts[i], SearchOption.TopDirectoryOnly);
-                return directories.SelectMany(dir => GetAllMatchingPaths(Path.Combine(dir, String.Join(separator, parts.Skip(i + 1)))));
+                IEnumerable<string> directories = Directory.EnumerateDirectories(
+                    combined,
+                    parts[i],
+                    SearchOption.TopDirectoryOnly
+                );
+                return directories.SelectMany(dir =>
+                    GetAllMatchingPaths(
+                        Path.Combine(dir, String.Join(separator, parts.Skip(i + 1)))
+                    )
+                );
             }
 
         return [];
@@ -62,8 +79,7 @@ public static class PathMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static string GetExtension(string path) =>
-        Path.GetExtension(path);
+    public static string GetExtension(string path) => Path.GetExtension(path);
     #endregion
 
     #region GetFileName
@@ -74,7 +90,7 @@ public static class PathMethods
     /// <param name="removeExtension"></param>
     /// <returns></returns>
     public static string GetFileName(string path, bool removeExtension = false) =>
-        removeExtension ? Path.GetFileNameWithoutExtension(path) : Path.GetFileName(path); 
+        removeExtension ? Path.GetFileNameWithoutExtension(path) : Path.GetFileName(path);
     #endregion
 
     #region GetFullPath
@@ -83,8 +99,7 @@ public static class PathMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static string GetFullPath(string path) =>
-        Path.GetFullPath(path);
+    public static string GetFullPath(string path) => Path.GetFullPath(path);
     #endregion
 
     #region GetParentDirectory
@@ -93,8 +108,7 @@ public static class PathMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static string GetParentDirectory(string path) =>
-        Path.GetDirectoryName(path);
+    public static string GetParentDirectory(string path) => Path.GetDirectoryName(path);
     #endregion
 
     #region InsertExtensionDot

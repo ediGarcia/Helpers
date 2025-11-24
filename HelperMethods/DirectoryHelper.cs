@@ -1,22 +1,26 @@
-﻿using HelperMethods.Enums;
-using HelperMethods.Helpers;
-using Microsoft.VisualBasic.FileIO;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using HelperMethods.Enums;
+using HelperMethods.Helpers;
+using Microsoft.VisualBasic.FileIO;
 using SearchOption = System.IO.SearchOption;
 
 namespace HelperMethods;
 
-public static class DirectoryMethods
+public static class DirectoryHelper
 {
-    public static string ApplicationDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    public static string ApplicationDataDirectory = Environment.GetFolderPath(
+        Environment.SpecialFolder.ApplicationData
+    );
     public static string TemporaryDirectory = Path.GetTempPath();
-    public static string UserDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    public static string UserDirectory = Environment.GetFolderPath(
+        Environment.SpecialFolder.UserProfile
+    );
 
     #region Public Methods
 
@@ -30,8 +34,8 @@ public static class DirectoryMethods
     public static void Copy(
         string source,
         string destination,
-        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
-        Transfer(source, destination, conflictAction, true);
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    ) => Transfer(source, destination, conflictAction, true);
     #endregion
 
     #region ClearDirectory
@@ -48,7 +52,10 @@ public static class DirectoryMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static void ClearDirectory(string path, InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete)
+    public static void ClearDirectory(
+        string path,
+        InnerDirectoryAction innerDirectoryAction = InnerDirectoryAction.Delete
+    )
     {
         foreach (string file in ListFiles(path))
             File.Delete(file);
@@ -76,7 +83,10 @@ public static class DirectoryMethods
     /// <exception cref="NotSupportedException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static void Create(string path, FileNameConflictAction conflictAction = FileNameConflictAction.Skip)
+    public static void Create(
+        string path,
+        FileNameConflictAction conflictAction = FileNameConflictAction.Skip
+    )
     {
         if (Exists(path))
             switch (conflictAction)
@@ -113,7 +123,7 @@ public static class DirectoryMethods
     {
         string newDirectoryPath = GenerateRandomDirectoryPath(parentDirectory);
 
-        while (SystemMethods.Exists(newDirectoryPath))
+        while (SystemHelper.Exists(newDirectoryPath))
             GenerateRandomDirectoryPath(parentDirectory);
 
         Directory.CreateDirectory(newDirectoryPath);
@@ -138,11 +148,17 @@ public static class DirectoryMethods
     /// <exception cref="UnauthorizedAccessException" />
     public static string CreateTemporaryDirectory(string directoryName = null)
     {
-        string novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
+        string novaPasta = Path.Combine(
+            Path.GetTempPath(),
+            directoryName ?? GenerateRandomDirectoryPath()
+        );
 
         //Checks if the folder exists.
         while (Exists(novaPasta))
-            novaPasta = Path.Combine(Path.GetTempPath(), directoryName ?? GenerateRandomDirectoryPath());
+            novaPasta = Path.Combine(
+                Path.GetTempPath(),
+                directoryName ?? GenerateRandomDirectoryPath()
+            );
 
         Directory.CreateDirectory(novaPasta);
         return novaPasta;
@@ -166,7 +182,11 @@ public static class DirectoryMethods
     {
         if (Exists(path))
         {
-            FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
+            FileSystem.DeleteDirectory(
+                path,
+                UIOption.OnlyErrorDialogs,
+                recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently
+            );
             return true;
         }
 
@@ -176,8 +196,7 @@ public static class DirectoryMethods
 
     #region Exists
     /// <inheritdoc cref="Directory.Exists"/>
-    public static bool Exists(string path) =>
-        Directory.Exists(path);
+    public static bool Exists(string path) => Directory.Exists(path);
     #endregion
 
     #region GenerateRandomDirectoryPath
@@ -215,12 +234,21 @@ public static class DirectoryMethods
         if (showLinkOverlay)
             flags += 0x8000; //SHGFI_LINKOVERLAY;
 
-        WindowsHelper.SHGetStockIconInfo(0x3/*SHSIID_FOLDER*/, flags, ref info);
+        WindowsHelper.SHGetStockIconInfo(
+            0x3 /*SHSIID_FOLDER*/
+            ,
+            flags,
+            ref info
+        );
 
         Icon icon = (Icon)Icon.FromHandle(info.hIcon).Clone(); // Get a copy that doesn't use the original handle.
         WindowsHelper.DestroyIcon(info.hIcon); // Clean up native icon to prevent resource leak.
 
-        return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        return Imaging.CreateBitmapSourceFromHIcon(
+            icon.Handle,
+            Int32Rect.Empty,
+            BitmapSizeOptions.FromEmptyOptions()
+        );
         // ReSharper restore CommentTypo
     }
     #endregion
@@ -243,7 +271,10 @@ public static class DirectoryMethods
     public static long GetDirectorySize(string path)
     {
         long size = 0;
-        Parallel.ForEach(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), _ => size += FileMethods.GetFileSize(_));
+        Parallel.ForEach(
+            Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories),
+            _ => size += FileHelper.GetFileSize(_)
+        );
         return size;
     }
     #endregion
@@ -283,7 +314,7 @@ public static class DirectoryMethods
     /// </summary>
     /// <param name="childPath">The path to be tested.</param>
     /// <param name="directoryPath">The possible parent directory.</param>
-    /// <returns></returns> 
+    /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="NotSupportedException"></exception>
@@ -300,15 +331,23 @@ public static class DirectoryMethods
     /// <param name="dirPath"></param>
     /// <param name="searchSubFolders"></param>
     /// <param name="searchPattern"></param>
-    /// <returns></returns> 
+    /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="DirectoryNotFoundException"></exception>
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static IReadOnlyList<string> ListDirectories(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
-        Directory.GetDirectories(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+    public static IReadOnlyList<string> ListDirectories(
+        string dirPath,
+        string searchPattern = "*.*",
+        bool searchSubFolders = false
+    ) =>
+        Directory.GetDirectories(
+            dirPath,
+            searchPattern,
+            searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly
+        );
     #endregion
 
     #region ListFiles
@@ -325,8 +364,16 @@ public static class DirectoryMethods
     /// <exception cref="IOException"></exception>
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static IReadOnlyList<string> ListFiles(string dirPath, string searchPattern = "*.*", bool searchSubfolders = false) =>
-        Directory.GetFiles(dirPath, searchPattern, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+    public static IReadOnlyList<string> ListFiles(
+        string dirPath,
+        string searchPattern = "*.*",
+        bool searchSubfolders = false
+    ) =>
+        Directory.GetFiles(
+            dirPath,
+            searchPattern,
+            searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly
+        );
     #endregion
 
     #region ListFilesAndDirs
@@ -344,8 +391,16 @@ public static class DirectoryMethods
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="SecurityException"></exception>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public static IReadOnlyList<string> ListFilesAndDirs(string dirPath, string searchPattern = "*.*", bool searchSubFolders = false) =>
-        Directory.GetFileSystemEntries(dirPath, searchPattern, searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+    public static IReadOnlyList<string> ListFilesAndDirs(
+        string dirPath,
+        string searchPattern = "*.*",
+        bool searchSubFolders = false
+    ) =>
+        Directory.GetFileSystemEntries(
+            dirPath,
+            searchPattern,
+            searchSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly
+        );
     #endregion
 
     #region Move
@@ -358,8 +413,8 @@ public static class DirectoryMethods
     public static void Move(
         string source,
         string destination,
-        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
-        Transfer(source, destination, conflictAction, false);
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    ) => Transfer(source, destination, conflictAction, false);
     #endregion
 
     #endregion
@@ -378,7 +433,8 @@ public static class DirectoryMethods
         string source,
         string destination,
         FileNameConflictAction conflictAction,
-        bool keepOriginal)
+        bool keepOriginal
+    )
     {
         if (!keepOriginal && !Exists(destination))
         {
@@ -386,8 +442,9 @@ public static class DirectoryMethods
             return;
         }
 
-        Action<string, string, FileNameConflictAction> transferMethod =
-            keepOriginal ? FileMethods.CopyToDirectory : FileMethods.MoveToDirectory;
+        Action<string, string, FileNameConflictAction> transferMethod = keepOriginal
+            ? FileHelper.CopyToDirectory
+            : FileHelper.MoveToDirectory;
 
         try
         {
@@ -409,7 +466,11 @@ public static class DirectoryMethods
 
         #region CreateFolder
         // Creates a new folder, if needed, and copies or moves the contents of the original folder into the new one.
-        void CreateFolder(string sourceDir, string destinationDir, Action<string, string, FileNameConflictAction> transferAction)
+        void CreateFolder(
+            string sourceDir,
+            string destinationDir,
+            Action<string, string, FileNameConflictAction> transferAction
+        )
         {
             if (!Exists(destinationDir))
                 Create(destinationDir);

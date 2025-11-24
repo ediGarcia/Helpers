@@ -13,7 +13,7 @@ using HelperMethods.Helpers;
 
 namespace HelperMethods;
 
-public static class SystemMethods
+public static class SystemHelper
 {
     #region Public Methods
 
@@ -31,10 +31,10 @@ public static class SystemMethods
         FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
     )
     {
-        if (FileMethods.Exists(source))
-            FileMethods.Copy(source, destination, conflictAction);
-        else if (DirectoryMethods.Exists(source))
-            DirectoryMethods.Copy(source, destination, conflictAction);
+        if (FileHelper.Exists(source))
+            FileHelper.Copy(source, destination, conflictAction);
+        else if (DirectoryHelper.Exists(source))
+            DirectoryHelper.Copy(source, destination, conflictAction);
         else
             throw new IOException($"\"{source}\" not found.");
     }
@@ -50,10 +50,10 @@ public static class SystemMethods
     public static void Delete(params string[] paths)
     {
         foreach (string path in paths)
-            if (DirectoryMethods.IsDirectory(path))
-                DirectoryMethods.Delete(path);
+            if (DirectoryHelper.IsDirectory(path))
+                DirectoryHelper.Delete(path);
             else
-                FileMethods.Delete(path);
+                FileHelper.Delete(path);
     }
     #endregion
 
@@ -74,10 +74,10 @@ public static class SystemMethods
     /// <exception cref="UnauthorizedAccessException" />
     public static bool Delete(string path, bool recycle = false)
     {
-        if (FileMethods.Exists(path))
-            FileMethods.Delete(path, recycle);
-        else if (DirectoryMethods.Exists(path))
-            DirectoryMethods.Delete(path, recycle);
+        if (FileHelper.Exists(path))
+            FileHelper.Delete(path, recycle);
+        else if (DirectoryHelper.Exists(path))
+            DirectoryHelper.Delete(path, recycle);
         else
             return false;
 
@@ -94,7 +94,7 @@ public static class SystemMethods
     /// <param name="path"></param>
     /// <returns></returns>
     public static bool Exists(string path) =>
-        FileMethods.Exists(path) || DirectoryMethods.Exists(path);
+        FileHelper.Exists(path) || DirectoryHelper.Exists(path);
     #endregion
 
     #region ForceDelete
@@ -105,7 +105,7 @@ public static class SystemMethods
     public static void ForceDelete(params string[] entries)
     {
         foreach (string entry in entries)
-            if (DirectoryMethods.IsDirectory(entry))
+            if (DirectoryHelper.IsDirectory(entry))
             {
                 foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(entry))
                     ForceDelete(fileSystemEntry);
@@ -163,8 +163,8 @@ public static class SystemMethods
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
     public static long GetSize(string path) =>
-        DirectoryMethods.IsDirectory(path) ? DirectoryMethods.GetDirectorySize(path)
-        : FileMethods.IsFile(path) ? FileMethods.GetFileSize(path)
+        DirectoryHelper.IsDirectory(path) ? DirectoryHelper.GetDirectorySize(path)
+        : FileHelper.IsFile(path) ? FileHelper.GetFileSize(path)
         : throw new FileNotFoundException($"Could not find a file or a directory named '{path}'.");
     #endregion
 
@@ -266,10 +266,10 @@ public static class SystemMethods
         FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
     )
     {
-        if (FileMethods.Exists(source))
-            FileMethods.Move(source, destination, conflictAction);
-        else if (DirectoryMethods.Exists(source))
-            DirectoryMethods.Move(source, destination, conflictAction);
+        if (FileHelper.Exists(source))
+            FileHelper.Move(source, destination, conflictAction);
+        else if (DirectoryHelper.Exists(source))
+            DirectoryHelper.Move(source, destination, conflictAction);
         else
             throw new IOException($"\"{source}\" not found.");
     }

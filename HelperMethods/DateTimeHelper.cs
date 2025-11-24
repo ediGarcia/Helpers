@@ -1,12 +1,12 @@
-﻿using HelperClasses.Classes.Month;
-using System.Globalization;
+﻿using System.Globalization;
+using HelperClasses.Classes.Month;
 
 namespace HelperMethods;
 
 /// <summary>
 /// Date and time management methods.
 /// </summary>
-public static class DateTimeMethods
+public static class DateTimeHelper
 {
     #region Public Methods
 
@@ -38,8 +38,7 @@ public static class DateTimeMethods
     /// Gets the selected month's last day.
     /// </summary>
     /// <returns></returns>
-    public static DateTime GetFirstDayOfMonth(MonthYear month) =>
-        month.ToDateTime();
+    public static DateTime GetFirstDayOfMonth(MonthYear month) => month.ToDateTime();
     #endregion
 
     #endregion
@@ -174,8 +173,7 @@ public static class DateTimeMethods
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    public static string GetTimeString(DateTime dateTime) =>
-        GetTimeString(dateTime.TimeOfDay);
+    public static string GetTimeString(DateTime dateTime) => GetTimeString(dateTime.TimeOfDay);
     #endregion
 
     #region GetTimeString(TimeSpan)
@@ -278,8 +276,11 @@ public static class DateTimeMethods
     /// <param name="provider"></param>
     /// <param name="styles"></param>
     /// <returns></returns>
-    public static DateTime Parse(string value, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
-        DateTime.Parse(value, provider ?? CultureInfo.CurrentCulture, styles);
+    public static DateTime Parse(
+        string value,
+        IFormatProvider provider = null,
+        DateTimeStyles styles = DateTimeStyles.None
+    ) => DateTime.Parse(value, provider ?? CultureInfo.CurrentCulture, styles);
     #endregion
 
     #region ParseExact
@@ -292,8 +293,12 @@ public static class DateTimeMethods
     /// <param name="provider"></param>
     /// <param name="styles"></param>
     /// <returns></returns>
-    public static DateTime ParseExact(string value, string format, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
-        DateTime.ParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles);
+    public static DateTime ParseExact(
+        string value,
+        string format,
+        IFormatProvider provider = null,
+        DateTimeStyles styles = DateTimeStyles.None
+    ) => DateTime.ParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles);
     #endregion
 
     #region RemoveMilliseconds*
@@ -305,7 +310,14 @@ public static class DateTimeMethods
     /// <param name="dateTime"></param>
     /// <returns></returns>
     public static DateTime RemoveMilliseconds(DateTime dateTime) =>
-        new(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
+        new(
+            dateTime.Year,
+            dateTime.Month,
+            dateTime.Day,
+            dateTime.Hour,
+            dateTime.Minute,
+            dateTime.Second
+        );
     #endregion
 
     #region RemoveMilliseconds(TimeSpan)
@@ -400,8 +412,12 @@ public static class DateTimeMethods
     /// <param name="provider"></param>
     /// <param name="styles"></param>
     /// <returns></returns>
-    public static bool TryParse(string value, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
-        DateTime.TryParse(value, provider ?? CultureInfo.CurrentCulture, styles, out result);
+    public static bool TryParse(
+        string value,
+        out DateTime result,
+        IFormatProvider provider = null,
+        DateTimeStyles styles = DateTimeStyles.None
+    ) => DateTime.TryParse(value, provider ?? CultureInfo.CurrentCulture, styles, out result);
     #endregion
 
     #region TryParseExact
@@ -416,8 +432,20 @@ public static class DateTimeMethods
     /// <param name="provider"></param>
     /// <param name="styles"></param>
     /// <returns></returns>
-    public static bool TryParseExact(string value, string format, out DateTime result, IFormatProvider provider = null, DateTimeStyles styles = DateTimeStyles.None) =>
-        DateTime.TryParseExact(value, format, provider ?? CultureInfo.CurrentCulture, styles, out result);
+    public static bool TryParseExact(
+        string value,
+        string format,
+        out DateTime result,
+        IFormatProvider provider = null,
+        DateTimeStyles styles = DateTimeStyles.None
+    ) =>
+        DateTime.TryParseExact(
+            value,
+            format,
+            provider ?? CultureInfo.CurrentCulture,
+            styles,
+            out result
+        );
     #endregion
 
     #endregion

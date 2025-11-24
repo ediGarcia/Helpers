@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class EnumMethods
+public static class EnumHelper
 {
     #region AddFlag*
 
@@ -12,8 +12,8 @@ public static class EnumMethods
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static T AddFlag<T>(T source, T flag) where T : Enum =>
-        (T)(object)((int)(source as object) | (int)(flag as object));
+    public static T AddFlag<T>(T source, T flag)
+        where T : Enum => (T)(object)((int)(source as object) | (int)(flag as object));
     #endregion
 
     #region AddFlag(Enum, Enum)
@@ -23,8 +23,7 @@ public static class EnumMethods
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static Enum AddFlag(Enum source, Enum flag) =>
-        AddFlag<Enum>(source, flag);
+    public static Enum AddFlag(Enum source, Enum flag) => AddFlag<Enum>(source, flag);
     #endregion
 
     #endregion
@@ -39,8 +38,8 @@ public static class EnumMethods
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static T RemoveFlag<T>(T source, T flag) where T : Enum =>
-        (T)(object)((int)(source as object) & ~(int)(flag as object));
+    public static T RemoveFlag<T>(T source, T flag)
+        where T : Enum => (T)(object)((int)(source as object) & ~(int)(flag as object));
     #endregion
 
     #region RemoveFlag(Enum, Enum)
@@ -50,8 +49,7 @@ public static class EnumMethods
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static Enum RemoveFlag(Enum source, Enum flag) =>
-        RemoveFlag<Enum>(source, flag);
+    public static Enum RemoveFlag(Enum source, Enum flag) => RemoveFlag<Enum>(source, flag);
     #endregion
 
     #endregion
@@ -65,8 +63,8 @@ public static class EnumMethods
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static T ToEnum<T>(object value) where T : Enum =>
-        (T)Enum.ToObject(typeof(T), value);
+    public static T ToEnum<T>(object value)
+        where T : Enum => (T)Enum.ToObject(typeof(T), value);
     #endregion
 
     #region ToEnum(Type, int)

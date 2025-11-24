@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class GenericMethods
+public static class GenericHelper
 {
     #region Public Methods
 
@@ -10,8 +10,7 @@ public static class GenericMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool AreAllNotNull(params object[] values) =>
-        values.All(_ => _ is not null);
+    public static bool AreAllNotNull(params object[] values) => values.All(_ => _ is not null);
     #endregion
 
     #region AreAllNull
@@ -20,10 +19,9 @@ public static class GenericMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool AreAllNull(params object[] values) =>
-        values.All(_ => _ is null);
+    public static bool AreAllNull(params object[] values) => values.All(_ => _ is null);
     #endregion
-    
+
     #region AreEqual
     /// <summary>
     /// Indicates whether every specified value is equal, based on a custom comparison function.
@@ -46,7 +44,8 @@ public static class GenericMethods
                 for (int i = 0; i < values.Count - 1; i++)
                 {
                     int result = customComparer(values[i], values[i + 1]);
-                    if (result != 0) return false;
+                    if (result != 0)
+                        return false;
                 }
 
                 return true;
@@ -90,8 +89,7 @@ public static class GenericMethods
     /// <returns>A signed integer that indicates the relative values of value and other. If the return os less than zero, then x is less than y.
     /// If the return is zero, x is equal to y. And if the return is greater than zero, then x is greater than y.</returns>
     /// <exception cref="ArgumentException"><see cref="T"/> does not implement <see cref="IComparable{T}"/> or <see cref="IComparable"/>.</exception>
-    public static int Compare<T>(T x, T y) =>
-        Comparer<T>.Default.Compare(x, y);
+    public static int Compare<T>(T x, T y) => Comparer<T>.Default.Compare(x, y);
     #endregion
 
     #region Equals
@@ -102,8 +100,7 @@ public static class GenericMethods
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns><see langword="true"/> if the two objects are considered equal; otherwise, <see langword="false"/>.</returns>
-    public static bool Equals<T>(T x, T y) =>
-        Compare(x, y) == 0;
+    public static bool Equals<T>(T x, T y) => Compare(x, y) == 0;
     #endregion
 
     #region EvaluateChance
@@ -113,7 +110,7 @@ public static class GenericMethods
     /// <param name="probability"></param>
     /// <returns></returns>
     public static bool EvaluateChance(int probability) =>
-        NumberMethods.GetRandomInt(100) < probability;
+        NumberHelper.GetRandomInt(100) < probability;
     #endregion
 
     #region GetFirstNotNull
@@ -132,8 +129,7 @@ public static class GenericMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool IsAnyNotNull(params object[] values) =>
-        values.Any(_ => _ is not null);
+    public static bool IsAnyNotNull(params object[] values) => values.Any(_ => _ is not null);
     #endregion
 
     #region IsAnyNull
@@ -142,8 +138,7 @@ public static class GenericMethods
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    public static bool IsAnyNull(params object[] values) =>
-        values.Any(_ => _ is null);
+    public static bool IsAnyNull(params object[] values) => values.Any(_ => _ is null);
     #endregion
 
     #region IsBetween
@@ -157,7 +152,8 @@ public static class GenericMethods
     /// <param name="inclusive"></param>
     /// <returns></returns>
     public static bool IsBetween<T>(T value, T minimum, T maximum, bool inclusive) =>
-        IsGreater(value, minimum) && IsLess(value, maximum) || inclusive && (value.Equals(minimum) || value.Equals(maximum));
+        IsGreater(value, minimum) && IsLess(value, maximum)
+        || inclusive && (value.Equals(minimum) || value.Equals(maximum));
     #endregion
 
     #region IsGreater
@@ -168,8 +164,7 @@ public static class GenericMethods
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public static bool IsGreater<T>(T x, T y) =>
-        Compare(x, y) > 0;
+    public static bool IsGreater<T>(T x, T y) => Compare(x, y) > 0;
     #endregion
 
     #region IsLess
@@ -180,8 +175,7 @@ public static class GenericMethods
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public static bool IsLess<T>(T x, T y) =>
-        Compare(x, y) < 0;
+    public static bool IsLess<T>(T x, T y) => Compare(x, y) < 0;
     #endregion
 
     #region Max
@@ -192,8 +186,7 @@ public static class GenericMethods
     /// <param name="value1"></param>
     /// <param name="value2"></param>
     /// <returns></returns>
-    public static T Max<T>(T value1, T value2) =>
-        IsGreater(value1, value2) ? value1 : value2;
+    public static T Max<T>(T value1, T value2) => IsGreater(value1, value2) ? value1 : value2;
     #endregion
 
     #region Min
@@ -204,8 +197,7 @@ public static class GenericMethods
     /// <param name="value1"></param>
     /// <param name="value2"></param>
     /// <returns></returns>
-    public static T Min<T>(T value1, T value2) =>
-        IsLess(value1, value2) ? value1 : value2;
+    public static T Min<T>(T value1, T value2) => IsLess(value1, value2) ? value1 : value2;
     #endregion
 
     #region ReturnFirstNotNull
@@ -237,8 +229,7 @@ public static class GenericMethods
     /// <param name="v1"></param>
     /// <param name="v2"></param>
     // ReSharper disable once UnusedMember.Global
-    public static void Swap<T>(ref T v1, ref T v2) => 
-        (v1, v2) = (v2, v1);
+    public static void Swap<T>(ref T v1, ref T v2) => (v1, v2) = (v2, v1);
 
     #endregion
 

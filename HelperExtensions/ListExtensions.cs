@@ -407,7 +407,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <returns></returns>
     public static T GetRandomItem<T>(this IList list) =>
-        (T)list[NumberMethods.GetRandomInt(list.Count)];
+        (T)list[NumberHelper.GetRandomInt(list.Count)];
     #endregion
 
     #region Move
@@ -628,7 +628,7 @@ public static class ListExtensions
     /// <param name="selector"></param>
     /// <returns></returns>
     public static T BinarySearch<T, TKey>(this IList<T> list, TKey value, Func<T, TKey> selector)
-        where TKey : IComparable<TKey> => ListMethods.BinarySearch(list, value, selector);
+        where TKey : IComparable<TKey> => ListHelper.BinarySearch(list, value, selector);
     #endregion
 
     #region BinarySearchIndex
@@ -646,7 +646,7 @@ public static class ListExtensions
         TKey value,
         Func<T, TKey> selector
     )
-        where TKey : IComparable<TKey> => ListMethods.BinarySearchIndex(list, value, selector);
+        where TKey : IComparable<TKey> => ListHelper.BinarySearchIndex(list, value, selector);
     #endregion
 
     #region Clone
@@ -798,7 +798,7 @@ public static class ListExtensions
     /// <param name="list"></param>
     /// <returns></returns>
     public static T GetRandomItem<T>(this IList<T> list) =>
-        list[NumberMethods.GetRandomInt(list.Count)];
+        list[NumberHelper.GetRandomInt(list.Count)];
     #endregion
 
     #region GetSublist

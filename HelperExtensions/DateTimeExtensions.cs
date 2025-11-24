@@ -15,8 +15,7 @@ public static class DateTimeExtensions
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    public static MonthYear GetMonth(this DateTime dateTime) =>
-        new(dateTime.Month, dateTime.Year);
+    public static MonthYear GetMonth(this DateTime dateTime) => new(dateTime.Month, dateTime.Year);
     #endregion
 
     #region IsBetween
@@ -28,8 +27,12 @@ public static class DateTimeExtensions
     /// <param name="maximum"></param>
     /// <param name="inclusive"></param>
     /// <returns></returns>
-    public static bool IsBetween(this DateTime value, DateTime minimum, DateTime maximum, bool inclusive = true) =>
-        GenericMethods.IsBetween(value, minimum, maximum, inclusive);
+    public static bool IsBetween(
+        this DateTime value,
+        DateTime minimum,
+        DateTime maximum,
+        bool inclusive = true
+    ) => GenericHelper.IsBetween(value, minimum, maximum, inclusive);
     #endregion
 
     #region IsDay
@@ -39,8 +42,7 @@ public static class DateTimeExtensions
     /// <param name="dateTime"></param>
     /// <param name="day"></param>
     /// <returns></returns>
-    public static bool IsDay(this DateTime dateTime, int day) =>
-        dateTime.Day == day;
+    public static bool IsDay(this DateTime dateTime, int day) => dateTime.Day == day;
     #endregion
 
     #region IsMonth
@@ -77,8 +79,8 @@ public static class DateTimeExtensions
     /// <param name="dateTime"></param>
     /// <param name="dates"></param>
     /// <returns></returns>
-    public static bool IsSameDate(this DateTime dateTime, params DateTime[] dates) => 
-        DateTimeMethods.IsSameDate([dateTime, .. dates]);
+    public static bool IsSameDate(this DateTime dateTime, params DateTime[] dates) =>
+        DateTimeHelper.IsSameDate([dateTime, .. dates]);
     #endregion
 
     #region IsSameMonth
@@ -89,7 +91,7 @@ public static class DateTimeExtensions
     /// <param name="dates"></param>
     /// <returns></returns>
     public static bool IsSameMonth(this DateTime dateTime, params DateTime[] dates) =>
-        DateTimeMethods.IsSameMonth([dateTime, .. dates]);
+        DateTimeHelper.IsSameMonth([dateTime, .. dates]);
     #endregion
 
     #region IsToday
@@ -98,8 +100,7 @@ public static class DateTimeExtensions
     /// </summary>
     /// <param name="dateTime"></param>
     /// <returns></returns>
-    public static bool IsToday(this DateTime dateTime) =>
-        dateTime == DateTime.Today;
+    public static bool IsToday(this DateTime dateTime) => dateTime == DateTime.Today;
     #endregion
 
     #region IsWeekday
@@ -153,8 +154,7 @@ public static class DateTimeExtensions
     /// <param name="time"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static string ToTimeString(this DateTime time) =>
-        time.TimeOfDay.ToTimeString();
+    public static string ToTimeString(this DateTime time) => time.TimeOfDay.ToTimeString();
     #endregion
 
     #endregion
@@ -233,8 +233,7 @@ public static class DateTimeExtensions
     /// </summary>
     /// <param name="timeSpan"></param>
     /// <returns></returns>
-    public static bool IsZero(this TimeSpan timeSpan) =>
-        timeSpan == TimeSpan.Zero;
+    public static bool IsZero(this TimeSpan timeSpan) => timeSpan == TimeSpan.Zero;
     #endregion
 
     #region RoundToDays
@@ -266,7 +265,7 @@ public static class DateTimeExtensions
     public static TimeSpan RoundToMilliseconds(this TimeSpan timeSpan) =>
         TimeSpan.FromMilliseconds(Math.Round(timeSpan.TotalMilliseconds));
     #endregion
-    
+
     #region RoundToMinutes
     /// <summary>
     /// Returns a new <see cref="TimeSpan"/> that rounds this instance value's minutes.
@@ -294,7 +293,7 @@ public static class DateTimeExtensions
     /// <param name="timeSpan"></param>
     /// <returns></returns>
     public static string ToShortTimeString(this TimeSpan timeSpan) =>
-        DateTimeMethods.GetShortTimeString(timeSpan.TotalSeconds);
+        DateTimeHelper.GetShortTimeString(timeSpan.TotalSeconds);
     #endregion
 
     #region ToTimeString

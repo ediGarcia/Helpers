@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class FunctionMethods
+public static class FunctionHelper
 {
     #region Wait
     /// <summary>
@@ -12,7 +12,10 @@ public static class FunctionMethods
         switch (interval)
         {
             case < 0:
-                throw new ArgumentOutOfRangeException(nameof(interval), "Interval must be a non-negative number.");
+                throw new ArgumentOutOfRangeException(
+                    nameof(interval),
+                    "Interval must be a non-negative number."
+                );
 
             case 0:
                 return;

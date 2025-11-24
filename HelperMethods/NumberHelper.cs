@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class NumberMethods
+public static class NumberHelper
 {
     #region Properties
 
@@ -21,9 +21,14 @@ public static class NumberMethods
     /// <param name="maximum"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException" />
-    public static double GetRandomDouble(double minimum = Double.MinValue, double maximum = Double.MaxValue) =>
+    public static double GetRandomDouble(
+        double minimum = Double.MinValue,
+        double maximum = Double.MaxValue
+    ) =>
         maximum < minimum
-            ? throw new ArgumentOutOfRangeException($"{nameof(maximum)} must be equal or greater than {nameof(minimum)}.")
+            ? throw new ArgumentOutOfRangeException(
+                $"{nameof(maximum)} must be equal or greater than {nameof(minimum)}."
+            )
             : Rand.NextDouble() * (maximum - minimum) + minimum;
     #endregion
 
@@ -89,7 +94,7 @@ public static class NumberMethods
     /// <param name="inclusive"></param>
     /// <returns></returns>
     public static bool IsBetween<T>(T value, T minimum, T maximum, bool inclusive = false) =>
-        GenericMethods.IsBetween(value, minimum, maximum, inclusive);
+        GenericHelper.IsBetween(value, minimum, maximum, inclusive);
     #endregion
 
     #region Max
@@ -100,8 +105,7 @@ public static class NumberMethods
     /// <param name="value1"></param>
     /// <param name="value2"></param>
     /// <returns></returns>
-    public static T Max<T>(T value1, T value2) =>
-        GenericMethods.Max(value1, value2);
+    public static T Max<T>(T value1, T value2) => GenericHelper.Max(value1, value2);
     #endregion
 
     #region Min
@@ -112,8 +116,7 @@ public static class NumberMethods
     /// <param name="value1"></param>
     /// <param name="value2"></param>
     /// <returns></returns>
-    public static T Min<T>(T value1, T value2) =>
-        GenericMethods.Min(value1, value2);
+    public static T Min<T>(T value1, T value2) => GenericHelper.Min(value1, value2);
     #endregion
 
     #endregion

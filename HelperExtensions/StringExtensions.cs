@@ -396,7 +396,7 @@ public static class StringExtensions
         this string str,
         string value,
         StringComparison comparisonType = StringComparison.Ordinal
-    ) => StringMethods.AreAllNull(str, value) || String.Compare(str, value, comparisonType) == 0;
+    ) => StringHelper.AreAllNull(str, value) || String.Compare(str, value, comparisonType) == 0;
     #endregion
 
     #region IsNull

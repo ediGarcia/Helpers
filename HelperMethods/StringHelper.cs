@@ -1,16 +1,17 @@
-﻿using HelperMethods.Enums;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using HelperMethods.Enums;
 
 namespace HelperMethods;
 
-public static class StringMethods
+public static class StringHelper
 {
     public const string LineBreaks = "\n";
     public const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
-    public const string NonSpaceChars = UpperCaseChars + LowerCaseChars + NumericChars + SpecialChars;
+    public const string NonSpaceChars =
+        UpperCaseChars + LowerCaseChars + NumericChars + SpecialChars;
     public const string NumericChars = "0123456789";
     public const string SpaceChars = " \t";
     public const string SpecialChars = "!\"#$%&'()#+,-./:;<>=?@[]^_`´{}|~";
@@ -41,7 +42,10 @@ public static class StringMethods
     public static string GenerateRandomString(char[] validChars, int width)
     {
         if (width < 0)
-            throw new ArgumentOutOfRangeException(nameof(width), "The desired string width must be greater than or equal to zero.");
+            throw new ArgumentOutOfRangeException(
+                nameof(width),
+                "The desired string width must be greater than or equal to zero."
+            );
 
         if (width == 0)
             return String.Empty;
@@ -49,7 +53,7 @@ public static class StringMethods
         char[] result = new char[width];
 
         for (int i = 0; i < width; i++)
-            result[i] = validChars[NumberMethods.GetRandomInt(validChars.Length)];
+            result[i] = validChars[NumberHelper.GetRandomInt(validChars.Length)];
 
         return new(result);
     }
@@ -87,12 +91,18 @@ public static class StringMethods
     public static string GenerateRandomString(char[] validChars, int minWidth, int maxWidth)
     {
         if (minWidth < 0 && maxWidth < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxWidth), "The desired string widths must be greater than or equal to zero.");
+            throw new ArgumentOutOfRangeException(
+                nameof(maxWidth),
+                "The desired string widths must be greater than or equal to zero."
+            );
 
         minWidth = Math.Max(0, minWidth);
         maxWidth = Math.Max(0, maxWidth);
 
-        return GenerateRandomString(validChars, NumberMethods.GetRandomInt(minWidth, maxWidth, true));
+        return GenerateRandomString(
+            validChars,
+            NumberHelper.GetRandomInt(minWidth, maxWidth, true)
+        );
     }
     #endregion
 
@@ -135,15 +145,16 @@ public static class StringMethods
     {
         using StreamReader reader = new(new MemoryStream());
         using (
-            XmlWriter writer =
-                XmlWriter.Create(
-                       reader.BaseStream,
-                       new()
-                   {
-                       Indent = true,
-                       IndentChars = indentChars,
-                       ConformanceLevel = ConformanceLevel.Document
-                   }))
+            XmlWriter writer = XmlWriter.Create(
+                reader.BaseStream,
+                new()
+                {
+                    Indent = true,
+                    IndentChars = indentChars,
+                    ConformanceLevel = ConformanceLevel.Document,
+                }
+            )
+        )
         {
             XmlDocument document = new();
             document.LoadXml(xml);
@@ -202,8 +213,7 @@ public static class StringMethods
     /// </summary>
     /// <param name="strings"></param>
     /// <returns></returns>
-    public static bool AreAllNull(params string[] strings) =>
-        strings?.All(_ => _ is null) == true;
+    public static bool AreAllNull(params string[] strings) => strings?.All(_ => _ is null) == true;
     #endregion
 
     #region AreAllNullOrEmpty
@@ -242,8 +252,7 @@ public static class StringMethods
     /// </summary>
     /// <param name="strings"></param>
     /// <returns></returns>
-    public static bool IsAnyNull(params string[] strings) =>
-        strings?.Any(_ => _ is null) == true;
+    public static bool IsAnyNull(params string[] strings) => strings?.Any(_ => _ is null) == true;
     #endregion
 
     #region IsAnyNullOrEmpty
@@ -273,8 +282,7 @@ public static class StringMethods
     /// <param name="text"></param>
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
-    public static bool IsNumber(string text) =>
-        Double.TryParse(text, out double _);
+    public static bool IsNumber(string text) => Double.TryParse(text, out double _);
     #endregion
 
     #region MakeFirstCharUpperCase
@@ -322,8 +330,13 @@ public static class StringMethods
     public static string RemoveAccentuation(string text) =>
         String.IsNullOrWhiteSpace(text) //Checks the text.
             ? null
-            : String.Join("",
-                text.Normalize(NormalizationForm.FormD).Where(_ => CharUnicodeInfo.GetUnicodeCategory(_) != UnicodeCategory.NonSpacingMark));
+            : String.Join(
+                "",
+                text.Normalize(NormalizationForm.FormD)
+                    .Where(_ =>
+                        CharUnicodeInfo.GetUnicodeCategory(_) != UnicodeCategory.NonSpacingMark
+                    )
+            );
     #endregion
 
     #region RemoveNewLine
@@ -369,8 +382,11 @@ public static class StringMethods
     /// <param name="email"></param>
     /// <returns></returns>
     public static bool ValidateEmail(string email) =>
-        email is not null && Regex.IsMatch(email,
-            @"\A(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)\Z");
+        email is not null
+        && Regex.IsMatch(
+            email,
+            @"\A(?:[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)\Z"
+        );
     #endregion
 
     #region ValidateUrl
@@ -381,8 +397,9 @@ public static class StringMethods
     /// <returns></returns>
     // ReSharper disable once UnusedMember.Global
     public static UrlType ValidateUrl(string url) =>
-        Uri.IsWellFormedUriString(url, UriKind.Absolute) ? UrlType.Absolute :
-        Uri.IsWellFormedUriString(url, UriKind.Relative) ? UrlType.Relative : UrlType.Invalid;
+        Uri.IsWellFormedUriString(url, UriKind.Absolute) ? UrlType.Absolute
+        : Uri.IsWellFormedUriString(url, UriKind.Relative) ? UrlType.Relative
+        : UrlType.Invalid;
     #endregion
 
     #endregion
@@ -401,8 +418,12 @@ public static class StringMethods
     private static string InsertEllipsisPrivate(string text, int maxWidth, bool isAtTheEnd)
     {
         if (maxWidth < 3)
-            throw new ArgumentOutOfRangeException(nameof(maxWidth), maxWidth, "The maximum width must be greater or equal to 3.");
-        
+            throw new ArgumentOutOfRangeException(
+                nameof(maxWidth),
+                maxWidth,
+                "The maximum width must be greater or equal to 3."
+            );
+
         if (String.IsNullOrEmpty(text) || text.Length <= maxWidth)
             return text;
 

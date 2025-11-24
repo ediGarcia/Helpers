@@ -1,6 +1,6 @@
 ﻿namespace HelperMethods;
 
-public static class ListMethods
+public static class ListHelper
 {
     #region Public Methods
 
@@ -16,7 +16,8 @@ public static class ListMethods
     /// <param name="value"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static T BinarySearch<T, TKey>(IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey>
+    public static T BinarySearch<T, TKey>(IList<T> list, TKey value, Func<T, TKey> selector)
+        where TKey : IComparable<TKey>
     {
         int index = BinarySearchIndex(list, value, selector);
         return index == -1 ? default : list[index];
@@ -34,7 +35,8 @@ public static class ListMethods
     /// <param name="selector"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static int BinarySearchIndex<T, TKey>(IList<T> list, TKey value, Func<T, TKey> selector) where TKey : IComparable<TKey>
+    public static int BinarySearchIndex<T, TKey>(IList<T> list, TKey value, Func<T, TKey> selector)
+        where TKey : IComparable<TKey>
     {
         int startIndex = 0;
         int finalIndex = list.Count - 1;

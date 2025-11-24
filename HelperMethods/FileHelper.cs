@@ -1,13 +1,13 @@
-﻿using HelperMethods.Enums;
-using Microsoft.VisualBasic.FileIO;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Xml.Serialization;
+using HelperMethods.Enums;
+using Microsoft.VisualBasic.FileIO;
 
 namespace HelperMethods;
 
-public static class FileMethods
+public static class FileHelper
 {
     #region Public Methods
 
@@ -19,7 +19,11 @@ public static class FileMethods
     /// <param name="destination"></param>
     /// <param name="conflictAction"></param>
     /// <exception cref="IOException"></exception>
-    public static void Copy(string source, string destination, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+    public static void Copy(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    )
     {
         if (ValidateConflictAction(destination, conflictAction))
             File.Copy(source, destination, true);
@@ -33,8 +37,16 @@ public static class FileMethods
     /// <param name="sourceFile"></param>
     /// <param name="destinationDirectory"></param>
     /// <param name="conflictAction"></param>
-    public static void CopyToDirectory(string sourceFile, string destinationDirectory, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
-        Copy(sourceFile, Path.Combine(destinationDirectory, Path.GetFileName(destinationDirectory)), conflictAction);
+    public static void CopyToDirectory(
+        string sourceFile,
+        string destinationDirectory,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    ) =>
+        Copy(
+            sourceFile,
+            Path.Combine(destinationDirectory, Path.GetFileName(destinationDirectory)),
+            conflictAction
+        );
     #endregion
 
     #region CreateFile
@@ -73,7 +85,11 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static string CreateRandomFile(string parentFolderPath, string content = "", string extension = null)
+    public static string CreateRandomFile(
+        string parentFolderPath,
+        string content = "",
+        string extension = null
+    )
     {
         string newFilePath = GenerateRandomFilePath(parentFolderPath, extension, true);
         File.WriteAllText(newFilePath, content ?? "");
@@ -89,7 +105,11 @@ public static class FileMethods
     /// <param name="extension">The desired extension of the file. If not extension is provided, a random one is created.</param>
     /// <param name="checkNotExisting">Indicates that the generated path should not exist in the current system.</param>
     /// <returns></returns>
-    public static string GenerateRandomFilePath(string rootFolderPath, string extension = null, bool checkNotExisting = false)
+    public static string GenerateRandomFilePath(
+        string rootFolderPath,
+        string extension = null,
+        bool checkNotExisting = false
+    )
     {
         string fileName;
 
@@ -98,9 +118,11 @@ public static class FileMethods
             fileName = Path.GetRandomFileName();
 
             if (extension is not null)
-                fileName = fileName.Replace(".", "") + PathMethods.InsertExtensionDot(extension);
+                fileName = fileName.Replace(".", "") + PathHelper.InsertExtensionDot(extension);
 
-            fileName = String.IsNullOrWhiteSpace(rootFolderPath) ? fileName : Path.Combine(rootFolderPath, fileName);
+            fileName = String.IsNullOrWhiteSpace(rootFolderPath)
+                ? fileName
+                : Path.Combine(rootFolderPath, fileName);
         } while (checkNotExisting && Exists(fileName));
 
         return fileName;
@@ -123,7 +145,11 @@ public static class FileMethods
     {
         if (Exists(path))
         {
-            FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently);
+            FileSystem.DeleteFile(
+                path,
+                UIOption.OnlyErrorDialogs,
+                recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently
+            );
             return true;
         }
 
@@ -137,8 +163,7 @@ public static class FileMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static bool Exists(string path) =>
-        File.Exists(path);
+    public static bool Exists(string path) => File.Exists(path);
     #endregion
 
     #region GetFileSize
@@ -152,8 +177,7 @@ public static class FileMethods
     /// <exception cref="IOException" />
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
-    public static long GetFileSize(string path) =>
-        new FileInfo(path).Length;
+    public static long GetFileSize(string path) => new FileInfo(path).Length;
     #endregion
 
     #region IsFile
@@ -162,8 +186,7 @@ public static class FileMethods
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static bool IsFile(string path) =>
-        Exists(path) && !DirectoryMethods.IsDirectory(path);
+    public static bool IsFile(string path) => Exists(path) && !DirectoryHelper.IsDirectory(path);
     #endregion
 
     #region Move
@@ -173,7 +196,11 @@ public static class FileMethods
     /// <param name="source"></param>
     /// <param name="destination"></param>
     /// <param name="conflictAction"></param>
-    public static void Move(string source, string destination, FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+    public static void Move(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    )
     {
         if (ValidateConflictAction(destination, conflictAction))
             File.Move(source, destination);
@@ -190,8 +217,13 @@ public static class FileMethods
     public static void MoveToDirectory(
         string sourceFile,
         string destinationDirectory,
-        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
-        Move(sourceFile, Path.Combine(destinationDirectory, Path.GetFileName(sourceFile)), conflictAction);
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    ) =>
+        Move(
+            sourceFile,
+            Path.Combine(destinationDirectory, Path.GetFileName(sourceFile)),
+            conflictAction
+        );
     #endregion
 
     #region ReadAllText
@@ -223,11 +255,16 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
-    public static IReadOnlyList<string> ReadAllLines(string path, FileShare fileShare = FileShare.ReadWrite)
+    public static IReadOnlyList<string> ReadAllLines(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite
+    )
     {
         List<string> lines = [];
 
-        using StreamReader reader = new(new FileStream(path, FileMode.Open, FileAccess.Read, fileShare));
+        using StreamReader reader = new(
+            new FileStream(path, FileMode.Open, FileAccess.Read, fileShare)
+        );
         while (!reader.EndOfStream)
             lines.Add(reader.ReadLine());
 
@@ -299,12 +336,14 @@ public static class FileMethods
     /// <exception cref="ArgumentNullException" />
     /// <exception cref="FileNotFoundException" />
     public static Process RunOrOpen(string path, bool runAsAdmin = false) =>
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = path,
-            Verb = runAsAdmin ? "runas" : "",
-            UseShellExecute = true
-        });
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = path,
+                Verb = runAsAdmin ? "runas" : "",
+                UseShellExecute = true,
+            }
+        );
     #endregion
 
     #region SaveDataToFile
@@ -322,7 +361,11 @@ public static class FileMethods
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SerializationException" />
     /// <exception cref="SecurityException" />
-    public static void SaveDataToFile<T>(string path, T data, Classes.FileMode mode = Classes.FileMode.OpenOrCreate)
+    public static void SaveDataToFile<T>(
+        string path,
+        T data,
+        Classes.FileMode mode = Classes.FileMode.OpenOrCreate
+    )
     {
         if (Exists(path))
         {
@@ -354,7 +397,12 @@ public static class FileMethods
     /// <exception cref="UnauthorizedAccessException" />
     public static void WriteXml<T>(string path, T data)
     {
-        using FileStream stream = new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        using FileStream stream = new(
+            path,
+            FileMode.OpenOrCreate,
+            FileAccess.Write,
+            FileShare.None
+        );
         new XmlSerializer(typeof(T)).Serialize(stream, data);
     }
     #endregion
@@ -371,7 +419,10 @@ public static class FileMethods
     /// <param name="conflictAction"></param>
     /// <returns></returns>
     /// <exception cref="IOException"></exception>
-    private static bool ValidateConflictAction(string destinationPath, FileNameConflictAction conflictAction)
+    private static bool ValidateConflictAction(
+        string destinationPath,
+        FileNameConflictAction conflictAction
+    )
     {
         if (Exists(destinationPath))
             switch (conflictAction)
