@@ -1,7 +1,4 @@
-﻿using CredentialManagement;
-using HelperMethods.Enums;
-using HelperMethods.Helpers;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -10,6 +7,9 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CredentialManagement;
+using HelperMethods.Enums;
+using HelperMethods.Helpers;
 
 namespace HelperMethods;
 
@@ -28,14 +28,13 @@ public static class SystemMethods
     public static void Copy(
         string source,
         string destination,
-        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    )
     {
         if (FileMethods.Exists(source))
             FileMethods.Copy(source, destination, conflictAction);
-
         else if (DirectoryMethods.Exists(source))
             DirectoryMethods.Copy(source, destination, conflictAction);
-
         else
             throw new IOException($"\"{source}\" not found.");
     }
@@ -136,16 +135,22 @@ public static class SystemMethods
 
         flags += largeIcon ? 0U : 1U;
 
-        WindowsHelper.SHGetFileInfo(path,
+        WindowsHelper.SHGetFileInfo(
+            path,
             0,
             ref shFileInfo,
             (uint)Marshal.SizeOf(shFileInfo),
-            flags);
+            flags
+        );
 
         Icon icon = (Icon)Icon.FromHandle(shFileInfo.hIcon).Clone(); // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly.
         WindowsHelper.DestroyIcon(shFileInfo.hIcon);
 
-        return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        return Imaging.CreateBitmapSourceFromHIcon(
+            icon.Handle,
+            Int32Rect.Empty,
+            BitmapSizeOptions.FromEmptyOptions()
+        );
         // ReSharper restore CommentTypo
     }
     #endregion
@@ -158,11 +163,9 @@ public static class SystemMethods
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
     public static long GetSize(string path) =>
-        DirectoryMethods.IsDirectory(path)
-            ? DirectoryMethods.GetDirectorySize(path)
-            : FileMethods.IsFile(path)
-                ? FileMethods.GetFileSize(path)
-                : throw new FileNotFoundException($"Could not find a file or a directory named '{path}'.");
+        DirectoryMethods.IsDirectory(path) ? DirectoryMethods.GetDirectorySize(path)
+        : FileMethods.IsFile(path) ? FileMethods.GetFileSize(path)
+        : throw new FileNotFoundException($"Could not find a file or a directory named '{path}'.");
     #endregion
 
     #region GetProcesses
@@ -173,8 +176,11 @@ public static class SystemMethods
     /// <returns></returns>
     public static IReadOnlyList<Process> GetProcesses(string searchPattern)
     {
-        Regex regex = new(searchPattern.Replace(".", "\\.").Replace("*", ".*").Replace("?", "."), RegexOptions.IgnoreCase);
-        return [..Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName))];
+        Regex regex = new(
+            searchPattern.Replace(".", "\\.").Replace("*", ".*").Replace("?", "."),
+            RegexOptions.IgnoreCase
+        );
+        return [.. Process.GetProcesses().Where(_ => regex.IsMatch(_.ProcessName))];
     }
     #endregion
 
@@ -186,7 +192,11 @@ public static class SystemMethods
     /// <param name="onlyAbsolute">Indicates whether only absolute paths should be accepted.</param>
     /// <param name="onlyExisting">Indicates whether only existing paths should be accepted.</param>
     /// <returns></returns>
-    public static bool IsValidLocalPath(string path, bool onlyAbsolute = false, bool onlyExisting = false) =>
+    public static bool IsValidLocalPath(
+        string path,
+        bool onlyAbsolute = false,
+        bool onlyExisting = false
+    ) =>
         !String.IsNullOrWhiteSpace(path)
         && !Path.GetInvalidPathChars().Any(path.Contains)
         && (!onlyAbsolute || Path.IsPathRooted(path))
@@ -220,7 +230,7 @@ public static class SystemMethods
     #endregion
 
     #region KillProcesses(params string[])
-    /// <summary> 
+    /// <summary>
     /// Kill process found through the search patterns.
     /// </summary>
     /// <param name="searchPatterns"></param>
@@ -253,14 +263,13 @@ public static class SystemMethods
     public static void Move(
         string source,
         string destination,
-        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError)
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError
+    )
     {
         if (FileMethods.Exists(source))
             FileMethods.Move(source, destination, conflictAction);
-
         else if (DirectoryMethods.Exists(source))
             DirectoryMethods.Move(source, destination, conflictAction);
-
         else
             throw new IOException($"\"{source}\" not found.");
     }
@@ -273,7 +282,7 @@ public static class SystemMethods
     /// <param name="identifier"></param>
     /// <returns></returns>
     /// <exception cref="SystemException"></exception>
-    public static bool RemoveCredential(string identifier) => 
+    public static bool RemoveCredential(string identifier) =>
         new Credential { Target = identifier }.Delete();
     #endregion
 
@@ -309,13 +318,16 @@ public static class SystemMethods
         string command,
         string arguments = "",
         bool runAsAdmin = false,
-        bool hideConsoleWindow = false) =>
-        Process.Start(new ProcessStartInfo(command, arguments)
-        {
-            CreateNoWindow = hideConsoleWindow,
-            UseShellExecute = true,
-            Verb = runAsAdmin ? "runas" : ""
-        });
+        bool hideConsoleWindow = false
+    ) =>
+        Process.Start(
+            new ProcessStartInfo(command, arguments)
+            {
+                CreateNoWindow = hideConsoleWindow,
+                UseShellExecute = true,
+                Verb = runAsAdmin ? "runas" : "",
+            }
+        );
     #endregion
 
     #region StoreEnterpriseCredential
@@ -327,8 +339,11 @@ public static class SystemMethods
     /// <param name="password"></param>
     /// <returns></returns>
     /// <exception cref="SystemException"></exception>
-    public static void StoreEnterpriseCredential(string identifier, string userName, string password) =>
-        StoreCredential(identifier, userName, password, PersistanceType.Enterprise);
+    public static void StoreEnterpriseCredential(
+        string identifier,
+        string userName,
+        string password
+    ) => StoreCredential(identifier, userName, password, PersistanceType.Enterprise);
     #endregion
 
     #region StoreLocalCredential
@@ -353,8 +368,11 @@ public static class SystemMethods
     /// <param name="password"></param>
     /// <returns></returns>
     /// <exception cref="SystemException"></exception>
-    public static void StoreSessionCredential(string identifier, string userName, string password) =>
-        StoreCredential(identifier, userName, password, PersistanceType.Session);
+    public static void StoreSessionCredential(
+        string identifier,
+        string userName,
+        string password
+    ) => StoreCredential(identifier, userName, password, PersistanceType.Session);
     #endregion
 
     #region SystemCopy
@@ -369,7 +387,15 @@ public static class SystemMethods
         if (!Exists(source))
             throw new IOException($"Could not find file \"{source}\".");
 
-        int resultCode = await Task.Run(() => CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoCopy, 0));
+        int resultCode = await Task.Run(
+            () =>
+                CallSystemFileOperation(
+                    source,
+                    destination,
+                    WindowsHelper.FileOperationType.FoCopy,
+                    0
+                )
+        );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
     }
     #endregion
@@ -385,7 +411,9 @@ public static class SystemMethods
         if (!Exists(path))
             throw new IOException($"Could not find file \"{path}\".");
 
-        int resultCode = await Task.Run(() => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0));
+        int resultCode = await Task.Run(
+            () => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0)
+        );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
     }
     #endregion
@@ -402,7 +430,15 @@ public static class SystemMethods
         if (!Exists(source))
             throw new IOException($"Could not find file \"{source}\".");
 
-        int resultCode = await Task.Run(() => CallSystemFileOperation(source, destination, WindowsHelper.FileOperationType.FoMove, 0));
+        int resultCode = await Task.Run(
+            () =>
+                CallSystemFileOperation(
+                    source,
+                    destination,
+                    WindowsHelper.FileOperationType.FoMove,
+                    0
+                )
+        );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
     }
     #endregion
@@ -419,16 +455,25 @@ public static class SystemMethods
     /// <param name="fileOperationType"></param>
     /// <param name="flags"></param>
     /// <param name="pathFrom"></param>
-    private static int CallSystemFileOperation(string pathFrom, string pathTo, WindowsHelper.FileOperationType fileOperationType, WindowsHelper.FileOperationFlags flags)
+    private static int CallSystemFileOperation(
+        string pathFrom,
+        string pathTo,
+        WindowsHelper.FileOperationType fileOperationType,
+        WindowsHelper.FileOperationFlags flags
+    )
     {
         WindowsHelper.ShFileOpStruct fs = new()
         {
             WFunc = fileOperationType,
             PFrom = pathFrom + '\0' + '\0',
-            FFlags = flags
+            FFlags = flags,
         };
 
-        if (fileOperationType is WindowsHelper.FileOperationType.FoCopy or WindowsHelper.FileOperationType.FoMove)
+        if (
+            fileOperationType
+            is WindowsHelper.FileOperationType.FoCopy
+                or WindowsHelper.FileOperationType.FoMove
+        )
             fs.PTo = pathTo;
 
         return WindowsHelper.SHFileOperation(ref fs);
@@ -445,18 +490,25 @@ public static class SystemMethods
     /// <param name="persistanceType"></param>
     /// <returns></returns>
     /// <exception cref="SystemException"></exception>
-    private static void StoreCredential(string identifier, string userName, string password, PersistanceType persistanceType)
+    private static void StoreCredential(
+        string identifier,
+        string userName,
+        string password,
+        PersistanceType persistanceType
+    )
     {
         Credential credential = new()
         {
             Target = identifier,
             Username = userName,
             Password = password,
-            PersistanceType = persistanceType
+            PersistanceType = persistanceType,
         };
 
         if (!credential.Save())
-            throw new SystemException($"The credential \"{identifier}\" could not be saved. Check if there is already a credential entry with the same id and if you have the required privileges.");
+            throw new SystemException(
+                $"The credential \"{identifier}\" could not be saved. Check if there is already a credential entry with the same id and if you have the required privileges."
+            );
     }
     #endregion
 
