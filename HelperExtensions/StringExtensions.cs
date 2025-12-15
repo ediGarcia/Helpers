@@ -229,7 +229,9 @@ public static class StringExtensions
 
     #endregion
 
-    #region EndsWith
+    #region EndsWith*
+
+    #region EndsWith(this string, string, bool)
     /// <summary>
     /// Determines whether the end of this string instance matches the specified string when compared using the invariant culture.
     /// </summary>
@@ -240,6 +242,23 @@ public static class StringExtensions
     public static bool EndsWith(this string st, string value, bool ignoreCase) =>
         !String.IsNullOrEmpty(value)
         && st?.EndsWith(value, ignoreCase, CultureInfo.InvariantCulture) == true;
+    #endregion
+
+    #region EndsWith(this string, string, [StringComparison])
+    /// <summary>
+    /// Determines whether the end of this string instance matches the specified string when compared using the specified comparison option.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="comparison"></param>
+    /// <returns></returns>
+    public static bool EndsWith(
+        this string st,
+        string value,
+        StringComparison comparison = StringComparison.OrdinalIgnoreCase
+    ) => st.EndsWith(value, comparison);
+    #endregion
+
     #endregion
 
     #region EndsWithAny
@@ -550,7 +569,9 @@ public static class StringExtensions
 
     #endregion
 
-    #region StartsWith
+    #region StartsWith*
+
+    #region StartsWith(this string, string, bool)
     /// <summary>
     /// Determines whether the beginning of this string instance matches the specified string when compared using the invariant culture.
     /// </summary>
@@ -561,6 +582,23 @@ public static class StringExtensions
     public static bool StartsWith(this string st, string value, bool ignoreCase) =>
         !String.IsNullOrEmpty(value)
         && st?.StartsWith(value, ignoreCase, CultureInfo.InvariantCulture) is true;
+    #endregion
+
+    #region StartsWith(this string, string, [StringComparison])
+    /// <summary>
+    /// Determines whether the start of this string instance matches the specified string when compared using the specified comparison option.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <param name="value"></param>
+    /// <param name="comparison"></param>
+    /// <returns></returns>
+    public static bool StartsWith(
+        this string st,
+        string value,
+        StringComparison comparison = StringComparison.OrdinalIgnoreCase
+    ) => st.StartsWith(value, comparison);
+    #endregion
+
     #endregion
 
     #region StartsWithAny
@@ -708,6 +746,15 @@ public static class StringExtensions
 
         return sb;
     }
+    #endregion
+
+    #region IsEmpty
+    /// <summary>
+    /// Indicates whether the current <see cref="StringBuilder"/> is empty.
+    /// </summary>
+    /// <param name="sb"></param>
+    /// <returns></returns>
+    public static bool IsEmpty(this StringBuilder sb) => sb.Length == 0;
     #endregion
 
     #region IsNull
