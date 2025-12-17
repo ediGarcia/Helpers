@@ -866,6 +866,58 @@ public static class ListExtensions
 
     #endregion
 
+    #region Queue
+
+    #region EnqueueMany
+    /// <summary>
+    /// Adds the specified values to the end of the <see cref="Queue{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="queue"></param>
+    /// <param name="values"></param>
+    public static void EnqueueMany<T>(this Queue<T> queue, params T[] values) =>
+        values.ForEach(queue.Enqueue);
+    #endregion
+
+    #region EnqueueRange
+    /// <summary>
+    /// Adds the specified values to the end of the <see cref="Queue{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="queue"></param>
+    /// <param name="values"></param>
+    public static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> values) =>
+        values.ForEach(queue.Enqueue);
+    #endregion
+
+    #endregion
+
+    #region Stack
+
+    #region PushMany
+    /// <summary>
+    /// Inserts the specified values to the top of the <see cref="Stack{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="stack"></param>
+    /// <param name="values"></param>
+    public static void PushMany<T>(this Stack<T> stack, params T[] values) =>
+        values.ForEach(stack.Push);
+    #endregion
+
+    #region PushRange
+    /// <summary>
+    /// Inserts the specified values to the top of the <see cref="Stack{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="stack"></param>
+    /// <param name="values"></param>
+    public static void PushRange<T>(this Stack<T> stack, IEnumerable<T> values) =>
+        values.ForEach(stack.Push);
+    #endregion
+
+    #endregion
+
     #region IEnumarable
 
     #region All
