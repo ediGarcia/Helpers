@@ -445,6 +445,15 @@ public static class StringExtensions
     public static bool IsNullOrWhiteSpace(this string st) => String.IsNullOrWhiteSpace(st);
     #endregion
 
+    #region IsNumber
+    /// <summary>
+    /// Determines whether the string represents a valid number.
+    /// </summary>
+    /// <param name="st"></param>
+    /// <returns></returns>
+    public static bool IsNumber(this string st) => Double.TryParse(st, out _);
+    #endregion
+
     #region IsWhiteSpace
     /// <summary>
     /// Indicates whether the current string contains only white-space characters.
