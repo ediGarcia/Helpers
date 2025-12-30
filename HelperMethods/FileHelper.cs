@@ -180,6 +180,34 @@ public static class FileHelper
     public static long GetFileSize(string path) => new FileInfo(path).Length;
     #endregion
 
+    #region GetNewFileName
+    /// <summary>
+    /// Generates a new file name by appending an index to avoid name conflicts.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="indexPrefix"></param>
+    /// <param name="indexSuffix"></param>
+    /// <returns></returns>
+    public static string GetNewFileName(
+        string path,
+        string indexPrefix = " (",
+        string indexSuffix = ")"
+    )
+    {
+        if (!SystemHelper.Exists(path))
+            return path;
+
+        string newPath;
+        int index = 1;
+
+        do newPath =
+            $"{Path.GetFileNameWithoutExtension(path)}{indexPrefix}{index++}{indexSuffix}{Path.GetExtension(path)}";
+        while (SystemHelper.Exists(newPath));
+
+        return newPath;
+    }
+    #endregion
+
     #region IsFile
     /// <summary>
     /// Determines whether the selected path belongs to a file.
@@ -226,49 +254,70 @@ public static class FileHelper
         );
     #endregion
 
-    #region ReadAllText
-    /// <summary>
-    /// Reads all text from a file.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="fileShare"></param>
-    /// <returns></returns>
-    public static string ReadAllText(string path, FileShare fileShare = FileShare.ReadWrite)
-    {
-        using FileStream fs = new(path, FileMode.Open, FileAccess.Read, fileShare);
-        using StreamReader reader = new(fs);
-        return reader.ReadToEnd();
-    }
-    #endregion
-
     #region ReadAllLines
     /// <summary>
     /// Returns the lines of a file's content.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException" />
     /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
     /// <exception cref="FileNotFoundException" />
     /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
     /// <exception cref="PathTooLongException" />
     /// <exception cref="SecurityException" />
     /// <exception cref="UnauthorizedAccessException" />
+    /// <returns>A string array containing all lines of the file.</returns>
     public static IReadOnlyList<string> ReadAllLines(
         string path,
-        FileShare fileShare = FileShare.ReadWrite
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.OpenOrCreate
     )
     {
         List<string> lines = [];
 
-        using StreamReader reader = new(
-            new FileStream(path, FileMode.Open, FileAccess.Read, fileShare)
-        );
+        using StreamReader reader = new(new FileStream(path, mode, FileAccess.Read, fileShare));
         while (!reader.EndOfStream)
             lines.Add(reader.ReadLine());
 
         return [.. lines];
+    }
+    #endregion
+
+    #region ReadAllText
+    /// <summary>
+    /// Reads all text from a file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    /// <returns>A string containing all the text in the file.</returns>
+    public static string ReadAllText(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.OpenOrCreate
+    )
+    {
+        using FileStream fs = new(path, mode, FileAccess.Read, fileShare);
+        using StreamReader reader = new(fs);
+        return reader.ReadToEnd();
     }
     #endregion
 
@@ -378,6 +427,75 @@ public static class FileHelper
         XmlSerializer serializer = new(typeof(T));
         using StreamWriter writer = new(path, mode == Classes.FileMode.Append);
         serializer.Serialize(writer, data);
+    }
+    #endregion
+
+    #region WriteAllLines
+    /// <summary>
+    /// Writes the specified lines into the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="lines"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    public static void WriteAllLines(
+        string path,
+        string[] lines,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.OpenOrCreate
+    )
+    {
+        using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
+        using StreamWriter writer = new(fs);
+
+        foreach (string line in lines)
+            writer.WriteLine(line);
+
+        writer.Flush();
+    }
+    #endregion
+
+    #region WriteAllText
+    /// <summary>
+    /// Writes the specified text into the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="text"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    public static void WriteAllText(
+        string path,
+        string text,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.OpenOrCreate
+    )
+    {
+        using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
+        using StreamWriter writer = new(fs);
+        writer.Write(text);
+        writer.Flush();
     }
     #endregion
 
