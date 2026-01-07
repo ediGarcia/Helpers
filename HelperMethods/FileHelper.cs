@@ -277,7 +277,7 @@ public static class FileHelper
     public static IReadOnlyList<string> ReadAllLines(
         string path,
         FileShare fileShare = FileShare.ReadWrite,
-        FileMode mode = FileMode.OpenOrCreate
+        FileMode mode = FileMode.Open
     )
     {
         List<string> lines = [];
@@ -312,7 +312,7 @@ public static class FileHelper
     public static string ReadAllText(
         string path,
         FileShare fileShare = FileShare.ReadWrite,
-        FileMode mode = FileMode.OpenOrCreate
+        FileMode mode = FileMode.Open
     )
     {
         using FileStream fs = new(path, mode, FileAccess.Read, fileShare);
@@ -453,7 +453,7 @@ public static class FileHelper
         string path,
         string[] lines,
         FileShare fileShare = FileShare.Read,
-        FileMode mode = FileMode.OpenOrCreate
+        FileMode mode = FileMode.Create
     )
     {
         using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
@@ -489,7 +489,7 @@ public static class FileHelper
         string path,
         string text,
         FileShare fileShare = FileShare.Read,
-        FileMode mode = FileMode.OpenOrCreate
+        FileMode mode = FileMode.Create
     )
     {
         using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
