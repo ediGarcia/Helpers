@@ -44,6 +44,7 @@ public static class ListExtensions
     #region ICollection<T>
 
     #region AddMany
+
     /// <summary>
     /// Adds multiple items to the collection.
     /// </summary>
@@ -822,16 +823,6 @@ public static class ListExtensions
     }
     #endregion
 
-    #region Last
-    /// <summary>
-    /// Retrieves the last item of the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    public static T Last<T>(this IList<T> list) => list[list.LastIndex()];
-    #endregion
-
     #region LastIndex
     /// <summary>
     /// Gets the last index of the current list.
@@ -863,6 +854,51 @@ public static class ListExtensions
         return newArray;
     }
     #endregion
+
+    #endregion
+
+    #region IReadOnlyList<T>
+
+    extension<T>(IReadOnlyList<T> list)
+    {
+        #region First
+        /// <summary>
+        /// Returns the first element of a sequence.
+        /// </summary>
+        /// <returns></returns>
+        public T First() =>
+            list[0];
+        #endregion
+
+        #region FirstOrDefault
+        /// <summary>
+        /// Returns the first element of a sequence, or a default value if the sequence contains no elements.
+        /// </summary>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public T FirstOrDefault(T defaultValue = default) =>
+            list.Count > 0 ? list[0] : defaultValue;
+        #endregion
+
+        #region Last
+        /// <summary>
+        /// Returns the last element of a sequence.
+        /// </summary>
+        /// <returns></returns>
+        public T Last() =>
+            list[^1];
+        #endregion
+
+        #region LastOrDefault
+        /// <summary>
+        /// Returns the last element of a sequence, or a default value if the sequence contains no elements.
+        /// </summary>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public T LastOrDefault(T defaultValue = default) =>
+            list.Count > 0 ? list[^1] : defaultValue;
+        #endregion
+    }
 
     #endregion
 
