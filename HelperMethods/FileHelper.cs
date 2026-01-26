@@ -180,34 +180,6 @@ public static class FileHelper
     public static long GetFileSize(string path) => new FileInfo(path).Length;
     #endregion
 
-    #region GetNewFileName
-    /// <summary>
-    /// Generates a new file name by appending an index to avoid name conflicts.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="indexPrefix"></param>
-    /// <param name="indexSuffix"></param>
-    /// <returns></returns>
-    public static string GetNewFileName(
-        string path,
-        string indexPrefix = " (",
-        string indexSuffix = ")"
-    )
-    {
-        if (!SystemHelper.Exists(path))
-            return path;
-
-        string newPath;
-        int index = 1;
-
-        do newPath =
-            $"{Path.GetFileNameWithoutExtension(path)}{indexPrefix}{index++}{indexSuffix}{Path.GetExtension(path)}";
-        while (SystemHelper.Exists(newPath));
-
-        return newPath;
-    }
-    #endregion
-
     #region IsFile
     /// <summary>
     /// Determines whether the selected path belongs to a file.

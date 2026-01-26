@@ -154,11 +154,8 @@ public static class DirectoryHelper
         );
 
         //Checks if the folder exists.
-        while (Exists(novaPasta))
-            novaPasta = Path.Combine(
-                Path.GetTempPath(),
-                directoryName ?? GenerateRandomDirectoryPath()
-            );
+        while (Exists(novaPasta) && directoryName is null)
+            novaPasta = Path.Combine(Path.GetTempPath(), GenerateRandomDirectoryPath());
 
         Directory.CreateDirectory(novaPasta);
         return novaPasta;

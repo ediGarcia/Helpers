@@ -22,6 +22,15 @@ public static class PathHelper
         );
     #endregion
 
+    #region Combine
+    /// <summary>
+    /// Combines multiple path strings into a single path.
+    /// </summary>
+    /// <param name="paths"></param>
+    /// <returns></returns>
+    public static string Combine(params string[] paths) => Path.Combine(paths);
+    #endregion
+
     #region GetAllMatchingPaths
     /// <summary>
     /// Returns the list of paths discovered from the selected pattern.
@@ -109,6 +118,83 @@ public static class PathHelper
     /// <param name="path"></param>
     /// <returns></returns>
     public static string GetParentDirectory(string path) => Path.GetDirectoryName(path);
+    #endregion
+
+    #region GetTempPath
+    /// <summary>
+    /// Retrieves the path of the temporary folder for the current user.
+    /// </summary>
+    /// <returns></returns>
+    public static string GetTempPath() => DirectoryHelper.TemporaryDirectory;
+    #endregion
+
+    #region GetTempFileName
+    /// <summary>
+    /// Generates a unique temporary file name.
+    /// </summary>
+    /// <returns></returns>
+    public static string GetTempFileName() => Path.GetTempFileName();
+    #endregion
+
+    #region GetUniqueRandomPath
+    /// <summary>
+    /// Generates a unique random path inside the selected parent folder.
+    /// </summary>
+    /// <param name="parentFolder"></param>
+    /// <param name="extension"></param>
+    /// <returns></returns>
+    public static string GetUniqueRandomPath(string parentFolder, string extension = null)
+    {
+        if (extension is not null && !extension.StartsWith('.'))
+            extension = '.' + extension;
+
+        string newPath;
+
+        do newPath = Path.Combine(parentFolder, Guid.NewGuid().ToString()) + extension;
+        while (SystemHelper.Exists(newPath));
+
+        return newPath;
+    }
+    #endregion
+
+    #region GetUniquePath
+    /// <summary>
+    /// Generates a unique path by appending an index to the file name if the selected path already exists.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="indexPrefix"></param>
+    /// <param name="indexSuffix"></param>
+    /// <returns></returns>
+    public static string GetUniquePath(
+        string path,
+        string indexPrefix = " (",
+        string indexSuffix = ")"
+    )
+    {
+        if (!SystemHelper.Exists(path))
+            return path;
+
+        string parentPath = DirectoryHelper.GetParentDirectory(path);
+        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+        string fileExtension = Path.GetExtension(path);
+        string newPath;
+        int index = 1;
+
+        do newPath =
+            $"{Path.Combine(parentPath, fileNameWithoutExtension)}{indexPrefix}{index++}{indexSuffix}{fileExtension}";
+        while (SystemHelper.Exists(newPath));
+
+        return newPath;
+    }
+    #endregion
+
+    #region GetRoot
+    /// <summary>
+    /// Retrieves the root directory information of the specified path string.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string GetRoot(string path) => Path.GetPathRoot(path);
     #endregion
 
     #region InsertExtensionDot
