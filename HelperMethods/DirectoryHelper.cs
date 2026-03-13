@@ -177,17 +177,23 @@ public static class DirectoryHelper
     /// <exception cref="UnauthorizedAccessException" />
     public static bool Delete(string path, bool recycle = false)
     {
-        if (Exists(path))
+        try
         {
-            FileSystem.DeleteDirectory(
-                path,
-                UIOption.OnlyErrorDialogs,
-                recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently
-            );
+            if (recycle)
+                FileSystem.DeleteDirectory(
+                    path,
+                    UIOption.OnlyErrorDialogs,
+                    RecycleOption.SendToRecycleBin
+                );
+            else
+                Directory.Delete(path, true);
+
             return true;
         }
-
-        return false;
+        catch
+        {
+            return false;
+        }
     }
     #endregion
 
