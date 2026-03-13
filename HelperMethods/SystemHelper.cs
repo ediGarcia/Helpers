@@ -155,6 +155,25 @@ public static class SystemHelper
     }
     #endregion
 
+    #region GetProcessById
+    /// <summary>
+    /// Retrieves a process by its identifier.
+    /// </summary>
+    /// <param name="processId"></param>
+    /// <returns></returns>
+    public static Process? GetProcessById(int processId)
+    {
+        try
+        {
+            return Process.GetProcessById(processId);
+        }
+        catch (ArgumentException)
+        {
+            return null;
+        }
+    }
+    #endregion
+
     #region GetSize
     /// <summary>
     /// Retrieves the size of a path (if it is a directory, it will be calculated recursively).
@@ -440,6 +459,28 @@ public static class SystemHelper
                 )
         );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
+    }
+    #endregion
+
+    #region TryGetProcessById
+    /// <summary>
+    /// Attempts to get a process by its identifier.
+    /// </summary>
+    /// <param name="processId"></param>
+    /// <param name="process"></param>
+    /// <returns></returns>
+    public static bool TryGetProcessById(int processId, out Process? process)
+    {
+        try
+        {
+            process = Process.GetProcessById(processId);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            process = null;
+            return false;
+        }
     }
     #endregion
 
