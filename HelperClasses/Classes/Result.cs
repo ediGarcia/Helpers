@@ -24,6 +24,34 @@ public class Result
 
     #region Public Static Methods
 
+    #region Create*
+
+    #region Create(TStatus, TValue)
+    /// <summary>
+    /// Creates a result with the specified status and value.
+    /// </summary>
+    /// <typeparam name="TStatus"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="status"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<TStatus, TValue> Create<TStatus, TValue>(TStatus status, TValue value) => new(status, value);
+    #endregion
+
+    #region Create(TStatus)
+    /// <summary>
+    /// Creates a result with the specified status and default value.
+    /// </summary>
+    /// <typeparam name="TStatus"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="status"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<TStatus, object> Create<TStatus>(TStatus status) => new(status);
+    #endregion
+
+    #endregion
+
     #region Failure
     /// <summary>
     /// Creates a failure result with the specified error message. The <see cref="ErrorMessage"/> property will be set to the specified error message.
@@ -127,6 +155,34 @@ public class Result<T>
     /// <param name="result"></param>
     public static implicit operator Result(Result<T> result) =>
         result.IsSuccess ? new(true, null) : new(false, result.ErrorMessage);
+    #endregion
+
+    #endregion
+}
+
+public class Result<TStatus, TValue>(TStatus status, TValue value)
+{
+    #region Properties
+
+    /// <summary>
+    /// Gets the status of the operation.
+    /// </summary>
+    public TStatus Status { get; } = status;
+
+    /// <summary>
+    /// Gets the value of the operation.
+    /// </summary>
+    public TValue Value { get; } = value;
+
+    #endregion
+
+    public Result(TStatus status) : this(status, default) { }
+
+    #region Operator
+
+    #region Result<TStatus, object> -> Result<TStatus, TValue>
+    public static implicit operator Result<TStatus, TValue>(Result<TStatus, object> result) =>
+        new(result.Status, result.Value is TValue convertedValue ? convertedValue : default!);
     #endregion
 
     #endregion
