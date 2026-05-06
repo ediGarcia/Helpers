@@ -4,6 +4,7 @@ using System.Security;
 using System.Xml.Serialization;
 using HelperMethods.Enums;
 using Microsoft.VisualBasic.FileIO;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

@@ -1,4 +1,5 @@
 ﻿namespace WpfHelpers.Converters;
+// ReSharper disable UnusedMember.Global
 
 public class InverseBooleanConverter : BooleanConverter
 {

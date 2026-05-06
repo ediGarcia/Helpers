@@ -1,4 +1,5 @@
 ﻿namespace WpfHelpers.Enums;
+// ReSharper disable UnusedMember.Global
 
 public enum ComparisonOperator
 {

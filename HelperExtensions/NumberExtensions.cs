@@ -1,4 +1,5 @@
 ﻿namespace HelperExtensions;
+// ReSharper disable UnusedMember.Global
 
 public static class NumberExtensions
 {

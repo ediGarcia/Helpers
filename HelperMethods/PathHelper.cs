@@ -1,4 +1,5 @@
 ﻿namespace HelperMethods;
+// ReSharper disable UnusedMember.Global
 
 public static class PathHelper
 {

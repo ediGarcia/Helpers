@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 

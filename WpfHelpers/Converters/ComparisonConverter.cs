@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using WpfHelpers.Enums;
+// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 

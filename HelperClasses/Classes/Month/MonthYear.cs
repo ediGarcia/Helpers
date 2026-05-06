@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperClasses.Classes.Month;
 

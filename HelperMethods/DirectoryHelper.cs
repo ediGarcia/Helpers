@@ -9,6 +9,7 @@ using HelperMethods.Enums;
 using HelperMethods.Helpers;
 using Microsoft.VisualBasic.FileIO;
 using SearchOption = System.IO.SearchOption;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

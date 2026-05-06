@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using CredentialManagement;
 using HelperMethods.Enums;
 using HelperMethods.Helpers;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 
@@ -411,8 +412,7 @@ public static class SystemHelper
                 CallSystemFileOperation(
                     source,
                     destination,
-                    WindowsHelper.FileOperationType.FoCopy,
-                    0
+                    WindowsHelper.FileOperationType.FoCopy
                 )
         );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
@@ -431,7 +431,7 @@ public static class SystemHelper
             throw new IOException($"Could not find file \"{path}\".");
 
         int resultCode = await Task.Run(
-            () => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete, 0)
+            () => CallSystemFileOperation(path, null, WindowsHelper.FileOperationType.FoDelete)
         );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
     }
@@ -454,8 +454,7 @@ public static class SystemHelper
                 CallSystemFileOperation(
                     source,
                     destination,
-                    WindowsHelper.FileOperationType.FoMove,
-                    0
+                    WindowsHelper.FileOperationType.FoMove
                 )
         );
         WindowsHelper.GetWindowsErrorMessage(resultCode, true);
@@ -494,20 +493,18 @@ public static class SystemHelper
     /// </summary>
     /// <param name="pathTo">Destination path for copy and move commands.</param>
     /// <param name="fileOperationType"></param>
-    /// <param name="flags"></param>
     /// <param name="pathFrom"></param>
     private static int CallSystemFileOperation(
         string pathFrom,
         string pathTo,
-        WindowsHelper.FileOperationType fileOperationType,
-        WindowsHelper.FileOperationFlags flags
+        WindowsHelper.FileOperationType fileOperationType
     )
     {
         WindowsHelper.ShFileOpStruct fs = new()
         {
             WFunc = fileOperationType,
-            PFrom = pathFrom + '\0' + '\0',
-            FFlags = flags,
+            PFrom = pathFrom + '\0' + '\0'
+            // FFlags = 0,
         };
 
         if (

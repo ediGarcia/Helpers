@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperClasses.Classes;
 

@@ -1,5 +1,6 @@
 ﻿using HelperClasses.Classes.Month;
 using HelperMethods;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 

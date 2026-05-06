@@ -1,8 +1,5 @@
 ﻿using System.Windows.Input;
-
-#pragma warning disable CS8600
-#pragma warning disable CS8604
-#pragma warning disable CS8625
+// ReSharper disable UnusedMember.Global
 
 namespace HelperClasses.Classes;
 

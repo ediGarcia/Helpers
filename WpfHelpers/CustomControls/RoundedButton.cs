@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.CustomControls;
 

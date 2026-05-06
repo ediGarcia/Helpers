@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 

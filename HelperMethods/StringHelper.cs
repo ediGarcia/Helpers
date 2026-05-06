@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using HelperMethods.Enums;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

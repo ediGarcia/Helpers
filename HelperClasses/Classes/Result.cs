@@ -1,4 +1,5 @@
 ﻿namespace HelperClasses.Classes;
+// ReSharper disable UnusedMember.Global
 
 public class Result
 {
@@ -43,9 +44,7 @@ public class Result
     /// Creates a result with the specified status and default value.
     /// </summary>
     /// <typeparam name="TStatus"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
     /// <param name="status"></param>
-    /// <param name="value"></param>
     /// <returns></returns>
     public static Result<TStatus, object> Create<TStatus>(TStatus status) => new(status);
     #endregion

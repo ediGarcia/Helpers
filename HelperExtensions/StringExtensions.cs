@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using HelperMethods;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperExtensions;
 
@@ -10,37 +11,37 @@ public static class StringExtensions
     #region Char
 
     #region IsDigit
-    /// <inheritdoc cref="Char.IsDigit" />
+    /// <inheritdoc cref="Char.IsDigit(char)" />
     public static bool IsDigit(this char c) => Char.IsDigit(c);
     #endregion
 
     #region IsLetter
-    /// <inheritdoc cref="Char.IsLetter" />
+    /// <inheritdoc cref="Char.IsLetter(char)" />
     public static bool IsLetter(this char c) => Char.IsLetter(c);
     #endregion
 
     #region IsLetterOrDigit
-    /// <inheritdoc cref="Char.IsLetterOrDigit" />
+    /// <inheritdoc cref="Char.IsLetterOrDigit(char)" />
     public static bool IsLetterOrDigit(this char c) => Char.IsLetterOrDigit(c);
     #endregion
 
     #region IsLower
-    /// <inheritdoc cref="Char.IsLower" />
+    /// <inheritdoc cref="Char.IsLower(char)" />
     public static bool IsLower(this char c) => Char.IsLower(c);
     #endregion
 
     #region IsUpper
-    /// <inheritdoc cref="Char.IsUpper" />
+    /// <inheritdoc cref="Char.IsUpper(char)" />
     public static bool IsUpper(this char c) => Char.IsUpper(c);
     #endregion
 
     #region ToLower
-    /// <inheritdoc cref="Char.ToLower" />
+    /// <inheritdoc cref="Char.ToLower(char)" />
     public static char ToLower(this char c) => Char.ToLower(c);
     #endregion
 
     #region ToUpper
-    /// <inheritdoc cref="Char.ToUpper" />
+    /// <inheritdoc cref="Char.ToUpper(char)" />
     public static char ToUpper(this char c) => Char.ToUpper(c);
     #endregion
 
@@ -196,7 +197,7 @@ public static class StringExtensions
     #endregion
 
     #region ContainsChar
-    /// <inheritdoc cref="String.Contains"/>
+    /// <inheritdoc cref="String.Contains(char)"/>
     public static bool ContainsChar(this string st, char value) => st?.IndexOf(value) > 0;
     #endregion
 
@@ -211,7 +212,7 @@ public static class StringExtensions
     #endregion
 
     #region ContainsString
-    /// <inheritdoc cref="String.Contains"/>
+    /// <inheritdoc cref="String.Contains(char)"/>
     public static bool ContainsString(this string st, string value) => st?.Contains(value) == true;
     #endregion
 

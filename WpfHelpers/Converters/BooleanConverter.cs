@@ -20,7 +20,7 @@ public class BooleanConverter : IValueConverter
     #endregion
 
     #region Convert
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not bool booleanValue)
             throw new ArgumentException("Invalid boolean value", nameof(value));
@@ -30,7 +30,7 @@ public class BooleanConverter : IValueConverter
     #endregion
 
     #region ConvertBack
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value == TrueValue)
             return true;

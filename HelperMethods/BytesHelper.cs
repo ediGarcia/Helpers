@@ -1,4 +1,5 @@
 ﻿using HelperMethods.Enums;
+// ReSharper disable UnusedMember.Global
 
 namespace HelperMethods;
 

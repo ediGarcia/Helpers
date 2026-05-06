@@ -1,9 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-
-#pragma warning disable CS8603
-#pragma warning disable CS8618
+// ReSharper disable UnusedMember.Global
 
 namespace HelperClasses.Classes;
 
@@ -14,7 +12,7 @@ public class ApiClientAction
     private readonly string _url;
     private readonly HttpMethod _httpMethod;
 
-    private HttpContent _content;
+    private HttpContent? _content;
 
     internal ApiClientAction(
         HttpMethod httpVerb,
@@ -117,6 +115,7 @@ public class ApiClientAction
     /// <summary>
     /// Sets or replaces the content for HTTP methods that support content.
     /// </summary>
+    /// <remarks>Replaces any existing content.</remarks>
     /// <param name="content"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
@@ -130,7 +129,8 @@ public class ApiClientAction
     #region SetJsonContent(string)
     /// <summary>
     /// Sets or replaces the content for HTTP methods that support content.
-    /// </summary>
+    /// </summary>]
+    /// <remarks>Replaces any existing content.</remarks>
     /// <param name="json"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
@@ -142,6 +142,7 @@ public class ApiClientAction
     /// <summary>
     /// Sets or replaces the content for HTTP methods that support content.
     /// </summary>
+    /// <remarks>Replaces any existing content.</remarks>
     /// <param name="content"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
