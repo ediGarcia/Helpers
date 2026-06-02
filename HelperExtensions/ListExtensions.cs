@@ -1433,5 +1433,24 @@ public static class ListExtensions
 
     #endregion
 
+    extension(IEnumerable<string?> enumerable)
+    {
+        #region JoinString*
+
+        #region JoinString(char)
+        /// <inheritdoc cref="String.Join{T}(char, IEnumerable{T})"/>
+        public string JoinString(char separator) =>
+            String.Join(separator, enumerable);
+        #endregion
+
+        #region JoinString([string])
+        /// <inheritdoc cref="String.Join(string?, IEnumerable{string?})"/>
+        public string JoinString(string separator = "") =>
+            String.Join(separator, enumerable);
+        #endregion
+
+        #endregion
+    }
+
     #endregion
 }
