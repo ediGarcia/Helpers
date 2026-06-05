@@ -1,10 +1,10 @@
 ﻿using HelperExtensions;
 using System.Globalization;
 using System.Windows.Data;
-// ReSharper disable UnusedMember.Global
 
 namespace WpfHelpers.Converters;
 
+// ReSharper disable UnusedMember.Global
 public class TupleConverter : IMultiValueConverter
 {
     #region Convert

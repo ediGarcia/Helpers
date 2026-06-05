@@ -47,31 +47,28 @@ public static class TypeExtensions
 
     #endregion
 
-    #region Enum
+    extension(Enum enumeration)
+    {
+        #region HasAllFlags
+        /// <summary>
+        /// Determines whether the specified enumeration has all the specified flags.
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public bool HasAllFlags(params Enum[] flags) =>
+            flags.All(enumeration.HasFlag);
+        #endregion
 
-    #region HasAllFlags
-    /// <summary>
-    /// Determines whether the specified enumeration has all the specified flags.
-    /// </summary>
-    /// <param name="enumeration"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool HasAllFlags(this Enum enumeration, params Enum[] flags) =>
-        flags.All(enumeration.HasFlag);
-    #endregion
-
-    #region HasAnyFlags
-    /// <summary>
-    /// Determines whether the specified enumeration has any of the specified flags.
-    /// </summary>
-    /// <param name="enumeration"></param>
-    /// <param name="flags"></param>
-    /// <returns></returns>
-    public static bool HasAnyFlags(this Enum enumeration, params Enum[] flags) =>
-        flags.Any(enumeration.HasFlag);
-    #endregion
-
-    #endregion
+        #region HasAnyFlags
+        /// <summary>
+        /// Determines whether the specified enumeration has any of the specified flags.
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public bool HasAnyFlags(params Enum[] flags) =>
+            flags.Any(enumeration.HasFlag);
+        #endregion
+    }
 
     #region Nullable
 
