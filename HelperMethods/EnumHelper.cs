@@ -1,4 +1,5 @@
 ﻿namespace HelperMethods;
+
 // ReSharper disable UnusedMember.Global
 
 public static class EnumHelper
@@ -13,8 +14,8 @@ public static class EnumHelper
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static T AddFlag<T>(T source, T flag)
-        where T : Enum => (T)(object)((int)(source as object) | (int)(flag as object));
+    public static T AddFlag<T>(T source, T flag) where T : Enum =>
+        (T)(object)((long)(source as object) | (long)(flag as object));
     #endregion
 
     #region AddFlag(Enum, Enum)
@@ -24,7 +25,8 @@ public static class EnumHelper
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static Enum AddFlag(Enum source, Enum flag) => AddFlag<Enum>(source, flag);
+    public static Enum AddFlag(Enum source, Enum flag) =>
+        AddFlag<Enum>(source, flag);
     #endregion
 
     #endregion
@@ -39,8 +41,8 @@ public static class EnumHelper
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static T RemoveFlag<T>(T source, T flag)
-        where T : Enum => (T)(object)((int)(source as object) & ~(int)(flag as object));
+    public static T RemoveFlag<T>(T source, T flag) where T : Enum =>
+        (T)(object)((long)(source as object) & ~(long)(flag as object));
     #endregion
 
     #region RemoveFlag(Enum, Enum)
@@ -50,12 +52,62 @@ public static class EnumHelper
     /// <param name="source"></param>
     /// <param name="flag"></param>
     /// <returns></returns>
-    public static Enum RemoveFlag(Enum source, Enum flag) => RemoveFlag<Enum>(source, flag);
+    public static Enum RemoveFlag(Enum source, Enum flag) =>
+        RemoveFlag<Enum>(source, flag);
+    #endregion
+
+    #endregion
+
+    #region ToggleFlag*
+
+    #region ToggleFlag(T, T)
+    /// <summary>
+    /// Returns a value toggling the specified flag from the original value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="flag"></param>
+    /// <returns></returns>
+    public static T ToggleFlag<T>(T source, T flag) where T : Enum =>
+        (T)(object)((long)(source as object) ^ (long)(flag as object));
+    #endregion
+
+    #region RemoveFlag(Enum, Enum)
+    /// <summary>
+    /// Returns a value toggling the specified flag from the original value.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="flag"></param>
+    /// <returns></returns>
+    public static Enum ToggleFlag(Enum source, Enum flag) =>
+        RemoveFlag<Enum>(source, flag);
     #endregion
 
     #endregion
 
     #region ToEnum*
+
+    #region ToEnum(string)
+    /// <summary>
+    /// Converts the specified value to an enumeration member.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static T ToEnum<T>(string value) where T : Enum =>
+        (T)Enum.Parse(typeof(T), value);
+    #endregion
+
+    #region ToEnum(Type, string)
+    /// <summary>
+    /// Converts the specified value to an enumeration member.
+    /// </summary>
+    /// <param name="enumType"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Enum ToEnum(Type enumType, string value) =>
+        Enum.Parse(enumType, value) as Enum;
+    #endregion
 
     #region ToEnum(int)
     /// <summary>
@@ -64,8 +116,8 @@ public static class EnumHelper
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static T ToEnum<T>(object value)
-        where T : Enum => (T)Enum.ToObject(typeof(T), value);
+    public static T ToEnum<T>(int value) where T : Enum =>
+        (T)Enum.ToObject(typeof(T), value);
     #endregion
 
     #region ToEnum(Type, int)
@@ -75,7 +127,7 @@ public static class EnumHelper
     /// <param name="enumType"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Enum ToEnum(Type enumType, object value) =>
+    public static Enum ToEnum(Type enumType, int value) =>
         Enum.ToObject(enumType, value) as Enum;
     #endregion
 
