@@ -1185,253 +1185,229 @@ public static class ListExtensions
     #endregion
 
     #endregion
-
-    #region IEnumerable<T>
-
-    #region Cast
-    /// <summary>
-    /// Casts the elements of an <see cref="IEnumerable{T}"/> to a specific type.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="converterFunction"></param>
-    /// <returns></returns>
-    public static IEnumerable<T2> Cast<T1, T2>(
-        this IEnumerable<T1> iEnumerable,
-        Func<T1, T2> converterFunction
-    ) => iEnumerable.Select(converterFunction);
-    #endregion
-
-    #region Clone
-    /// <summary>
-    /// Creates a copy of the current <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Clone<T>(this IEnumerable<T> iEnumerable) => [.. iEnumerable];
-    #endregion
-
-    #region ContainsAll
-    /// <summary>
-    /// Indicates whether the <see cref="IEnumerable{T}"/> contains all the specified items.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="items"></param>
-    /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
-    public static bool ContainsAll<T>(this IEnumerable<T> iEnumerable, params T[] items)
+    
+    extension<T>(IEnumerable<T> iEnumerable)
     {
-        if (items.Length == 0)
-            return true;
+        #region Cast
+        /// <summary>
+        /// Casts the elements of an <see cref="IEnumerable{T}"/> to a specific type.
+        /// </summary>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="converterFunction"></param>
+        /// <returns></returns>
+        public IEnumerable<T2> Cast<T2>(
+            Func<T, T2> converterFunction
+        ) => iEnumerable.Select(converterFunction);
+        #endregion
 
-        HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? iEnumerable.ToHashSet();
-        return items.All(sourceSet.Contains);
-    }
-    #endregion
+        #region Clone
+        /// <summary>
+        /// Creates a copy of the current <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> Clone() =>
+            [.. iEnumerable];
+        #endregion
 
-    #region ContainsAny
-    /// <summary>
-    /// Indicates whether the <see cref="IEnumerable{T}"/> contains any the specified items.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="items"></param>
-    /// <returns>True, if the enumeration contains any of the specified items. False, otherwise.</returns>
-    public static bool ContainsAny<T>(this IEnumerable<T> iEnumerable, params T[] items)
-    {
-        if (items.Length == 0)
-            return true;
-
-        HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? iEnumerable.ToHashSet();
-        return items.Any(sourceSet.Contains);
-    }
-    #endregion
-
-    #region ForEach*
-
-    #region ForEach(this IEnumerable<T>, Action<T>)
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action)
-    {
-        foreach (T item in iEnumerable)
-            action(item);
-    }
-    #endregion
-
-    #region ForEach(this IEnumerable<T>, Action<T, int>)
-    /// <summary>
-    /// Runs the specified <see cref="Action"/> for each item of the collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="action"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T, int> action)
-    {
-        int index = 0;
-
-        foreach (T item in iEnumerable)
-            action(item, index++);
-    }
-    #endregion
-
-    #endregion
-
-    #region IndexOf
-    /// <summary>
-    /// Determines the index of the first item that matches the condition in the sequence.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static int IndexOf<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate)
-    {
-        int index = 0;
-
-        foreach (T item in iEnumerable)
+        #region ContainsAll
+        /// <summary>
+        /// Indicates whether the <see cref="IEnumerable{T}"/> contains all the specified items.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns>True, if the enumeration contains all the specified items. False, otherwise.</returns>
+        public bool ContainsAll(params T[] items)
         {
-            if (predicate(item))
-                return index;
+            if (items.Length == 0)
+                return true;
 
-            index++;
+            HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? [.. iEnumerable];
+            return items.All(sourceSet.Contains);
         }
+        #endregion
 
-        return -1;
+        #region ContainsAny
+        /// <summary>
+        /// Indicates whether the <see cref="IEnumerable{T}"/> contains any the specified items.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns>True, if the enumeration contains any of the specified items. False, otherwise.</returns>
+        public bool ContainsAny(params T[] items)
+        {
+            if (items.Length == 0)
+                return true;
+
+            HashSet<T> sourceSet = iEnumerable as HashSet<T> ?? [.. iEnumerable];
+            return items.Any(sourceSet.Contains);
+        }
+        #endregion
+
+        #region ForEach*
+
+        #region ForEach(Action<T>)
+        /// <summary>
+        /// Runs the specified <see cref="Action"/> for each item of the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void ForEach(Action<T> action)
+        {
+            foreach (T item in iEnumerable)
+                action(item);
+        }
+        #endregion
+
+        #region ForEach(Action<T, int>)
+        /// <summary>
+        /// Runs the specified <see cref="Action"/> for each item of the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void ForEach(Action<T, int> action)
+        {
+            int index = 0;
+
+            foreach (T item in iEnumerable)
+                action(item, index++);
+        }
+        #endregion
+
+        #endregion
+
+        #region IndexOf
+        /// <summary>
+        /// Determines the index of the first item that matches the condition in the sequence.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public int IndexOf(Func<T, bool> predicate)
+        {
+            int index = 0;
+
+            foreach (T item in iEnumerable)
+            {
+                if (predicate(item))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
+        }
+        #endregion
+
+        #region None
+        /// <summary>
+        /// Determines whether no elements of a sequence satisfy a condition.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public bool None(Func<T, bool> predicate) =>
+            iEnumerable.All(item => !predicate(item));
+        #endregion
+
+        #region ParallelAll
+        /// <summary>
+        /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns>true if every the element in the source pass the test in the specified predicate; otherwise, false.</returns>
+        public bool ParallelAll(Func<T, bool> predicate) =>
+            iEnumerable.AsParallel().All(predicate);
+        #endregion
+
+        #region ParallelAny
+        /// <summary>
+        /// Determines whether any element of the sequence satisfies a condition. The process may run in parallel for each item.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns>true if any elements in the source pass the test in the specified predicate; otherwise, false.</returns>
+        public bool ParallelAny(Func<T, bool> predicate) =>
+            iEnumerable.AsParallel().Any(predicate);
+        #endregion
+
+        #region ParallelCount
+        /// <summary>
+        /// Returns the count of elements in a sequence. The process may run in parallel for each item.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns>The number of elements in the input sequence.</returns>
+        public int ParallelCount(Func<T, bool> predicate) =>
+            iEnumerable.AsParallel().Count(predicate); 
+        #endregion
+
+        #region ParallelForEach*
+
+        #region ParallelForEach(Action<T>)
+        /// <summary>
+        /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="body"></param>
+        /// <returns>A structure that contains information about which portion of the loop completed.</returns>
+        public ParallelLoopResult ParallelForEach(
+            Action<T> body
+        ) => Parallel.ForEach(iEnumerable, body);
+        #endregion
+
+        #region ParallelForEach(Action<T, ParallelLoopState>)
+        /// <summary>
+        /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel, and the state of the loop can be monitored and manipulated.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="body"></param>
+        /// <returns>A structure that contains information about which portion of the loop completed.</returns>
+        public ParallelLoopResult ParallelForEach(
+            Action<T, ParallelLoopState> body
+        ) => Parallel.ForEach(iEnumerable, body);
+        #endregion
+
+        #endregion
+
+        #region Sum<T>(Func<T, TimeSpan>)
+        /// <summary>
+        /// Calculates the sum of <see cref="TimeSpan"/> values projected from elements in a sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="selector">A function that projects each element of the sequence into a <see cref="TimeSpan"/> value.</param>
+        /// <returns>The total <see cref="TimeSpan"/> resulting from summing the projected values.</returns>
+        public TimeSpan Sum(Func<T, TimeSpan> selector) =>
+            iEnumerable.Aggregate(TimeSpan.Zero, (current, item) => current + selector(item));
+        #endregion
+
+        #region ToArray
+        /// <summary>
+        /// Creates a T array out of the specific type from the <see cref="IEnumerable{T}"/>
+        /// </summary>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="conversionFunction"></param>
+        /// <returns></returns>
+        public T2[] ToArray<T2>(
+            Func<T, T2> conversionFunction
+        ) => [.. iEnumerable.Select(conversionFunction)];
+        #endregion
+
+        #region ToList
+        /// <summary>
+        /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
+        /// </summary>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="conversionFunction"></param>
+        /// <returns></returns>
+        public List<T2> ToList<T2>(
+            Func<T, T2> conversionFunction
+        ) => [.. iEnumerable.Select(conversionFunction)];
+        #endregion
     }
-    #endregion
-
-    #region None
-    /// <summary>
-    /// Determines whether no elements of a sequence satisfy a condition.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static bool None<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
-        iEnumerable.All(item => !predicate(item));
-    #endregion
-
-    #region ParallelAll
-    /// <summary>
-    /// Determines whether every the element of the sequence satisfies a condition. The process may run in parallel for each item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns>true if every the element in the source pass the test in the specified predicate; otherwise, false.</returns>
-    public static bool ParallelAll<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
-        iEnumerable.AsParallel().All(predicate);
-    #endregion
-
-    #region ParallelAny
-    /// <summary>
-    /// Determines whether any element of the sequence satisfies a condition. The process may run in parallel for each item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns>true if any elements in the source pass the test in the specified predicate; otherwise, false.</returns>
-    public static bool ParallelAny<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
-        iEnumerable.AsParallel().Any(predicate);
-    #endregion
-
-    #region ParallelCount
-    /// <summary>
-    /// Returns the count of elements in a sequence. The process may run in parallel for each item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="predicate"></param>
-    /// <returns>The number of elements in the input sequence.</returns>
-    public static int ParallelCount<T>(this IEnumerable<T> iEnumerable, Func<T, bool> predicate) =>
-        iEnumerable.AsParallel().Count(predicate);
-    #endregion
-
-    #region ParallelForEach*
-
-    #region ParallelForEach(this IEnumerable<T>, Action<T>)
-    /// <summary>
-    /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="body"></param>
-    /// /// <returns>A structure that contains information about which portion of the loop completed.</returns>
-    public static ParallelLoopResult ParallelForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T> body
-    ) => Parallel.ForEach(iEnumerable, body);
-    #endregion
-
-    #region ParallelForEach(this IEnumerable<T>, Action<T, ParallelLoopState>)
-    /// <summary>
-    /// Executes a foreach (For Each in Visual Basic) operation in an <see cref="IEnumerable{T}"/> in which iterations may run in parallel, and the state of the loop can be monitored and manipulated.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="body"></param>
-    /// <returns>A structure that contains information about which portion of the loop completed.</returns>
-    public static ParallelLoopResult ParallelForEach<T>(
-        this IEnumerable<T> iEnumerable,
-        Action<T, ParallelLoopState> body
-    ) => Parallel.ForEach(iEnumerable, body);
-    #endregion
-
-    #endregion
-
-    #region Sum<T>(this IEnumerable<T>, Func<T, TimeSpan>)
-    /// <summary>
-    /// Calculates the sum of <see cref="TimeSpan"/> values projected from elements in a sequence.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    /// <param name="iEnumerable">The sequence of elements to aggregate.</param>
-    /// <param name="selector">A function that projects each element of the sequence into a <see cref="TimeSpan"/> value.</param>
-    /// <returns>The total <see cref="TimeSpan"/> resulting from summing the projected values.</returns>
-    public static TimeSpan Sum<T>(this IEnumerable<T> iEnumerable, Func<T, TimeSpan> selector) =>
-        iEnumerable.Aggregate(TimeSpan.Zero, (current, item) => current + selector(item));
-    #endregion
-
-    #region ToArray
-    /// <summary>
-    /// Creates a T array out of the specific type from the <see cref="IEnumerable{T}"/>
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="conversionFunction"></param>
-    /// <returns></returns>
-    public static T2[] ToArray<T1, T2>(
-        this IEnumerable<T1> iEnumerable,
-        Func<T1, T2> conversionFunction
-    ) => [.. iEnumerable.Select(conversionFunction)];
-    #endregion
-
-    #region ToList
-    /// <summary>
-    /// Creates a <see cref="List{T}"/> out of the specific type from the <see cref="IEnumerable{T}"/>
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <param name="iEnumerable"></param>
-    /// <param name="conversionFunction"></param>
-    /// <returns></returns>
-    public static List<T2> ToList<T1, T2>(
-        this IEnumerable<T1> iEnumerable,
-        Func<T1, T2> conversionFunction
-    ) => [.. iEnumerable.Select(conversionFunction)];
-    #endregion
-
-    #endregion
 
     extension(IEnumerable<string?> enumerable)
     {
