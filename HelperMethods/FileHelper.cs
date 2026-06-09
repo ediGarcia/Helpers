@@ -446,6 +446,9 @@ public static class FileHelper
         FileMode mode = FileMode.Create
     )
     {
+        if (mode is FileMode.Create or FileMode.CreateNew)
+            DirectoryHelper.Create(DirectoryHelper.GetParentDirectory(path));
+
         using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
         using StreamWriter writer = new(fs);
 
@@ -482,6 +485,9 @@ public static class FileHelper
         FileMode mode = FileMode.Create
     )
     {
+        if (mode is FileMode.Create or FileMode.CreateNew)
+            DirectoryHelper.Create(DirectoryHelper.GetParentDirectory(path));
+
         using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
         using StreamWriter writer = new(fs);
         writer.Write(text);
