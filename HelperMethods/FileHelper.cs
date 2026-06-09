@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Text.Json;
 using System.Xml.Serialization;
 using HelperMethods.Enums;
 using Microsoft.VisualBasic.FileIO;
@@ -294,6 +295,22 @@ public static class FileHelper
     }
     #endregion
 
+    #region ReadJson
+    /// <summary>
+    /// Reads the JSON data from the specified file and converts it to the specified type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    public static T ReadJson<T>(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.Open) =>
+        JsonSerializer.Deserialize<T>(ReadAllText(path, fileShare, mode));
+    #endregion
+
     #region ReadXml
     /// <summary>
     /// Reads the XML data from the specified file and converts it to the specified type.
@@ -470,6 +487,29 @@ public static class FileHelper
         writer.Write(text);
         writer.Flush();
     }
+    #endregion
+
+    #region WriteJson
+    /// <summary>
+    /// Writes the specified data in JSON format into the specified file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="data"></param>
+    /// <param name="writeIndented"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    public static void WriteJson<T>(
+        string path,
+        T data,
+        bool writeIndented = false,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create) =>
+        WriteAllText(
+            path,
+            JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = writeIndented }),
+            fileShare,
+            mode);
     #endregion
 
     #region WriteXml
