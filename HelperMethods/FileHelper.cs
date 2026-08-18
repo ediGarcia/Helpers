@@ -495,27 +495,57 @@ public static class FileHelper
     }
     #endregion
 
-    #region WriteJson
+    #region WriteJson*
+
+    #region WriteJson(string, T, JsonSerializerOptions, [FileShare], [FileMode])
     /// <summary>
     /// Writes the specified data in JSON format into the specified file.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="path"></param>
     /// <param name="data"></param>
-    /// <param name="writeIndented"></param>
+    /// <param name="options"></param>
     /// <param name="fileShare"></param>
     /// <param name="mode"></param>
     public static void WriteJson<T>(
         string path,
         T data,
-        bool writeIndented = false,
+        JsonSerializerOptions options,
         FileShare fileShare = FileShare.Read,
         FileMode mode = FileMode.Create) =>
         WriteAllText(
             path,
-            JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = writeIndented }),
+            JsonSerializer.Serialize(data, options),
             fileShare,
             mode);
+    #endregion
+
+    #region WriteJson(string, T, [FileShare], [FileMode])
+    /// <summary>
+    /// Writes the specified data in JSON format into the specified file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="data"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    public static void WriteJson<T>(
+        string path,
+        T data,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create) =>
+        WriteJson(
+            path,
+            data,
+            new()
+            {
+                AllowTrailingCommas = true,
+                WriteIndented = true
+            },
+            fileShare,
+            mode);
+    #endregion
+
     #endregion
 
     #region WriteXml
