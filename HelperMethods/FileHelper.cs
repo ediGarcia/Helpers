@@ -264,9 +264,45 @@ public static class FileHelper
     }
     #endregion
 
+    #region ReadAllLinesAsync
+    /// <summary>
+    /// Returns the lines of a file's content.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    /// <returns>A string array containing all lines of the file.</returns>
+    public static async Task<IReadOnlyList<string>> ReadAllLinesAsync(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.Open
+    )
+    {
+        List<string> lines = [];
+
+        using StreamReader reader = new(new FileStream(path, mode, FileAccess.Read, fileShare));
+        while (await reader.ReadLineAsync() is { } line)
+            lines.Add(line);
+
+        return [.. lines];
+    }
+    #endregion
+
     #region ReadAllText
     /// <summary>
-    /// Reads all text from a file.
+    /// Reads all the text from a file.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="fileShare"></param>
@@ -295,6 +331,37 @@ public static class FileHelper
     }
     #endregion
 
+    #region ReadAllTextAsync
+    /// <summary>
+    /// Asynchronously reads all the text from a file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    /// <returns>A string containing all the text in the file.</returns>
+    public static async Task<string> ReadAllTextAsync(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.Open
+    )
+    {
+        await using FileStream fs = new(path, mode, FileAccess.Read, fileShare);
+        using StreamReader reader = new(fs);
+        return await reader.ReadToEndAsync();
+    }
+    #endregion
+
     #region ReadJson
     /// <summary>
     /// Reads the JSON data from the specified file and converts it to the specified type.
@@ -309,6 +376,22 @@ public static class FileHelper
         FileShare fileShare = FileShare.ReadWrite,
         FileMode mode = FileMode.Open) =>
         JsonSerializer.Deserialize<T>(ReadAllText(path, fileShare, mode));
+    #endregion
+
+    #region ReadJsonAsync
+    /// <summary>
+    /// Asynchronously reads the JSON data from the specified file and converts it to the specified type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    public static async Task<T> ReadJsonAsync<T>(
+        string path,
+        FileShare fileShare = FileShare.ReadWrite,
+        FileMode mode = FileMode.Open) =>
+        JsonSerializer.Deserialize<T>(await ReadAllTextAsync(path, fileShare, mode));
     #endregion
 
     #region ReadXml
@@ -422,7 +505,7 @@ public static class FileHelper
 
     #region WriteAllLines
     /// <summary>
-    /// Writes the specified lines into the specified file.
+    /// Writes the specified given into the specified file.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="lines"></param>
@@ -459,9 +542,48 @@ public static class FileHelper
     }
     #endregion
 
+    #region WriteAllLinesAsync
+    /// <summary>
+    /// Asynchronously writes the given lines into the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="lines"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    public static async Task WriteAllLinesAsync(
+        string path,
+        string[] lines,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create
+    )
+    {
+        if (mode is FileMode.Create or FileMode.CreateNew)
+            DirectoryHelper.Create(DirectoryHelper.GetParentDirectory(path));
+
+        await using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
+        await using StreamWriter writer = new(fs);
+
+        foreach (string line in lines)
+            await writer.WriteLineAsync(line);
+
+        await writer.FlushAsync();
+    }
+    #endregion
+
     #region WriteAllText
     /// <summary>
-    /// Writes the specified text into the specified file.
+    /// Writes the given text into the specified file.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="text"></param>
@@ -492,6 +614,42 @@ public static class FileHelper
         using StreamWriter writer = new(fs);
         writer.Write(text);
         writer.Flush();
+    }
+    #endregion
+
+    #region WriteAllTextAsync
+    /// <summary>
+    /// Asynchronously writes the given text into the specified file.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="text"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentException" />
+    /// <exception cref="ArgumentNullException" />
+    /// <exception cref="ArgumentOutOfRangeException" />
+    /// <exception cref="DirectoryNotFoundException" />
+    /// <exception cref="FileNotFoundException" />
+    /// <exception cref="IOException" />
+    /// <exception cref="NotSupportedException" />
+    /// <exception cref="OutOfMemoryException" />
+    /// <exception cref="PathTooLongException" />
+    /// <exception cref="SecurityException" />
+    /// <exception cref="UnauthorizedAccessException" />
+    public static async Task WriteAllTextAsync(
+        string path,
+        string text,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create
+    )
+    {
+        if (mode is FileMode.Create or FileMode.CreateNew)
+            DirectoryHelper.Create(DirectoryHelper.GetParentDirectory(path));
+
+        await using FileStream fs = new(path, mode, FileAccess.Write, fileShare);
+        await using StreamWriter writer = new(fs);
+        await writer.WriteAsync(text);
+        await writer.FlushAsync();
     }
     #endregion
 
@@ -535,6 +693,59 @@ public static class FileHelper
         FileShare fileShare = FileShare.Read,
         FileMode mode = FileMode.Create) =>
         WriteJson(
+            path,
+            data,
+            new()
+            {
+                AllowTrailingCommas = true,
+                WriteIndented = true
+            },
+            fileShare,
+            mode);
+    #endregion
+
+    #endregion
+
+    #region WriteJsonAsync*
+
+    #region WriteJsonAsync(string, T, JsonSerializerOptions, [FileShare], [FileMode])
+    /// <summary>
+    /// Asynchronously writes the specified data in JSON format into the specified file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="data"></param>
+    /// <param name="options"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    public static async Task WriteJsonAsync<T>(
+        string path,
+        T data,
+        JsonSerializerOptions options,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create) =>
+        await WriteAllTextAsync(
+            path,
+            JsonSerializer.Serialize(data, options),
+            fileShare,
+            mode);
+    #endregion
+
+    #region WriteJsonAsync(string, T, [FileShare], [FileMode])
+    /// <summary>
+    /// Asynchronously writes the specified data in JSON format into the specified file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <param name="data"></param>
+    /// <param name="fileShare"></param>
+    /// <param name="mode"></param>
+    public static async Task WriteJsonAsync<T>(
+        string path,
+        T data,
+        FileShare fileShare = FileShare.Read,
+        FileMode mode = FileMode.Create) =>
+        await WriteJsonAsync(
             path,
             data,
             new()
