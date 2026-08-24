@@ -213,5 +213,11 @@ public static class PathHelper
     }
     #endregion
 
+    #region IsFullPath
+    /// <inheritdoc cref="Path.IsPathFullyQualified(string)"/>
+    public static bool IsFullPath(string path) =>
+        Path.IsPathFullyQualified(path);
+    #endregion
+
     #endregion
 }
