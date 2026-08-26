@@ -189,12 +189,18 @@ public static class SystemHelper
     #endregion
 
     #region GetProcesses
+    /// <inheritdoc cref="Process.GetProcessesByName(string?)"/>
+    public static IReadOnlyList<Process> GetProcesses(string processName) =>
+        [.. Process.GetProcessesByName(processName)];
+    #endregion
+
+    #region GetProcessesByPattern
     /// <summary>
     /// Gets process which names matches the specified search pattern.
     /// </summary>
     /// <param name="searchPattern"></param>
     /// <returns></returns>
-    public static IReadOnlyList<Process> GetProcesses(string searchPattern)
+    public static IReadOnlyList<Process> GetProcessesByPattern(string searchPattern)
     {
         Regex regex = new(
             searchPattern.Replace(".", "\\.").Replace("*", ".*").Replace("?", "."),
@@ -227,7 +233,7 @@ public static class SystemHelper
 
     #region KillProcesses(params Process[])
     /// <summary>
-    /// Kill the specified processes.
+    /// Kills the specified processes.
     /// </summary>
     /// <param name="processes"></param>
     public static void KillProcesses(IEnumerable<Process> processes)
@@ -239,7 +245,7 @@ public static class SystemHelper
 
     #region KillProcesses(params Process[])
     /// <summary>
-    /// Kill the specified processes.
+    /// Kills the specified processes.
     /// </summary>
     /// <param name="processes"></param>
     public static void KillProcesses(params Process[] processes)
@@ -251,17 +257,17 @@ public static class SystemHelper
 
     #region KillProcesses(params string[])
     /// <summary>
-    /// Kill process found through the search patterns.
+    /// Kills the specified processes.
     /// </summary>
-    /// <param name="searchPatterns"></param>
+    /// <param name="processesNames"></param>
     /// <returns>The number of processes killed.</returns>
-    public static int KillProcesses(params string[] searchPatterns)
+    public static int KillProcesses(params string[] processesNames)
     {
         int processCount = 0;
 
-        foreach (string searchPattern in searchPatterns)
+        foreach (string processName in processesNames)
         {
-            IReadOnlyList<Process> processes = GetProcesses(searchPattern);
+            IReadOnlyList<Process> processes = GetProcesses(processName);
             KillProcesses(processes);
             processCount += processes.Count;
         }
@@ -270,6 +276,27 @@ public static class SystemHelper
     }
     #endregion
 
+    #endregion
+
+    #region KillProcessesByPattern
+    /// <summary>
+    /// Kills processes found through the search patterns.
+    /// </summary>
+    /// <param name="searchPatterns"></param>
+    /// <returns>The number of processes killed.</returns>
+    public static int KillProcessesByPattern(params string[] searchPatterns)
+    {
+        int processCount = 0;
+
+        foreach (string searchPattern in searchPatterns)
+        {
+            IReadOnlyList<Process> processes = GetProcessesByPattern(searchPattern);
+            KillProcesses(processes);
+            processCount += processes.Count;
+        }
+
+        return processCount;
+    }
     #endregion
 
     #region Move

@@ -206,7 +206,7 @@ public static class PathHelper
     /// <returns></returns>
     public static string InsertExtensionDot(string extension)
     {
-        if (!extension.StartsWith("."))
+        if (!extension.StartsWith('.'))
             extension = "." + extension;
 
         return extension;
