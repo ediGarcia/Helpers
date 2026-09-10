@@ -8,44 +8,50 @@ namespace HelperExtensions;
 
 public static class StringExtensions
 {
-    #region Char
+    extension(char c)
+    {
+        #region IsDigit
+        /// <inheritdoc cref="Char.IsDigit(char)" />
+        public bool IsDigit() =>
+            Char.IsDigit(c);
+        #endregion
 
-    #region IsDigit
-    /// <inheritdoc cref="Char.IsDigit(char)" />
-    public static bool IsDigit(this char c) => Char.IsDigit(c);
-    #endregion
+        #region IsLetter
+        /// <inheritdoc cref="Char.IsLetter(char)" />
+        public bool IsLetter() =>
+            Char.IsLetter(c);
+        #endregion
 
-    #region IsLetter
-    /// <inheritdoc cref="Char.IsLetter(char)" />
-    public static bool IsLetter(this char c) => Char.IsLetter(c);
-    #endregion
+        #region IsLetterOrDigit
+        /// <inheritdoc cref="Char.IsLetterOrDigit(char)" />
+        public bool IsLetterOrDigit() =>
+            Char.IsLetterOrDigit(c);
+        #endregion
 
-    #region IsLetterOrDigit
-    /// <inheritdoc cref="Char.IsLetterOrDigit(char)" />
-    public static bool IsLetterOrDigit(this char c) => Char.IsLetterOrDigit(c);
-    #endregion
+        #region IsLower
+        /// <inheritdoc cref="Char.IsLower(char)" />
+        public bool IsLower() =>
+            Char.IsLower(c);
+        #endregion
 
-    #region IsLower
-    /// <inheritdoc cref="Char.IsLower(char)" />
-    public static bool IsLower(this char c) => Char.IsLower(c);
-    #endregion
+        #region IsUpper
+        /// <inheritdoc cref="Char.IsUpper(char)" />
+        public bool IsUpper() =>
+            Char.IsUpper(c);
+        #endregion
 
-    #region IsUpper
-    /// <inheritdoc cref="Char.IsUpper(char)" />
-    public static bool IsUpper(this char c) => Char.IsUpper(c);
-    #endregion
+        #region ToLower
+        /// <inheritdoc cref="Char.ToLower(char)" />
+        public char ToLower() =>
+            Char.ToLower(c);
+        #endregion
 
-    #region ToLower
-    /// <inheritdoc cref="Char.ToLower(char)" />
-    public static char ToLower(this char c) => Char.ToLower(c);
-    #endregion
-
-    #region ToUpper
-    /// <inheritdoc cref="Char.ToUpper(char)" />
-    public static char ToUpper(this char c) => Char.ToUpper(c);
-    #endregion
-
-    #endregion
+        #region ToUpper
+        /// <inheritdoc cref="Char.ToUpper(char)" />
+        public char ToUpper() =>
+            Char.ToUpper(c);
+        #endregion
+    }
 
     extension(string st)
     {
@@ -70,19 +76,6 @@ public static class StringExtensions
             String.Concat(st, String.Join(separator, values));
         #endregion
 
-        #region AppendManyNew
-        /// <summary>
-        /// Appends each string that does not exist in the original one.
-        /// </summary>
-        /// <param name="separator"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        public string AppendManyNew(string separator, params string[] values) =>
-            st is null
-                ? String.Join(separator, values)
-                : String.Concat(st, String.Join(separator, values.Where(_ => !st.Contains(_))));
-        #endregion
-
         #region AppendNew
         /// <summary>
         /// Appends the string if it does not exist in the original one.
@@ -90,7 +83,7 @@ public static class StringExtensions
         /// <param name="value"></param>
         /// <returns></returns>
         public string AppendNew(string value) =>
-            st?.Contains(value) == true ? st : String.Concat(st, value);
+            st.Contains(value) ? st : String.Concat(st, value);
         #endregion
 
         #region Contains*
@@ -299,16 +292,6 @@ public static class StringExtensions
             [.. Regex.Matches(st, pattern).Select(m => m.Value)];
         #endregion
 
-        #region GetValueOrDefault
-        /// <summary>
-        /// Returns the default value if the current string is null.
-        /// </summary>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
-        public string GetValueOrDefault(string defaultValue = null) =>
-            st ?? defaultValue;
-        #endregion
-
         #region IsContainedBy
         /// <summary>
         /// Indicates whether the current string is contained by the specified value.
@@ -401,18 +384,6 @@ public static class StringExtensions
         /// <returns></returns>
         public string PrependMany(params string[] values) =>
             String.Concat(String.Join(String.Empty, values), st);
-        #endregion
-
-        #region PrependManyNew
-        /// <summary>
-        /// Prepends each string that does not exist in the original one.
-        /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        public string PrependManyNew(params string[] values) =>
-            st is null
-                ? String.Concat(values)
-                : String.Concat(String.Concat(values.Where(_ => !st.Contains(_))), st);
         #endregion
 
         #region PrependNew
@@ -546,6 +517,16 @@ public static class StringExtensions
 
     extension(string? st)
     {
+        #region GetValueOrDefault
+        /// <summary>
+        /// Returns the default value if the current string is null.
+        /// </summary>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public string GetValueOrDefault(string defaultValue = null) =>
+            st ?? defaultValue;
+        #endregion
+
         #region IsNull
         /// <summary>
         /// Indicates whether the current string is null.
@@ -583,162 +564,168 @@ public static class StringExtensions
         #endregion
     }
 
-    #region StringBuilder
-
-    #region Append
-    /// <summary>
-    /// Appends multiple strings into the string builder.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static StringBuilder Append(this StringBuilder sb, params object[] values)
+    extension(StringBuilder sb)
     {
-        values.ForEach(item => sb.Append(item));
-        return sb;
-    }
-    #endregion
+        #region Append
+        /// <summary>
+        /// Appends multiple strings into the string builder.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public StringBuilder Append(params object[] values)
+        {
+            values.ForEach(item => sb.Append(item));
+            return sb;
+        }
+        #endregion
 
-    #region AppendLine
-    /// <summary>
-    /// Appends multiple strings into the string builder then adds a line break.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static StringBuilder AppendLine(this StringBuilder sb, params object[] values)
+        #region AppendLine
+        /// <summary>
+        /// Appends multiple strings into the string builder then adds a line break.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public StringBuilder AppendLine(params object[] values)
+        {
+            values.ForEach(_ => sb.Append(_));
+            return sb.AppendLine();
+        }
+        #endregion
+
+        #region AppendLines*
+
+        #region AppendLines(params object[])
+        /// <summary>
+        /// Appends multiple strings into the string builder then adds a line break.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public StringBuilder AppendLines(params object[] values)
+        {
+            values.ForEach(_ => sb.AppendLine(_));
+            return sb;
+        }
+        #endregion
+
+        #region AppendLines(IEnumerable<T>)
+        /// <summary>
+        /// Appends multiple strings into the string builder then adds a line break.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public StringBuilder AppendLines<T>(IEnumerable<T> values)
+        {
+            values.ForEach(_ => sb.AppendLine(_));
+            return sb;
+        }
+        #endregion
+
+        #endregion
+
+        #region AppendIf
+        /// <summary>
+        /// Appends the specified string value if the condition is true.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIf(Func<bool> condition, string value)
+        {
+            if (condition())
+                sb.Append(value);
+
+            return sb;
+        }
+        #endregion
+
+        #region AppendIfNotNull
+        /// <summary>
+        /// Appends the specified string value if it's not null.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefix"></param>
+        /// <param name="suffix"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIfNotNull(object? value,
+            object? prefix = null,
+            object? suffix = null
+        )
+        {
+            if (value is not null)
+                sb.Append(prefix).Append(value).Append(suffix);
+
+            return sb;
+        }
+        #endregion
+
+        #region AppendIfNotNullOrWhiteSpace
+        /// <summary>
+        /// Appends the specified sting value if it's not null, empty or contains only white-space characters.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefix"></param>
+        /// <param name="suffix"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIfNotNullOrWhiteSpace(object value,
+            object prefix = null,
+            object suffix = null
+        )
+        {
+            string stringValue = value?.ToString();
+
+            if (!stringValue.IsNullOrWhiteSpace())
+                sb.Append(prefix).Append(stringValue).Append(suffix);
+
+            return sb;
+        }
+        #endregion
+
+        #region IsEmpty
+        /// <summary>
+        /// Indicates whether the current <see cref="StringBuilder"/> is empty.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty() =>
+            sb.Length == 0;
+        #endregion
+
+        #region IsWhiteSpace
+        /// <summary>
+        /// Indicates whether the current <see cref="StringBuilder"/> contains only white-space characters.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsWhiteSpace() =>
+            sb.ToString().IsWhiteSpace();
+        #endregion
+    }
+
+    extension(StringBuilder? sb)
     {
-        values.ForEach(_ => sb.Append(_));
-        return sb.AppendLine();
+        #region IsNull
+        /// <summary>
+        /// Indicates whether the current <see cref="StringBuilder"/> is null.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsNull() =>
+            sb?.ToString() is null;
+        #endregion
+
+        #region IsNullOrEmpty
+        /// <summary>
+        /// Indicates whether the current <see cref="StringBuilder"/> is null or empty.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsNullOrEmpty() =>
+            sb?.ToString().IsNullOrEmpty() == true;
+        #endregion
+
+        #region IsNullOrWhiteSpace
+        /// <summary>
+        /// Indicates whether the current <see cref="StringBuilder"/> is null, empty or contains only white-space characters.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsNullOrWhiteSpace() =>
+            sb?.ToString().IsNullOrWhiteSpace() == true;
+        #endregion
     }
-    #endregion
-
-    #region AppendLines*
-
-    #region AppendLines(this StringBuilder, params object[])
-    /// <summary>
-    /// Appends multiple strings into the string builder then adds a line break.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static StringBuilder AppendLines(this StringBuilder sb, params object[] values)
-    {
-        values.ForEach(_ => sb.AppendLine(_));
-        return sb;
-    }
-    #endregion
-
-    #region AppendLines(this StringBuilder, IEnumerable<T>)
-    /// <summary>
-    /// Appends multiple strings into the string builder then adds a line break.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static StringBuilder AppendLines<T>(this StringBuilder sb, IEnumerable<T> values)
-    {
-        values.ForEach(_ => sb.AppendLine(_));
-        return sb;
-    }
-    #endregion
-
-    #endregion
-
-    #region AppendIfNotNull
-    /// <summary>
-    /// Appends the specified string value if it's not null.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="value"></param>
-    /// <param name="prefix"></param>
-    /// <param name="suffix"></param>
-    /// <returns></returns>
-    public static StringBuilder AppendIfNotNull(
-        this StringBuilder sb,
-        object value,
-        object prefix = null,
-        object suffix = null
-    )
-    {
-        if (value is not null)
-            sb.Append(prefix).Append(value).Append(suffix);
-
-        return sb;
-    }
-    #endregion
-
-    #region AppendIfNotNullOrWhiteSpace
-    /// <summary>
-    /// Appends the specified sting value if it's not null, empty or contains only white-space characters.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="value"></param>
-    /// <param name="prefix"></param>
-    /// <param name="suffix"></param>
-    /// <returns></returns>
-    public static StringBuilder AppendIfNotNullOrWhiteSpace(
-        this StringBuilder sb,
-        object value,
-        object prefix = null,
-        object suffix = null
-    )
-    {
-        string stringValue = value?.ToString();
-
-        if (!stringValue.IsNullOrWhiteSpace())
-            sb.Append(prefix).Append(stringValue).Append(suffix);
-
-        return sb;
-    }
-    #endregion
-
-    #region IsEmpty
-    /// <summary>
-    /// Indicates whether the current <see cref="StringBuilder"/> is empty.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <returns></returns>
-    public static bool IsEmpty(this StringBuilder sb) => sb.Length == 0;
-    #endregion
-
-    #region IsNull
-    /// <summary>
-    /// Indicates whether the current <see cref="StringBuilder"/> is null.
-    /// </summary>
-    /// <param name="st"></param>
-    /// <returns></returns>
-    public static bool IsNull(this StringBuilder st) => st?.ToString() is null;
-    #endregion
-
-    #region IsNullOrEmpty
-    /// <summary>
-    /// Indicates whether the current <see cref="StringBuilder"/> is null or empty.
-    /// </summary>
-    /// <param name="st"></param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty(this StringBuilder st) =>
-        st?.ToString().IsNullOrEmpty() == true;
-    #endregion
-
-    #region IsNullOrWhiteSpace
-    /// <summary>
-    /// Indicates whether the current <see cref="StringBuilder"/> is null, empty or contains only white-space characters.
-    /// </summary>
-    /// <param name="st"></param>
-    /// <returns></returns>
-    public static bool IsNullOrWhiteSpace(this StringBuilder st) =>
-        st?.ToString().IsNullOrWhiteSpace() == true;
-    #endregion
-
-    #region IsWhiteSpace
-    /// <summary>
-    /// Indicates whether the current <see cref="StringBuilder"/> contains only white-space characters.
-    /// </summary>
-    /// <param name="st"></param>
-    /// <returns></returns>
-    public static bool IsWhiteSpace(this StringBuilder st) => st.ToString().IsWhiteSpace();
-    #endregion
-
-    #endregion
 }
