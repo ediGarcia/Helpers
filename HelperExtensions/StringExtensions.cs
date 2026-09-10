@@ -622,7 +622,9 @@ public static class StringExtensions
 
         #endregion
 
-        #region AppendIf
+        #region AppendIf*
+
+        #region AppendIf(Func<bool>, string)
         /// <summary>
         /// Appends the specified string value if the condition is true.
         /// </summary>
@@ -636,6 +638,24 @@ public static class StringExtensions
 
             return sb;
         }
+        #endregion
+
+        #region AppendIf(bool, string)
+        /// <summary>
+        /// Appends the specified string value if the condition is true.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIf(bool condition, string value)
+        {
+            if (condition)
+                sb.Append(value);
+
+            return sb;
+        }
+        #endregion
+
         #endregion
 
         #region AppendIfNotNull
