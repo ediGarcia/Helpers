@@ -197,6 +197,32 @@ public static class StringExtensions
             st.Contains(value);
         #endregion
 
+        #region Enclose
+
+        #region Enclose(char, char)
+        /// <summary>
+        /// Encloses the string with the specified characters.
+        /// </summary>
+        /// <param name="openCharacter"></param>
+        /// <param name="closeCharacter"></param>
+        /// <returns></returns>
+        public string Enclose(char openCharacter, char closeCharacter) =>
+            $"{openCharacter}{st}{closeCharacter}";
+        #endregion
+
+        #region Enclose(string, string)
+        /// <summary>
+        /// Encloses the string with the specified strings.
+        /// </summary>
+        /// <param name="openValue"></param>
+        /// <param name="closeValue"></param>
+        /// <returns></returns>
+        public string Enclose(string openValue, string closeValue) =>
+            $"{openValue}{st}{closeValue}";
+        #endregion
+
+        #endregion
+
         #region EndsWith*
 
         #region EndsWith(string, bool)
