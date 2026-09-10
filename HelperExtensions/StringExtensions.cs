@@ -624,16 +624,16 @@ public static class StringExtensions
 
         #region AppendIf*
 
-        #region AppendIf(Func<bool>, string)
+        #region AppendIf(bool, char)
         /// <summary>
-        /// Appends the specified string value if the condition is true.
+        /// Appends the specified character if the condition is true.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public StringBuilder AppendIf(Func<bool> condition, string value)
+        public StringBuilder AppendIf(bool condition, char value)
         {
-            if (condition())
+            if (condition)
                 sb.Append(value);
 
             return sb;
@@ -650,6 +650,38 @@ public static class StringExtensions
         public StringBuilder AppendIf(bool condition, string value)
         {
             if (condition)
+                sb.Append(value);
+
+            return sb;
+        }
+        #endregion
+
+        #region AppendIf(Func<bool>, char)
+        /// <summary>
+        /// Appends the specified character if the condition is true.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIf(Func<bool> condition, char value)
+        {
+            if (condition())
+                sb.Append(value);
+
+            return sb;
+        }
+        #endregion
+
+        #region AppendIf(Func<bool>, string)
+        /// <summary>
+        /// Appends the specified string value if the condition is true.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public StringBuilder AppendIf(Func<bool> condition, string value)
+        {
+            if (condition())
                 sb.Append(value);
 
             return sb;
