@@ -353,6 +353,7 @@ public static class SystemHelper
     /// </summary>
     /// <param name="command"></param>
     /// <param name="arguments"></param>
+    /// <param name="workingDirectory"></param>
     /// <param name="runAsAdmin"></param>
     /// <param name="hideConsoleWindow"></param>
     /// <returns></returns>
@@ -364,6 +365,7 @@ public static class SystemHelper
     public static Process Run(
         string command,
         string arguments = "",
+        string workingDirectory = "",
         bool runAsAdmin = false,
         bool hideConsoleWindow = false
     ) =>
@@ -371,6 +373,7 @@ public static class SystemHelper
             new ProcessStartInfo(command, arguments)
             {
                 CreateNoWindow = hideConsoleWindow,
+                WorkingDirectory = workingDirectory ?? String.Empty,
                 UseShellExecute = true,
                 Verb = runAsAdmin ? "runas" : "",
             }
