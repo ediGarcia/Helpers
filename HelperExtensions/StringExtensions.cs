@@ -106,12 +106,8 @@ public static class StringExtensions
         /// <param name="value"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public bool Contains(string value, bool ignoreCase) =>
-            value is not null
-            && st?.IndexOf(
-                value,
-                ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal
-            ) >= 0;
+        public bool Contains(string? value, bool ignoreCase) =>
+            value is not null && st.Contains(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
         #endregion
 
         #region Contains(char, [StringComparison]
@@ -189,12 +185,6 @@ public static class StringExtensions
         /// <exception cref="NullReferenceException">The string is null.</exception>
         public bool ContainsSpace() =>
             st.Any(Char.IsWhiteSpace);
-        #endregion
-
-        #region ContainsString
-        /// <inheritdoc cref="String.Contains(char)"/>
-        public bool ContainsString(string value) =>
-            st.Contains(value);
         #endregion
 
         #region Enclose*
@@ -620,7 +610,7 @@ public static class StringExtensions
         /// <returns></returns>
         public StringBuilder Append(params object[] values)
         {
-            values.ForEach(item => sb.Append(item));
+            values.ForEach(_ => sb.Append(_));
             return sb;
         }
         #endregion
@@ -670,65 +660,33 @@ public static class StringExtensions
 
         #region AppendIf*
 
-        #region AppendIf(bool, char)
-        /// <summary>
-        /// Appends the specified character if the condition is true.
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public StringBuilder AppendIf(bool condition, char value)
-        {
-            if (condition)
-                sb.Append(value);
-
-            return sb;
-        }
-        #endregion
-
-        #region AppendIf(bool, string)
+        #region AppendIf(bool, object)
         /// <summary>
         /// Appends the specified string value if the condition is true.
         /// </summary>
         /// <param name="condition"></param>
-        /// <param name="value"></param>
+        /// <param name="values"></param>
         /// <returns></returns>
-        public StringBuilder AppendIf(bool condition, string value)
+        public StringBuilder AppendIf(bool condition, params object[] values)
         {
             if (condition)
-                sb.Append(value);
+                Append(sb, values);
 
             return sb;
         }
         #endregion
 
-        #region AppendIf(Func<bool>, char)
-        /// <summary>
-        /// Appends the specified character if the condition is true.
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public StringBuilder AppendIf(Func<bool> condition, char value)
-        {
-            if (condition())
-                sb.Append(value);
-
-            return sb;
-        }
-        #endregion
-
-        #region AppendIf(Func<bool>, string)
+        #region AppendIf(Func<bool>, object)
         /// <summary>
         /// Appends the specified string value if the condition is true.
         /// </summary>
         /// <param name="condition"></param>
-        /// <param name="value"></param>
+        /// <param name="values"></param>
         /// <returns></returns>
-        public StringBuilder AppendIf(Func<bool> condition, string value)
+        public StringBuilder AppendIf(Func<bool> condition, params object[] values)
         {
             if (condition())
-                sb.Append(value);
+                Append(sb, values);
 
             return sb;
         }
