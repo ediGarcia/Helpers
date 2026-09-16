@@ -39,6 +39,26 @@ public static class DirectoryHelper
     ) => Transfer(source, destination, conflictAction, true);
     #endregion
 
+    #region CopyAsync
+    /// <summary>
+    /// Asynchronously copies a folder to a new location.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    /// <returns></returns>
+    public static async Task CopyAsync(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        await Task.Run(() => Copy(source, destination, conflictAction))
+            .ContinueWith(_ =>
+            {
+                if (_.IsFaulted)
+                    throw _.Exception;
+            });
+    #endregion
+
     #region ClearDirectory
     /// <summary>
     /// Deletes all the files and directories from a given path.

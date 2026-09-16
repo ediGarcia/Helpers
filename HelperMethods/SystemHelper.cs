@@ -41,6 +41,26 @@ public static class SystemHelper
     }
     #endregion
 
+    #region CopyAsync
+    /// <summary>
+    /// Copies the specified file or folder and its contents to the destination path asynchronously.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    /// <returns></returns>
+    public static async Task CopyAsync(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        await Task.Run(() => Copy(source, destination, conflictAction))
+            .ContinueWith(_ =>
+            {
+                if (_.IsFaulted)
+                    throw _.Exception;
+            }); 
+    #endregion
+
     #region Delete*
 
     #region Delete(params string[])

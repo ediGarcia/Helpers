@@ -32,6 +32,26 @@ public static class FileHelper
     }
     #endregion
 
+    #region CopyAsync
+    /// <summary>
+    /// Asynchronously copies the existing file to a new file.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="conflictAction"></param>
+    /// <returns></returns>
+    public static async Task CopyAsync(
+        string source,
+        string destination,
+        FileNameConflictAction conflictAction = FileNameConflictAction.ThrowError) =>
+        await Task.Run(() => Copy(source, destination, conflictAction))
+            .ContinueWith(_ =>
+            {
+                if (_.IsFaulted)
+                    throw _.Exception;
+            }); 
+    #endregion
+
     #region CopyToDirectory
     /// <summary>
     /// Copies an existing file into the specified directory.
