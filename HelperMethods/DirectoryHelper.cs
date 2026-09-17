@@ -476,15 +476,15 @@ public static class DirectoryHelper
 
             foreach (string sourceDir in ListDirectories(source, searchSubFolders: true))
                 CreateFolder(sourceDir, sourceDir.Replace(source, destination), transferMethod);
-
-            if (!keepOriginal)
-                Delete(source);
         }
         catch
         {
             Delete(destination);
             throw;
         }
+
+        if (!keepOriginal)
+            Delete(source);
 
         #region Local Methods
 
