@@ -134,7 +134,8 @@ public static class PathHelper
     /// Generates a unique temporary file name.
     /// </summary>
     /// <returns></returns>
-    public static string GetTempFileName() => Path.GetTempFileName();
+    public static string GetTempFileName(string extension = ".tmp") =>
+        Combine(GetTempPath(), Guid.NewGuid().ToString("N") + (extension ?? String.Empty));
     #endregion
 
     #region GetUniqueRandomPath
@@ -144,14 +145,15 @@ public static class PathHelper
     /// <param name="parentFolder"></param>
     /// <param name="extension"></param>
     /// <returns></returns>
-    public static string GetUniqueRandomPath(string parentFolder, string extension = null)
+    public static string GetUniqueRandomFileName(string parentFolder, string extension)
     {
         if (extension is not null && !extension.StartsWith('.'))
             extension = '.' + extension;
 
         string newPath;
 
-        do newPath = Path.Combine(parentFolder, Guid.NewGuid().ToString()) + extension;
+        do 
+            newPath = Path.Combine(parentFolder, Guid.NewGuid().ToString("N")) + extension;
         while (SystemHelper.Exists(newPath));
 
         return newPath;
